@@ -18,7 +18,9 @@ import select
 import six
 import datetime
 from collections import deque
-import psycopg2
+# import snowball_driver as psycopg2
+from snowball_driver.errors import Error as PError
+from snowball_driver.dbapi.cursor import Cursor
 from flask import g, current_app
 from flask_babelex import gettext
 from flask_security import current_user
@@ -38,6 +40,9 @@ from .encoding import getEncoding, configureDriverEncodings
 from pgadmin.utils import csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
+
+from . import psycopg as psycopg2
+
 
 _ = gettext
 
@@ -190,24 +195,24 @@ class Connection(BaseConnection):
         return res
 
     def __repr__(self):
-        return "PG Connection: {0} ({1}) -> {2} (ajax:{3})".format(
+        return "DB Connection: {0} ({1}) -> {2} (ajax:{3})".format(
             self.conn_id, self.db,
-            'Connected' if self.conn and not self.conn.closed else
+            'Connected' if self.conn and not self.conn.is_closed else
             "Disconnected",
             self.async_
         )
 
     def __str__(self):
-        return "PG Connection: {0} ({1}) -> {2} (ajax:{3})".format(
+        return "DB Connection: {0} ({1}) -> {2} (ajax:{3})".format(
             self.conn_id, self.db,
-            'Connected' if self.conn and not self.conn.closed else
+            'Connected' if self.conn and not self.conn.is_closed else
             "Disconnected",
             self.async_
         )
 
     def connect(self, **kwargs):
         if self.conn:
-            if self.conn.closed:
+            if self.conn.is_closed:
                 self.conn = None
             else:
                 return True, None
@@ -292,23 +297,23 @@ class Connection(BaseConnection):
             pg_conn = psycopg2.connect(
                 host=manager.local_bind_host if manager.use_ssh_tunnel
                 else manager.host,
-                hostaddr=manager.local_bind_host if manager.use_ssh_tunnel
-                else manager.hostaddr,
+                # hostaddr=manager.local_bind_host if manager.use_ssh_tunnel
+                # else manager.hostaddr,
                 port=manager.local_bind_port if manager.use_ssh_tunnel
                 else manager.port,
                 database=database,
                 user=user,
-                password=password,
-                async_=self.async_,
-                passfile=get_complete_file_path(passfile),
-                sslmode=manager.ssl_mode,
-                sslcert=get_complete_file_path(manager.sslcert),
-                sslkey=get_complete_file_path(manager.sslkey),
-                sslrootcert=get_complete_file_path(manager.sslrootcert),
-                sslcrl=get_complete_file_path(manager.sslcrl),
-                sslcompression=True if manager.sslcompression else False,
-                service=manager.service,
-                connect_timeout=manager.connect_timeout
+                password=password or '',
+                # async_=self.async_,
+                # passfile=get_complete_file_path(passfile),
+                # sslmode=manager.ssl_mode,
+                # sslcert=get_complete_file_path(manager.sslcert),
+                # sslkey=get_complete_file_path(manager.sslkey),
+                # sslrootcert=get_complete_file_path(manager.sslrootcert),
+                # sslcrl=get_complete_file_path(manager.sslcrl),
+                # sslcompression=True if manager.sslcompression else False,
+                # service=manager.service,
+                connect_timeout=manager.connect_timeout,
             )
 
             # If connection is asynchronous then we will have to wait
@@ -316,14 +321,15 @@ class Connection(BaseConnection):
             if self.async_ == 1:
                 self._wait(pg_conn)
 
-        except psycopg2.Error as e:
+        except PError as e:
             manager.stop_ssh_tunnel()
-            if e.pgerror:
-                msg = e.pgerror
-            elif e.diag.message_detail:
-                msg = e.diag.message_detail
-            else:
-                msg = str(e)
+            # if e.pgerror:
+            #     msg = e.pgerror
+            # elif e.diag.message_detail:
+            #     msg = e.diag.message_detail
+            # else:
+            #     msg = str(e)
+            msg = str(e)
             current_app.logger.info(
                 u"Failed to connect to the database server(#{server_id}) for "
                 u"connection ({conn_id}) with error message as below"
@@ -361,7 +367,7 @@ class Connection(BaseConnection):
 
     def _initialize(self, conn_id, **kwargs):
         self.execution_aborted = False
-        self.__backend_pid = self.conn.get_backend_pid()
+        self.__backend_pid = None
 
         setattr(g, "{0}#{1}".format(
             self.manager.sid,
@@ -375,7 +381,7 @@ class Connection(BaseConnection):
         def _execute(cur, query, params=None):
             try:
                 self.__internal_blocking_execute(cur, query, params)
-            except psycopg2.Error as pe:
+            except PError as pe:
                 cur.close()
                 return formatted_exception_msg(pe, False)
             return None
@@ -399,28 +405,28 @@ class Connection(BaseConnection):
             register_binary_typecasters(self.conn)
 
         postgres_encoding, self.python_encoding, typecast_encoding = \
-            getEncoding(self.conn.encoding)
+            getEncoding('utf-8')
 
         # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
         # convenience hack for those running on old, unsupported versions of
         # PostgreSQL 'cos we're nice like that.
-        status = _execute(
-            cur,
-            "SET DateStyle=ISO; "
-            "SET client_min_messages=notice; "
-            "SELECT set_config('bytea_output','escape',false) FROM pg_settings"
-            " WHERE name = 'bytea_output'; "
-            "SET client_encoding='{0}';".format(postgres_encoding)
-        )
+        # status = _execute(
+        #     cur,
+        #     "SET DateStyle=ISO; "
+        #     "SET client_min_messages=notice; "
+        #     "SELECT set_config('bytea_output','escape',false) FROM pg_settings"
+        #     " WHERE name = 'bytea_output'; "
+        #     "SET client_encoding='{0}';".format(postgres_encoding)
+        # )
 
-        if status is not None:
-            self.conn.close()
-            self.conn = None
+        # if status is not None:
+        #     self.conn.close()
+        #     self.conn = None
 
-            return False, status
+        #     return False, status
 
         if manager.role:
-            status = _execute(cur, u"SET ROLE TO %s", [manager.role])
+            status = _execute(cur, u"SET ROLE %s", [manager.role])
 
             if status is not None:
                 self.conn.close()
@@ -459,37 +465,42 @@ class Connection(BaseConnection):
 
         if cur.rowcount > 0:
             row = cur.fetchmany(1)[0]
-            manager.ver = row['version']
-            manager.sversion = self.conn.server_version
+            version_str, = row
+            version = version_str.split('.')[0]
+            manager.ver = version_str
+            # snowball_driver connection has no attribute 'server_version'
+            # manager.sversion = self.conn.server_version
+            manager.sversion = 0
 
-        status = _execute(cur, """
-SELECT
-    db.oid as did, db.datname, db.datallowconn,
-    pg_encoding_to_char(db.encoding) AS serverencoding,
-    has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid
-FROM
-    pg_database db
-WHERE db.datname = current_database()""")
+#         status = _execute(cur, """
+# SELECT
+#     db.oid as did, db.datname, db.datallowconn,
+#     pg_encoding_to_char(db.encoding) AS serverencoding,
+#     has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid
+# FROM
+#     pg_database db
+# WHERE db.datname = current_database()""")
 
-        if status is None:
-            manager.db_info = manager.db_info or dict()
-            if cur.rowcount > 0:
-                res = cur.fetchmany(1)[0]
-                manager.db_info[res['did']] = res.copy()
+#         if status is None:
+#             manager.db_info = manager.db_info or dict()
+#             if cur.rowcount > 0:
+#                 res = cur.fetchmany(1)[0]
+#                 manager.db_info[res['did']] = res.copy()
 
-                # We do not have database oid for the maintenance database.
-                if len(manager.db_info) == 1:
-                    manager.did = res['did']
+#                 # We do not have database oid for the maintenance database.
+#                 if len(manager.db_info) == 1:
+#                     manager.did = res['did']
 
-        status = _execute(cur, """
-SELECT
-    oid as id, rolname as name, rolsuper as is_superuser,
-    CASE WHEN rolsuper THEN true ELSE rolcreaterole END as can_create_role,
-    CASE WHEN rolsuper THEN true ELSE rolcreatedb END as can_create_db
-FROM
-    pg_catalog.pg_roles
-WHERE
-    rolname = current_user""")
+#         status = _execute(cur, """
+# SELECT
+#     oid as id, rolname as name, rolsuper as is_superuser,
+#     CASE WHEN rolsuper THEN true ELSE rolcreaterole END as can_create_role,
+#     CASE WHEN rolsuper THEN true ELSE rolcreatedb END as can_create_db
+# FROM
+#     pg_catalog.pg_roles
+# WHERE
+#     rolname = current_user""")
+        status = _execute(cur, """SELECT currentUser();""")
 
         if status is None:
             manager.user_info = dict()
@@ -539,9 +550,9 @@ WHERE
             self.conn_id.encode('utf-8')
         ), None)
 
-        if self.connected() and cur and not cur.closed:
-            if not server_cursor or (server_cursor and cur.name):
-                return True, cur
+        if self.connected() and cur:
+            # if not server_cursor or (server_cursor and cur.name):
+            return True, cur
 
         if not self.connected():
             errmsg = ""
@@ -564,15 +575,16 @@ WHERE
                 )
 
         try:
-            if server_cursor:
-                # Providing name to cursor will create server side cursor.
-                cursor_name = "CURSOR:{0}".format(self.conn_id)
-                cur = self.conn.cursor(
-                    name=cursor_name, cursor_factory=DictCursor
-                )
-            else:
-                cur = self.conn.cursor(cursor_factory=DictCursor)
-        except psycopg2.Error as pe:
+            # if server_cursor:
+            #     # Providing name to cursor will create server side cursor.
+            #     cursor_name = "CURSOR:{0}".format(self.conn_id)
+            #     cur = self.conn.cursor(
+            #         name=cursor_name, cursor_factory=DictCursor
+            #     )
+            # else:
+            #     cur = self.conn.cursor(cursor_factory=DictCursor)
+            cur = self.conn.cursor()
+        except PError as pe:
             current_app.logger.exception(pe)
             errmsg = gettext(
                 "Failed to create cursor for psycopg2 connection with error "
@@ -582,7 +594,7 @@ WHERE
             )
 
             current_app.logger.error(errmsg)
-            if self.conn.closed:
+            if self.conn.is_closed:
                 self.conn = None
                 if self.auto_reconnect and not self.reconnecting:
                     current_app.logger.info(
@@ -618,21 +630,21 @@ WHERE
         # We need to esacpe the data so that it does not fail when
         # it is encoded with python ascii
         # unicode_escape helps in escaping and unescaping
-        if self.conn:
-            if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
-                                      'MULE_INTERNAL', 'MULEINTERNAL')\
-               and params is not None and type(params) == dict:
-                for key, val in params.items():
-                    modified_val = val
-                    # "unicode_escape" will convert single backslash to double
-                    # backslash, so we will have to replace/revert them again
-                    # to store the correct value into the database.
-                    if isinstance(val, six.string_types):
-                        modified_val = val.encode('unicode_escape')\
-                            .decode('raw_unicode_escape')\
-                            .replace("\\\\", "\\")
+        # if self.conn:
+        #     if self.conn.encoding in ('SQL_ASCII', 'SQLASCII',
+        #                               'MULE_INTERNAL', 'MULEINTERNAL')\
+        #        and params is not None and type(params) == dict:
+        #         for key, val in params.items():
+        #             modified_val = val
+        #             # "unicode_escape" will convert single backslash to double
+        #             # backslash, so we will have to replace/revert them again
+        #             # to store the correct value into the database.
+        #             if isinstance(val, six.string_types):
+        #                 modified_val = val.encode('unicode_escape')\
+        #                     .decode('raw_unicode_escape')\
+        #                     .replace("\\\\", "\\")
 
-                    params[key] = modified_val
+        #             params[key] = modified_val
 
         return params
 
@@ -649,7 +661,7 @@ WHERE
             params: Extra parameters
         """
 
-        query = query.encode(self.python_encoding)
+        # query = query.encode(self.python_encoding)
 
         params = self.escape_params_sqlascii(params)
         cur.execute(query, params)
@@ -690,7 +702,7 @@ WHERE
         )
         try:
             self.__internal_blocking_execute(cur, query, params)
-        except psycopg2.Error as pe:
+        except PError as pe:
             cur.close()
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
@@ -771,9 +783,9 @@ WHERE
 
             for c in cur.ordered_description():
                 # This is to handle the case in which column name is non-ascii
-                column_name = c.to_dict()['name']
+                column_name = c._asdict()['name']
                 header.append(column_name)
-                if c.to_dict()['type_code'] in ALL_JSON_TYPES:
+                if c.to_sdict()['type_code'] in ALL_JSON_TYPES:
                     json_columns.append(column_name)
 
             res_io = StringIO()
@@ -817,7 +829,7 @@ WHERE
                 results = cur.fetchmany(records)
 
                 if not results:
-                    if not cur.closed:
+                    if not self.cursor_closed(cur):
                         cur.close()
                     break
                 res_io = StringIO()
@@ -858,7 +870,7 @@ WHERE
         )
         try:
             self.__internal_blocking_execute(cur, query, params)
-        except psycopg2.Error as pe:
+        except PError as pe:
             cur.close()
             if not self.connected():
                 if self.auto_reconnect and not self.reconnecting:
@@ -941,7 +953,7 @@ WHERE
             self.execution_aborted = False
             cur.execute(query, params)
             res = self._wait_timeout(cur.connection)
-        except psycopg2.Error as pe:
+        except PError as pe:
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
                 u"Failed to execute query (execute_async) for the server "
@@ -1000,7 +1012,7 @@ WHERE
 
         try:
             self.__internal_blocking_execute(cur, query, params)
-        except psycopg2.Error as pe:
+        except PError as pe:
             cur.close()
             if not self.connected():
                 if self.auto_reconnect and not self.reconnecting:
@@ -1082,7 +1094,7 @@ WHERE
         )
         try:
             self.__internal_blocking_execute(cur, query, params)
-        except psycopg2.Error as pe:
+        except PError as pe:
             cur.close()
             if not self.connected():
                 if self.auto_reconnect and \
@@ -1136,7 +1148,7 @@ WHERE
         )
         try:
             self.__internal_blocking_execute(cur, query, params)
-        except psycopg2.Error as pe:
+        except PError as pe:
             cur.close()
             if not self.connected():
                 if self.auto_reconnect and not self.reconnecting:
@@ -1227,7 +1239,7 @@ WHERE
 
     def connected(self):
         if self.conn:
-            if not self.conn.closed:
+            if not self.conn.is_closed:
                 return True
             self.conn = None
         return False
@@ -1258,25 +1270,25 @@ WHERE
             pg_conn = psycopg2.connect(
                 host=manager.local_bind_host if manager.use_ssh_tunnel
                 else manager.host,
-                hostaddr=manager.local_bind_host if manager.use_ssh_tunnel
-                else manager.hostaddr,
+                # hostaddr=manager.local_bind_host if manager.use_ssh_tunnel
+                # else manager.hostaddr,
                 port=manager.local_bind_port if manager.use_ssh_tunnel
                 else manager.port,
                 database=self.db,
                 user=manager.user,
-                password=password,
-                passfile=get_complete_file_path(manager.passfile),
-                sslmode=manager.ssl_mode,
-                sslcert=get_complete_file_path(manager.sslcert),
-                sslkey=get_complete_file_path(manager.sslkey),
-                sslrootcert=get_complete_file_path(manager.sslrootcert),
-                sslcrl=get_complete_file_path(manager.sslcrl),
-                sslcompression=True if manager.sslcompression else False,
-                service=manager.service,
+                password=password or '',
+                # passfile=get_complete_file_path(manager.passfile),
+                # sslmode=manager.ssl_mode,
+                # sslcert=get_complete_file_path(manager.sslcert),
+                # sslkey=get_complete_file_path(manager.sslkey),
+                # sslrootcert=get_complete_file_path(manager.sslrootcert),
+                # sslcrl=get_complete_file_path(manager.sslcrl),
+                # sslcompression=True if manager.sslcompression else False,
+                # service=manager.service,
                 connect_timeout=manager.connect_timeout
             )
 
-        except psycopg2.Error as e:
+        except PError as e:
             msg = e.pgerror if e.pgerror else e.message \
                 if e.message else e.diag.message_detail \
                 if e.diag.message_detail else str(e)
@@ -1292,7 +1304,7 @@ Failed to reset the connection to the server due to following error:
 
         pg_conn.notices = deque([], self.ASYNC_NOTICE_MAXLENGTH)
         self.conn = pg_conn
-        self.__backend_pid = pg_conn.get_backend_pid()
+        self.__backend_pid = None
 
         return True, None
 
@@ -1406,7 +1418,7 @@ Failed to reset the connection to the server due to following error:
         is_error = False
         try:
             status = self._wait_timeout(self.conn)
-        except psycopg2.Error as pe:
+        except PError as pe:
             if self.conn.closed:
                 raise ConnectionLost(
                     self.manager.sid,
@@ -1529,82 +1541,9 @@ Failed to reset the connection to the server due to following error:
             conn_id: Connection id
             did: Database id (optional)
         """
-        cancel_conn = self.manager.connection(did=did, conn_id=conn_id)
-        query = """SELECT pg_cancel_backend({0});""".format(
-            cancel_conn.__backend_pid)
 
         status = True
-        msg = ''
-
-        # if backend pid is same then create a new connection
-        # to cancel the query and release it.
-        if cancel_conn.__backend_pid == self.__backend_pid:
-            password = getattr(self.manager, 'password', None)
-            if password:
-                # Fetch Logged in User Details.
-                user = User.query.filter_by(id=current_user.id).first()
-                if user is None:
-                    return False, gettext("Unauthorized request.")
-
-                crypt_key_present, crypt_key = get_crypt_key()
-                if not crypt_key_present:
-                    return False, crypt_key
-
-                password = decrypt(password, crypt_key)\
-                    .decode()
-
-            try:
-                pg_conn = psycopg2.connect(
-                    host=self.manager.local_bind_host if
-                    self.manager.use_ssh_tunnel else self.manager.host,
-                    hostaddr=self.manager.local_bind_host if
-                    self.manager.use_ssh_tunnel else
-                    self.manager.hostaddr,
-                    port=self.manager.local_bind_port if
-                    self.manager.use_ssh_tunnel else self.manager.port,
-                    database=self.db,
-                    user=self.manager.user,
-                    password=password,
-                    passfile=get_complete_file_path(self.manager.passfile),
-                    sslmode=self.manager.ssl_mode,
-                    sslcert=get_complete_file_path(self.manager.sslcert),
-                    sslkey=get_complete_file_path(self.manager.sslkey),
-                    sslrootcert=get_complete_file_path(
-                        self.manager.sslrootcert
-                    ),
-                    sslcrl=get_complete_file_path(self.manager.sslcrl),
-                    sslcompression=True if self.manager.sslcompression
-                    else False,
-                    service=self.manager.service,
-                    connect_timeout=self.manager.connect_timeout
-                )
-
-                # Get the cursor and run the query
-                cur = pg_conn.cursor()
-                cur.execute(query)
-
-                # Close the connection
-                pg_conn.close()
-                pg_conn = None
-
-            except psycopg2.Error as e:
-                status = False
-                if e.pgerror:
-                    msg = e.pgerror
-                elif e.diag.message_detail:
-                    msg = e.diag.message_detail
-                else:
-                    msg = str(e)
-                return status, msg
-        else:
-            if self.connected():
-                status, msg = self.execute_void(query)
-
-                if status:
-                    cancel_conn.execution_aborted = True
-            else:
-                status = False
-                msg = gettext("Not connected to the database server.")
+        msg = gettext("snowball database has not transaction.")
 
         return status, msg
 

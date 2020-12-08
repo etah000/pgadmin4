@@ -194,25 +194,25 @@ class ServerManager(object):
                     if not conn.connected():
                         conn.connect()
 
-                    if conn.connected():
-                        status, res = conn.execute_dict(u"""
-SELECT
-    db.oid as did, db.datname, db.datallowconn,
-    pg_encoding_to_char(db.encoding) AS serverencoding,
-    has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid
-FROM
-    pg_database db
-WHERE db.oid = {0}""".format(did))
+#                     if conn.connected():
+#                         status, res = conn.execute_dict(u"""
+# SELECT
+#     db.oid as did, db.datname, db.datallowconn,
+#     pg_encoding_to_char(db.encoding) AS serverencoding,
+#     has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid
+# FROM
+#     pg_database db
+# WHERE db.oid = {0}""".format(did))
 
-                        if status and len(res['rows']) > 0:
-                            for row in res['rows']:
-                                self.db_info[did] = row
-                                database = self.db_info[did]['datname']
+#                         if status and len(res['rows']) > 0:
+#                             for row in res['rows']:
+#                                 self.db_info[did] = row
+#                                 database = self.db_info[did]['datname']
 
-                        if did not in self.db_info:
-                            raise ObjectGone(gettext(
-                                "Could not find the specified database."
-                            ))
+#                         if did not in self.db_info:
+#                             raise ObjectGone(gettext(
+#                                 "Could not find the specified database."
+#                             ))
 
         if not get_crypt_key()[0]:
             # the reason its not connected might be missing key
@@ -222,8 +222,8 @@ WHERE db.oid = {0}""".format(did))
             # Check SSH Tunnel is alive or not.
             if self.use_ssh_tunnel == 1:
                 self.check_ssh_tunnel_alive()
-            else:
-                raise ConnectionLost(self.sid, None, None)
+            # else:
+            #     raise ConnectionLost(self.sid, None, None)
 
         my_id = (u'CONN:{0}'.format(conn_id)) if conn_id is not None else \
             (u'DB:{0}'.format(database))

@@ -17,6 +17,7 @@ result.
 from collections import OrderedDict
 import psycopg2
 from psycopg2.extensions import cursor as _cursor, encodings
+from snowball_driver.dbapi.cursor import Cursor as _cursor
 from .encoding import configureDriverEncodings
 
 configureDriverEncodings(encodings)
@@ -94,19 +95,20 @@ class _WrapperColumn(object):
         # exposed as items of the cursor.description sequence.
         # Before psycopg2 2.8 the description attribute was a sequence
         # of simple tuples or namedtuples.
-        if psycopg2.__version__.find('2.8') != -1:
-            ores = OrderedDict()
-            ores['name'] = self.orig_col.name
-            ores['type_code'] = self.orig_col.type_code
-            ores['display_size'] = self.orig_col.display_size
-            ores['internal_size'] = self.orig_col.internal_size
-            ores['precision'] = self.orig_col.precision
-            ores['scale'] = self.orig_col.scale
-            ores['null_ok'] = self.orig_col.null_ok
-            ores['table_oid'] = self.orig_col.table_oid
-            ores['table_column'] = self.orig_col.table_column
-        else:
-            ores = OrderedDict(self.orig_col._asdict())
+        # if psycopg2.__version__.find('2.8') != -1:
+        #     ores = OrderedDict()
+        #     ores['name'] = self.orig_col.name
+        #     ores['type_code'] = self.orig_col.type_code
+        #     ores['display_size'] = self.orig_col.display_size
+        #     ores['internal_size'] = self.orig_col.internal_size
+        #     ores['precision'] = self.orig_col.precision
+        #     ores['scale'] = self.orig_col.scale
+        #     ores['null_ok'] = self.orig_col.null_ok
+        #     ores['table_oid'] = self.orig_col.table_oid
+        #     ores['table_column'] = self.orig_col.table_column
+        # else:
+        #     ores = OrderedDict(self.orig_col._asdict())
+        ores = OrderedDict(self.orig_col._asdict())
 
         name = ores['name']
         if self.dummy_name:
@@ -142,6 +144,7 @@ class DictCursor(_cursor):
         """
         self._odt_desc = None
         _cursor.__init__(self, *args, **kwargs)
+        # _cursor.__init__(self, )
 
     def _dict_tuple(self, tup):
         """
@@ -236,3 +239,7 @@ class DictCursor(_cursor):
                 yield self._dict_tuple(next(it))
         except StopIteration:
             pass
+
+    @property
+    def closed(self, ):
+        return self._state == self._states.CURSOR_CLOSED

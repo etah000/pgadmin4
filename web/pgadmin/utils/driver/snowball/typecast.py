@@ -178,7 +178,7 @@ def register_string_typecasters(connection):
     # are escaped again and sent to the DB.
 
     postgres_encoding, python_encoding, typecast_encoding = \
-        getEncoding(connection.encoding)
+        getEncoding('utf-8')
     if postgres_encoding != 'UNICODE':
         def non_ascii_escape(value, cursor):
             if value is None:
