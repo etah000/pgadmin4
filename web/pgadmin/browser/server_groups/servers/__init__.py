@@ -50,17 +50,19 @@ def has_any(data, keys):
 
 
 def recovery_state(connection, postgres_version):
-    recovery_check_sql = render_template(
-        "connect/sql/#{0}#/check_recovery.sql".format(postgres_version))
+    # recovery_check_sql = render_template(
+    #     "connect/sql/#{0}#/check_recovery.sql".format(postgres_version))
 
-    status, result = connection.execute_dict(recovery_check_sql)
-    if status and 'rows' in result and len(result['rows']) > 0:
-        in_recovery = result['rows'][0]['inrecovery']
-        wal_paused = result['rows'][0]['isreplaypaused']
-    else:
-        in_recovery = None
-        wal_paused = None
-    return status, result, in_recovery, wal_paused
+    # status, result = connection.execute_dict(recovery_check_sql)
+    # if status and 'rows' in result and len(result['rows']) > 0:
+    #     in_recovery = result['rows'][0]['inrecovery']
+    #     wal_paused = result['rows'][0]['isreplaypaused']
+    # else:
+    #     in_recovery = None
+    #     wal_paused = None
+    # return status, result, in_recovery, wal_paused
+
+    return True, None, None, None
 
 
 def server_icon_and_background(is_connected, manager, server):

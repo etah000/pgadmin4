@@ -9,6 +9,7 @@
 
 import os
 import sys
+import json
 from collections import defaultdict
 from operator import attrgetter
 
@@ -312,8 +313,8 @@ SHORTCUT_FIELDS = [
 ]
 
 
-class KeyManager:
-    def __init__(self):
+class _KeyManager:
+    def __init__(self, ):
         self.users = dict()
         self.lock = Lock()
 
@@ -353,3 +354,66 @@ class KeyManager:
 
             if user is not None:
                 del self.users[current_user.id]
+
+
+class KeyManager:
+    """redis cached KeyManager, for development environment only.
+    """
+
+    def __init__(self):
+        self.users = dict()
+        self.lock = Lock()
+        self.conn = self.init_rdb()
+
+    def init_rdb(self, ):
+        import redis
+        pool = redis.ConnectionPool(
+            host='192.168.32.1',
+            port=6379,
+            db=1,
+            password='',
+            decode_responses=True)
+        rdb = redis.Redis(connection_pool=pool)
+
+        return rdb
+
+    @login_required
+    def get(self):
+        user = self.conn.get(current_user.id)
+        if user is not None:
+            return json.loads(user).get('key', None)
+
+    @login_required
+    def set(self, _key, _new_login=True):
+        with self.lock:
+            user = self.conn.get(current_user.id)
+            user = None if user is None else json.loads(user)
+
+            if user is None:
+                user = dict(session_count=1, key=_key)
+            else:
+                if _new_login:
+                    user['session_count'] += 1
+                user['key'] = _key
+
+            self.conn.set(current_user.id, json.dumps(user))
+
+    @login_required
+    def reset(self):
+        with self.lock:
+            # user = self.users.get(current_user.id, None)
+            user = self.conn.get(current_user.id)
+            user = None if user is None else json.loads(user)
+
+            if user is not None:
+                # This will not decrement if session expired
+                user['session_count'] -= 1
+                if user['session_count'] == 0:
+                    self.conn.delete(current_user.id)
+                else:
+                    self.conn.set(current_user.id, json.dumps(user))
+
+    @login_required
+    def hard_reset(self):
+        with self.lock:
+            self.conn.delete(current_user.id)

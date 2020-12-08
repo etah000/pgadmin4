@@ -66,6 +66,13 @@ class PgAdmin(Flask):
                     'Skipping blacklisted module: %s' % module_name
                 )
                 continue
+
+            if module_name in self.config['MODULES_TO_SKIP']:
+                self.logger.info(
+                    'Skipping graylisted module: %s' % module_name
+                )
+                continue
+
             self.logger.info('Examining potential module: %s' % module_name)
             module = import_module(module_name)
             for key in list(module.__dict__.keys()):

@@ -1,17 +1,19 @@
 SELECT
-    db.oid as did, db.datname as name, ta.spcname as spcname, db.datallowconn,
-    has_database_privilege(db.oid, 'CREATE') as cancreate, datdba as owner
-FROM
-    pg_database db
-    LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace = ta.oid
-WHERE {% if did %}
-db.oid = {{ did|qtLiteral }}::OID{% else %}
-db.oid > {{ last_system_oid }}::OID
-{% endif %}
+    rowNumberInAllBlocks () AS did,
+    *
+FROM ( SELECT DISTINCT
+        db.database AS name,
+        '' AS spcname,
+        1 AS datallowconn,
+        1 AS cancreate,
+        currentUser () AS owner
+    FROM
+        system.tables AS db
+    WHERE 1
 {% if db_restrictions %}
-
 AND
-db.datname in ({{db_restrictions}})
+db.database IN ({{db_restrictions}})
 {% endif %}
 
-ORDER BY datname;
+    ORDER BY
+        database);
