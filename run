@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# id|username|email|password|active|confirmed_at|masterpass_check|auth_source
+# 1|admin|admin|$pbkdf2-sha512$25000$xbh37n3vnZOS0jpHiDHmnA$S9wajH.w92fPWEBI6L2isP2e08o8.MRWOMr77OX9f0NZ2YB7p2yvEt0Kc2RLT7Vn8V6rK/F6UEtG3pIsc9tTwQ|1|||internal
+
+python web/pgAdmin4_dev.py
