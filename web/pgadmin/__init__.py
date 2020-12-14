@@ -67,9 +67,9 @@ class PgAdmin(Flask):
                 )
                 continue
 
-            if module_name in self.config['MODULES_TO_SKIP']:
+            if module_name not in self.config['MODULES_ACTIVE']:
                 self.logger.info(
-                    'Skipping graylisted module: %s' % module_name
+                    'Skipping DEACTIVE module: %s' % module_name
                 )
                 continue
 

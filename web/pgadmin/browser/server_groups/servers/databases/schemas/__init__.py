@@ -210,7 +210,7 @@ class SchemaView(PGChildNodeView):
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
-        {'type': 'int', 'id': 'did'}
+        {'type': 'string', 'id': 'did'}
     ]
     ids = [
         {'type': 'int', 'id': 'scid'}

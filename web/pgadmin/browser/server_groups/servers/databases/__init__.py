@@ -103,7 +103,7 @@ class DatabaseView(PGChildNodeView):
         {'type': 'int', 'id': 'sid'}
     ]
     ids = [
-        {'type': 'int', 'id': 'did'}
+        {'type': 'string', 'id': 'did'}
     ]
 
     operations = dict({
@@ -395,6 +395,16 @@ class DatabaseView(PGChildNodeView):
                 _("Could not find the database on the server.")
             )
 
+        result = res
+        result['acl'] = None
+        result['typeacl'] = ''
+        result['variables'] = []
+
+        return ajax_response(
+            response=result,
+            status=200
+        )
+
         SQL = render_template(
             "/".join([self.template_path, 'acl.sql']),
             did=did, conn=self.conn
@@ -512,7 +522,7 @@ class DatabaseView(PGChildNodeView):
         """
         This function to return list of avialable encodings
         """
-        res = [{'label': '', 'value': ''}]
+        res = [{'label': 'UTF8', 'value': 'UTF8'}]
         SQL = render_template(
             "/".join([self.template_path, 'get_encodings.sql'])
         )

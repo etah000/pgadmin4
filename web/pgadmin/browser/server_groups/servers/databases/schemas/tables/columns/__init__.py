@@ -162,9 +162,9 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
-        {'type': 'int', 'id': 'did'},
+        {'type': 'string', 'id': 'did'},
         {'type': 'int', 'id': 'scid'},
-        {'type': 'int', 'id': 'tid'}
+        {'type': 'string', 'id': 'tid'}
     ]
     ids = [
         # Here we specify type as any because table
@@ -240,7 +240,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            tid=tid, show_sys_objects=self.blueprint.show_system_objects
+            did=did, tid=tid, show_sys_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -270,6 +270,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         res = []
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
+            did=did,
             tid=tid,
             clid=clid,
             show_sys_objects=self.blueprint.show_system_objects

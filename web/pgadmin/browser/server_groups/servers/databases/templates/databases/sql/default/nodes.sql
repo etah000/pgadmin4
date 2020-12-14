@@ -1,5 +1,5 @@
 SELECT
-    rowNumberInAllBlocks () AS did,
+    name AS did,
     *
 FROM ( SELECT DISTINCT
         db.database AS name,

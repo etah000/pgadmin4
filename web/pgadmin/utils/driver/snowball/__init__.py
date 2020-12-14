@@ -16,7 +16,7 @@ object.
 import datetime
 from flask import session
 from flask_login import current_user
-import psycopg2
+# import psycopg2
 from psycopg2.extensions import adapt
 from threading import Lock
 
@@ -26,6 +26,8 @@ from .keywords import ScanKeyword
 from ..abstract import BaseDriver
 from .connection import Connection
 from .server_manager import ServerManager
+
+from . import psycopg as psycopg2
 
 connection_restore_lock = Lock()
 
@@ -128,7 +130,7 @@ class Driver(BaseDriver):
         """
         version = getattr(psycopg2, '__version__', None)
 
-        if version:
+        if version is not None:
             return version
 
         raise Exception(
@@ -140,7 +142,7 @@ class Driver(BaseDriver):
         Returns the loaded libpq version
         """
         version = getattr(psycopg2, '__libpq_version__', None)
-        if version:
+        if version is not None:
             return version
 
         raise Exception(

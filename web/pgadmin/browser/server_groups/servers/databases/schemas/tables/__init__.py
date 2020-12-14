@@ -243,11 +243,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
-        {'type': 'int', 'id': 'did'},
+        {'type': 'string', 'id': 'did'},
         {'type': 'int', 'id': 'scid'}
     ]
     ids = [
-        {'type': 'int', 'id': 'tid'}
+        {'type': 'string', 'id': 'tid'}
     ]
 
     operations = dict({
@@ -402,7 +402,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         res = []
         SQL = render_template(
             "/".join([self.table_template_path, 'nodes.sql']),
-            scid=scid
+            did=did, scid=scid
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:

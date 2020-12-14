@@ -47,6 +47,7 @@ def get_parent(conn, tid, template_path=None):
     :param template_path: Optional template path
     :return:
     """
+    return 'public', tid
 
     SQL = render_template("/".join([template_path,
                                     'get_parent.sql']), tid=tid)

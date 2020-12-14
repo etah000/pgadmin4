@@ -4,6 +4,8 @@ from .cursor import DictCursor as Cursor
 # overload snowball_driver official Connection class
 # to supports DictCursor
 
+__version__ = 0
+__libpq_version__ = 0
 
 class Connection(_connection):
     def cursor(self):

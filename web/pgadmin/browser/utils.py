@@ -444,6 +444,7 @@ class PGChildNodeView(NodeView):
 
         Returns: Dictionary of dependencies for the selected node.
         """
+        return []
 
         # Set the sql_path
         sql_path = 'depends/sql/#{0}#'.format(conn.manager.version)
@@ -499,6 +500,8 @@ class PGChildNodeView(NodeView):
 
         Returns: Dictionary of dependents for the selected node.
         """
+        return []
+
         # Set the sql_path
         sql_path = 'depends/sql/#{0}#'.format(conn.manager.version)
 
