@@ -523,6 +523,12 @@ class DatabaseView(PGChildNodeView):
         This function to return list of avialable encodings
         """
         res = [{'label': 'UTF8', 'value': 'UTF8'}]
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
         SQL = render_template(
             "/".join([self.template_path, 'get_encodings.sql'])
         )
@@ -546,6 +552,12 @@ class DatabaseView(PGChildNodeView):
         This function to return list of available collation/character types
         """
         res = [{'label': '', 'value': ''}]
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
         default_list = ['C', 'POSIX']
         for val in default_list:
             res.append(

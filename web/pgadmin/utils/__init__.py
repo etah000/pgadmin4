@@ -313,7 +313,7 @@ SHORTCUT_FIELDS = [
 ]
 
 
-class _KeyManager:
+class KeyManager:
     def __init__(self, ):
         self.users = dict()
         self.lock = Lock()
@@ -356,7 +356,7 @@ class _KeyManager:
                 del self.users[current_user.id]
 
 
-class KeyManager:
+class _KeyManager:
     """redis cached KeyManager, for development environment only.
     """
 

@@ -281,6 +281,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         Args:
             tid: Table ID
         """
+        return ajax_response(
+            response=[],
+            status=200
+        )
+
         # Specific condition for column which we need to append
         where = "WHERE dep.refobjid={0}::OID".format(tid)
 
