@@ -71,6 +71,8 @@ def get_exclusion_constraints(conn, did, tid, exid=None, template_path=None):
     :param template_path: Template Path
     :return:
     """
+    return True, []
+
     sql = render_template("/".join([template_path, 'properties.sql']),
                           did=did, tid=tid, cid=exid)
 

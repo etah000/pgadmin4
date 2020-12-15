@@ -774,11 +774,16 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             This function will return list of types available for table node
             for node-ajax-control
         """
+        return make_json_response(
+            data=[],
+            status=200
+        )
+
         res = [{'label': '', 'value': ''}]
         try:
             SQL = render_template(
                 "/".join([self.table_template_path, 'get_oftype.sql']),
-                scid=scid,
+                did=dic, scid=scid, tid=tid,
                 server_type=self.manager.server_type,
                 show_sys_objects=self.blueprint.show_system_objects
             )

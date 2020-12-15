@@ -72,6 +72,7 @@ def get_index_constraints(conn, did, tid, ctype, cid=None, template_path=None):
     :param template_path: Template Path
     :return:
     """
+    return True, []
 
     sql = render_template("/".join([template_path, 'properties.sql']),
                           did=did, tid=tid, cid=cid, constraint_type=ctype)

@@ -565,6 +565,11 @@ rolmembership:{
 
     @check_precondition(action='list')
     def list(self, gid, sid):
+        return ajax_response(
+            response=[],
+            status=200
+        )
+
         status, res = self.conn.execute_dict(
             render_template(
                 self.sql_path + 'properties.sql'

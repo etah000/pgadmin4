@@ -524,14 +524,18 @@ class VacuumSettings:
         vacuum_fields = json.loads(vacuum_fields)
 
         # returns an array of setting & name values
-        vacuum_fields_keys = "'" + "','".join(
-            vacuum_fields[setting_type].keys()) + "'"
-        SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
-                              columns=vacuum_fields_keys)
+        # vacuum_fields_keys = "'" + "','".join(
+        #     vacuum_fields[setting_type].keys()) + "'"
+        # SQL = render_template('vacuum_settings/sql/vacuum_defaults.sql',
+        #                       columns=vacuum_fields_keys)
 
-        status, res = conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+        # status, res = conn.execute_dict(SQL)
+        # if not status:
+        #     return internal_server_error(errormsg=res)
+
+        res = dict()
+        res['rows'] = [dict(name=key, setting='') 
+                        for key in vacuum_fields[setting_type].keys()]
 
         for row in res['rows']:
             row_name = row['name']

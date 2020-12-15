@@ -70,6 +70,7 @@ def get_check_constraints(conn, tid, cid=None, template_path=None):
     :param template_path: Template Path
     :return:
     """
+    return True, []
 
     sql = render_template("/".join(
         [template_path, 'properties.sql']), tid=tid, cid=cid)

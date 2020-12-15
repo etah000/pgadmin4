@@ -21,6 +21,6 @@ SELECT
     {### Default ACL for Functions ###}
     '' AS funcacl,
     '' AS acl
-FROM system.tables
-WHERE {% if did %} database = '{{ did }}' {% endif %}
+FROM system.databases
+{% if did %} WHERE name = '{{ did }}' {% endif %}
 ORDER BY name;
