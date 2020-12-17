@@ -1,9 +1,7 @@
 {### SQL to fetch tablespace object stats ###}
-{% if tsid %}
-SELECT pg_tablespace_size({{ tsid|qtLiteral }}::OID) AS {{ conn|qtIdent(_('Size')) }}
-{% else %}
-SELECT ts.spcname AS {{ conn|qtIdent(_('Name')) }},
-    pg_tablespace_size(ts.oid) AS {{ conn|qtIdent(_('Size')) }}
-FROM
-    pg_catalog.pg_tablespace ts;
-{% endif %}
+SELECT name as Name,
+        concat(toString(round(total_space/(1024*1024*1024))),'G') as Total_Size
+        ,concat(toString(round(free_space/(1024*1024*1024))),'G') as Free_Size
+FROM system.disks;
+
+

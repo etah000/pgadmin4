@@ -70,7 +70,7 @@ class TablespaceView(PGChildNodeView):
         {'type': 'int', 'id': 'sid'}
     ]
     ids = [
-        {'type': 'int', 'id': 'tsid'}
+        {'type': 'string', 'id': 'tsid'}
     ]
 
     operations = dict({
@@ -267,8 +267,8 @@ class TablespaceView(PGChildNodeView):
 
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
-        copy_data['is_sys_obj'] = (
-            copy_data['oid'] <= self.datlastsysoid)
+        #copy_data['is_sys_obj'] = ( copy_data['oid'] <= self.datlastsysoid)
+        copy_data['is_sys_obj'] = True
         copy_data = self._formatter(copy_data, tsid)
 
         return ajax_response(
@@ -541,49 +541,7 @@ class TablespaceView(PGChildNodeView):
         """
         This function will generate sql for sql panel
         """
-        SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
-            tsid=tsid, conn=self.conn
-        )
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the tablespace on the server.")
-            )
-        # Making copy of output for future use
-        old_data = dict(res['rows'][0])
-
-        old_data = self._formatter(old_data, tsid)
-
-        # To format privileges
-        if 'spcacl' in old_data:
-            old_data['spcacl'] = parse_priv_to_db(old_data['spcacl'], self.acl)
-
-        SQL = ''
-        # We are not showing create sql for system tablespace
-        if not old_data['name'].startswith('pg_'):
-            SQL = render_template(
-                "/".join([self.template_path, 'create.sql']),
-                data=old_data
-            )
-            SQL += "\n"
-        SQL += render_template(
-            "/".join([self.template_path, 'alter.sql']),
-            data=old_data, conn=self.conn
-        )
-
-        sql_header = u"""
--- Tablespace: {0}
-
--- DROP TABLESPACE {0};
-
-""".format(old_data['name'])
-
-        SQL = sql_header + SQL
-        SQL = re.sub('\n{2,}', '\n\n', SQL)
+        SQL = '-- No SQL could be generated for the selected object.'
         return ajax_response(response=SQL.strip('\n'))
 
     @check_precondition
