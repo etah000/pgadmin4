@@ -94,7 +94,7 @@ class RoleView(PGChildNodeView):
         {'type': 'int', 'id': 'sid'}
     ]
     ids = [
-        {'type': 'int', 'id': 'rid'}
+        {'type': 'string', 'id': 'rid'}
     ]
 
     operations = dict({
@@ -565,11 +565,6 @@ rolmembership:{
 
     @check_precondition(action='list')
     def list(self, gid, sid):
-        return ajax_response(
-            response=[],
-            status=200
-        )
-
         status, res = self.conn.execute_dict(
             render_template(
                 self.sql_path + 'properties.sql'
@@ -697,7 +692,7 @@ rolmembership:{
         if len(res['rows']) == 0:
             return gone(_("Could not find the role information."))
 
-        res['rows'][0]['is_sys_obj'] = (
+        res['rows'][0]['is_sys_obj'] = True or (
             res['rows'][0]['oid'] <= self.datlastsysoid)
 
         return ajax_response(
@@ -950,6 +945,7 @@ rolmembership:{
 
         Returns: Dictionary of dependents for the selected node.
         """
+        return []
 
         # Dictionary for the object types
         types = {

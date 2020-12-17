@@ -1,17 +1,43 @@
 SELECT
-	r.oid, r.*,
-	pg_catalog.shobj_description(r.oid, 'pg_authid') AS description,
-	ARRAY(
-		SELECT
-			CASE WHEN am.admin_option THEN '1' ELSE '0' END || rm.rolname
-		FROM
-			(SELECT * FROM pg_auth_members WHERE member = r.oid) am
-			LEFT JOIN pg_catalog.pg_roles rm ON (rm.oid = am.roleid)
-	) rolmembership,
-	(SELECT array_agg(provider || '=' || label) FROM pg_shseclabel sl1 WHERE sl1.objoid=r.oid) AS seclabels
-FROM
-	pg_roles r
-{% if rid %}
-WHERE r.oid = {{ rid|qtLiteral }}::oid
-{% endif %}
-ORDER BY r.rolcanlogin, r.rolname
+    name AS oid,
+	name AS `oid-2`,
+    name AS rolname,
+    0 AS rolinherit,
+    0 AS rolcreaterole,
+    0 AS rolcreatedb,
+    1 AS rolcanlogin,
+    0 AS rolreplication,
+    -1 AS rolconnlimit,
+    '' AS rolpassword,
+    0 AS rolvaliduntil,
+    0 AS rolbypassrls,
+    array() AS rolconfig,
+    1 AS rolsuper,
+    1 AS rolcatupdate,
+    '' AS description,
+    array() AS rolmembership,
+    array() AS seclabels
+FROM system.users
+{% if rid %} WHERE name = '{{ rid }}' {% endif %}
+UNION ALL
+SELECT
+    name AS oid,
+	name AS `oid-2`,
+    name AS rolname,
+    0 AS rolinherit,
+    0 AS rolcreaterole,
+    0 AS rolcreatedb,
+    0 AS rolcanlogin,
+    0 AS rolreplication,
+    -1 AS rolconnlimit,
+    '' AS rolpassword,
+    0 AS rolvaliduntil,
+    0 AS rolbypassrls,
+    array() AS rolconfig,
+    0 AS rolsuper,
+    1 AS rolcatupdate,
+    '' AS description,
+    array() AS rolmembership,
+    array() AS seclabels
+FROM system.roles
+{% if rid %} WHERE name = '{{ rid }}' {% endif %}
