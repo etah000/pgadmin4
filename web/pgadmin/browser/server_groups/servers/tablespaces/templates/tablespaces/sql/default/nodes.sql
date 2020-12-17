@@ -1,4 +1,5 @@
 SELECT
-    0 AS oid, 
-    'public' AS name, 
-    'default' as owner
+    name as oid, 
+    name, 
+    'default' as owner 
+FROM system.disks;
