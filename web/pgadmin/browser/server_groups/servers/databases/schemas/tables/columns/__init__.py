@@ -330,7 +330,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            tid=tid, clid=clid,
+            did=did, tid=tid, clid=clid,
             show_sys_objects=self.blueprint.show_system_objects
         )
 
@@ -344,7 +344,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         # Making copy of output for future use
         data = dict(res['rows'][0])
-        data = column_utils.column_formatter(self.conn, tid, clid, data)
+        # data = column_utils.column_formatter(self.conn, tid, clid, data)
 
         return ajax_response(
             response=data,
@@ -753,6 +753,11 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             tid: Table ID
             clid: Column ID
         """
+        return ajax_response(
+            response=[],
+            status=200
+        )
+
         # Specific condition for column which we need to append
         where = "WHERE dep.refobjid={0}::OID AND dep.refobjsubid={1}".format(
             tid, clid

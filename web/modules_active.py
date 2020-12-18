@@ -28,7 +28,7 @@ MODULES_ACTIVE = (
     'pgadmin.browser.server_groups.servers.databases.schemas',
     # 'pgadmin.browser.server_groups.servers.databases.schemas.catalog_objects',
     # 'pgadmin.browser.server_groups.servers.databases.schemas.catalog_objects.columns',
-    # 'pgadmin.browser.server_groups.servers.databases.schemas.collations',
+    'pgadmin.browser.server_groups.servers.databases.schemas.collations',
     # 'pgadmin.browser.server_groups.servers.databases.schemas.domains',
     # 'pgadmin.browser.server_groups.servers.databases.schemas.domains.domain_constraints',
     # 'pgadmin.browser.server_groups.servers.databases.schemas.foreign_tables',

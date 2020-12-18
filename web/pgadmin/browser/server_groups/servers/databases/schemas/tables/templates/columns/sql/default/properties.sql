@@ -3,7 +3,7 @@ SELECT
     0 AS attlen,
     0 AS attndims,
     0 AS attnotnull,
-    rowNumberInAllBlocks() AS attnum,
+    name AS attnum,
     NULL AS attoptions,
     -1 AS attstattarget,
     'p' AS attstorage,
@@ -26,3 +26,6 @@ SELECT
     'public' AS typnspname
 FROM system.columns
 WHERE database = '{{ did }}' AND table = '{{ tid }}'
+{% if clid %}
+ AND name = '{{ clid }}'
+{% endif %}
