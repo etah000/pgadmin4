@@ -115,7 +115,7 @@ class CatalogObjectView(PGChildNodeView):
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
-        {'type': 'int', 'id': 'did'},
+        {'type': 'string', 'id': 'did'},
         {'type': 'int', 'id': 'scid'}
     ]
     ids = [
