@@ -12,6 +12,7 @@ MODULES_ACTIVE = (
     'pgadmin.browser.register_browser_preferences',
     'pgadmin.browser.server_groups',
     'pgadmin.browser.server_groups.servers',
+    'pgadmin.browser.server_groups.servers.clusters',
     'pgadmin.browser.server_groups.servers.databases',
     # 'pgadmin.browser.server_groups.servers.databases.casts',
     # 'pgadmin.browser.server_groups.servers.databases.event_triggers',
