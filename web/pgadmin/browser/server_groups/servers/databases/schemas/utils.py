@@ -579,6 +579,7 @@ class VacuumSettings:
         * result - Resultset of vacuum data
         * type - table/toast vacuum type
         """
+        return None
 
         vacuum_settings_tmp = copy.deepcopy(self.fetch_default_vacuum_settings(
             conn, self.manager.sid, type))

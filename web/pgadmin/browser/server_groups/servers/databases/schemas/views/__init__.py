@@ -197,7 +197,7 @@ class MViewModule(ViewModule):
             **kwargs:
         """
         super(MViewModule, self).__init__(*args, **kwargs)
-        self.min_ver = 90300
+        self.min_ver = None
         self.max_ver = None
         self.min_gpdbver = 1000000000
 
@@ -315,11 +315,11 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
-        {'type': 'int', 'id': 'did'},
+        {'type': 'string', 'id': 'did'},
         {'type': 'int', 'id': 'scid'}
     ]
     ids = [
-        {'type': 'int', 'id': 'vid'}
+        {'type': 'string', 'id': 'vid'}
     ]
 
     operations = dict({
@@ -407,7 +407,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         SQL = render_template("/".join(
             [self.template_path, 'sql/nodes.sql']),
-            vid=vid, datlastsysoid=self.datlastsysoid)
+            did=did, vid=vid, datlastsysoid=self.datlastsysoid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -435,7 +435,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template("/".join(
-            [self.template_path, 'sql/nodes.sql']), scid=scid)
+            [self.template_path, 'sql/nodes.sql']), did=did, scid=scid)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -1609,10 +1609,12 @@ class MViewNode(ViewNode, VacuumSettings):
         """
         Returns the template path for PostgreSQL servers.
         """
-        return 'pg/{0}'.format(
-            '9.4_plus' if ver >= 90400 else
-            '9.3_plus'
-        )
+        # return 'pg/{0}'.format(
+        #     '9.4_plus' if ver >= 90400 else
+        #     '9.3_plus'
+        # )
+        return 'pg/#{0}#'.format(ver)
+
 
     def getSQL(self, gid, sid, did, data, vid=None):
         """
