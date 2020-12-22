@@ -81,11 +81,9 @@ define('pgadmin.browser', [
         ajaxHook: function(item, settings) {
           if (item != null) {
             var d = this.itemData(item);
-            console.log(d)
             var n = b.Nodes[d._type];
             if (n)
               settings.url = n.generate_url(item, 'children', d, true);
-              // console.log(settings.url);
           }
         },
         loaderDelay: 100,
@@ -495,9 +493,6 @@ define('pgadmin.browser', [
           /* If the node specific callback returns false, we will also return
            * false for further processing.
            */
-          if(eventName in node.callbacks){
-            console.log(eventName);
-          }
           if (_.isObject(node.callbacks) &&
             eventName in node.callbacks &&
               typeof node.callbacks[eventName] == 'function' &&
@@ -939,7 +934,6 @@ define('pgadmin.browser', [
     },
 
     onAddTreeNode: function(_data, _hierarchy, _opts) {
-      console.log("^^^^^^^^^^^^^^^^^^");
       var ctx = {
           b: this, // Browser
           d: null, // current parent
