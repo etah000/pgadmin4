@@ -152,11 +152,11 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
-        {'type': 'int', 'id': 'did'},
+        {'type': 'string', 'id': 'did'},
         {'type': 'int', 'id': 'scid'}
     ]
     ids = [
-        {'type': 'int', 'id': 'coid'}
+        {'type': 'string', 'id': 'coid'}
     ]
 
     operations = dict({
@@ -366,6 +366,10 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will return list of collation available
         as AJAX response.
         """
+        return make_json_response(
+            data=[],
+            status=200
+        )
 
         res = [{'label': '', 'value': ''}]
         try:

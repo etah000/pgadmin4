@@ -699,6 +699,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             This function will return list of types available for column node
             for node-ajax-control
         """
+        return make_json_response(
+            data=[],
+            status=200
+        )
+
         condition = render_template(
             "/".join([
                 self.table_template_path, 'get_types_where_condition.sql'

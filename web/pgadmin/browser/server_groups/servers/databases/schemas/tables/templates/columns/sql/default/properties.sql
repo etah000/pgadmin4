@@ -9,7 +9,7 @@ SELECT
     'p' AS attstorage,
     0 AS atttypid,
     -1 AS atttypmod,
-    name AS cltype,
+    type AS cltype,
     '' AS collspcname,
     'p' AS defaultstorage,
     NULL AS defval,
@@ -26,3 +26,6 @@ SELECT
     'public' AS typnspname
 FROM system.columns
 WHERE database = '{{ did }}' AND table = '{{ tid }}'
+{% if clid %}
+ AND name = '{{ clid }}'
+{% endif %}
