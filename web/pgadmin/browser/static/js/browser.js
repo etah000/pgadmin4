@@ -493,9 +493,6 @@ define('pgadmin.browser', [
           /* If the node specific callback returns false, we will also return
            * false for further processing.
            */
-          if(eventName in node.callbacks){
-            console.log(eventName);
-          }
           if (_.isObject(node.callbacks) &&
             eventName in node.callbacks &&
               typeof node.callbacks[eventName] == 'function' &&
