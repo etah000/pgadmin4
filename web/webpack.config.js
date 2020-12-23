@@ -427,6 +427,7 @@ module.exports = [{
         ',pgadmin.node.server' +
         ',pgadmin.node.database' +
         ',pgadmin.node.format' +
+        ',pgadmin.node.dictionary' +
         ',pgadmin.node.role' +
         ',pgadmin.node.cast' +
         ',pgadmin.node.tablespace' +

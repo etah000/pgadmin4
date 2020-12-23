@@ -78,6 +78,7 @@ MODULES_ACTIVE = (
     'pgadmin.browser.server_groups.servers.roles',
     'pgadmin.browser.server_groups.servers.tablespaces',
     'pgadmin.browser.server_groups.servers.formats',
+    'pgadmin.browser.server_groups.servers.dictionaries',
     # 'pgadmin.browser.server_groups.servers.types',
     'pgadmin.browser.server_groups.servers.utils',
     'pgadmin.browser.utils',
