@@ -81,11 +81,9 @@ define('pgadmin.browser', [
         ajaxHook: function(item, settings) {
           if (item != null) {
             var d = this.itemData(item);
-            console.log(d)
             var n = b.Nodes[d._type];
             if (n)
               settings.url = n.generate_url(item, 'children', d, true);
-              // console.log(settings.url);
           }
         },
         loaderDelay: 100,
@@ -939,7 +937,6 @@ define('pgadmin.browser', [
     },
 
     onAddTreeNode: function(_data, _hierarchy, _opts) {
-      console.log("^^^^^^^^^^^^^^^^^^");
       var ctx = {
           b: this, // Browser
           d: null, // current parent

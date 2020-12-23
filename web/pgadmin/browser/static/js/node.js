@@ -976,6 +976,7 @@ define('pgadmin.browser.node', [
             b.panels['properties'].panel.isVisible()) {
             // Show object properties (only when the 'properties' tab
             // is active).
+            console.log(b.panels['properties'].panel);
             this.showProperties(item, d, b.panels['properties'].panel);
           }
         }
@@ -1215,19 +1216,19 @@ define('pgadmin.browser.node', [
 
             var buttons = [];
 
-            buttons.push({
-              label: gettext('Edit'),
-              type: 'edit',
-              tooltip: gettext('Edit'),
-              extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
-              icon: 'fa fa-sm fa-pencil',
-              disabled: !that.canEdit,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onEdit();
-                });
-              },
-            });
+            // buttons.push({
+            //   label: gettext('Edit'),
+            //   type: 'edit',
+            //   tooltip: gettext('Edit'),
+            //   extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
+            //   icon: 'fa fa-sm fa-pencil',
+            //   disabled: !that.canEdit,
+            //   register: function(btn) {
+            //     btn.on('click',() => {
+            //       onEdit();
+            //     });
+            //   },
+            // });
 
             buttons.push({
               label: '',
