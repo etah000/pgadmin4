@@ -53,8 +53,8 @@ class TableModule(SchemaChildModule):
       - Load the module script for schema, when any of the server node is
         initialized.
     """
-    NODE_TYPE = 'table'
-    COLLECTION_LABEL = gettext("Tables")
+    NODE_TYPE = 'replication'
+    COLLECTION_LABEL = gettext("Replications")
 
     def __init__(self, *args, **kwargs):
         """
@@ -240,14 +240,18 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
     node_type = blueprint.node_type
 
+    # did will be system.clusters.cluster
+    # scid will be system.clusters.shard_num
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'},
         {'type': 'int', 'id': 'scid'}
     ]
+
+    # tid will be system.clusters.replica_num
     ids = [
-        {'type': 'string', 'id': 'tid'}
+        {'type': 'int', 'id': 'tid'}
     ]
 
     operations = dict({
@@ -358,7 +362,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         res = []
         SQL = render_template(
             "/".join([self.table_template_path, 'nodes.sql']),
-            scid=scid, tid=tid
+            did=did,scid=scid, tid=tid
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:

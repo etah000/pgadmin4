@@ -9,7 +9,7 @@ SELECT
     NULL AS autovacuum_vacuum_cost_limit,
     NULL AS autovacuum_vacuum_scale_factor,
     NULL AS autovacuum_vacuum_threshold,
-    dependencies_table AS coll_inherits,
+    '' AS coll_inherits,
     NULL AS conkey,
     NULL AS conname,
     NULL AS description,
@@ -18,7 +18,7 @@ SELECT
     '0' AS inherited_tables_cnt,
     0 AS is_sys_table,
     0 AS isrepl,
-    name,
+    replica_num AS name,
     0 AS oid,
     NULL AS relacl_str,
     0 AS relhasoids,
@@ -47,10 +47,8 @@ SELECT
     NULL AS typname,
     NULL AS typoid
 FROM
-   system.tables
+   system.clusters
 WHERE
-    database = '{{ did }}' 
-    AND name NOT LIKE '.%'
-    AND engine NOT LIKE '%View'
-    {% if tid %} AND name = '{{ tid }}' {% endif %}
-ORDER BY name
+    cluster = '{{ did }}' 
+    {% if scid %} AND shard_num = {{ scid }} {% endif %}
+    {% if tid %} AND replica_num = {{ tid }} {% endif %}

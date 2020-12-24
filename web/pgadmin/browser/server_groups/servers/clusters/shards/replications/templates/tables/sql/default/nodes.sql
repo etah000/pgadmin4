@@ -1,14 +1,12 @@
 SELECT 
-    name AS oid,
-    name,
+    replica_num AS oid,
+    replica_num as name,
     0 AS triggercount,
     0 AS has_enable_triggers,
     0 AS is_inherits,
     0 AS is_inherited
-FROM system.tables
+FROM system.clusters
 WHERE 
-    database = '{{ did }}' 
-    AND name NOT LIKE '.%'
-    AND engine NOT LIKE '%View'
-{% if tid %}    AND name = '{{ tid }}' {% endif %}
-ORDER BY name;
+    cluster = '{{ did }}' 
+    {% if scid %} AND shard_num = {{ scid }} {% endif %}
+    {% if tid %} AND replica_num = {{ tid }} {% endif %}
