@@ -36,8 +36,8 @@ from pgadmin.model import Server
 
 
 class DatabaseModule(CollectionNodeModule):
-    NODE_TYPE = 'database'
-    COLLECTION_LABEL = _("Databases")
+    NODE_TYPE = 'cluster'
+    COLLECTION_LABEL = _("Virtual Clusters")
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
