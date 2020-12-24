@@ -470,7 +470,10 @@ module.exports = [{
         ',pgadmin.node.mview' +
         ',pgadmin.node.table' +
         ',pgadmin.node.partition' +
-        ',pgadmin.node.compound_trigger',
+        ',pgadmin.node.compound_trigger' +
+        ',pgadmin.node.cluster' +
+        ',pgadmin.node.shard' +
+        ',pgadmin.node.replication',
       },
     }, {
       test: require.resolve('./node_modules/acitree/js/jquery.aciTree.min'),
