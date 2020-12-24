@@ -64,8 +64,8 @@ class SchemaModule(CollectionNodeModule):
       - Load the module script for schema, when any of the server node is
         initialized.
     """
-    NODE_TYPE = 'schema'
-    COLLECTION_LABEL = gettext("Schemas")
+    NODE_TYPE = 'shard'
+    COLLECTION_LABEL = gettext("Shards")
 
     def __init__(self, *args, **kwargs):
         """
@@ -103,19 +103,19 @@ class SchemaModule(CollectionNodeModule):
         return False
 
 
-class CatalogModule(SchemaModule):
-    """
-     class CatalogModule(SchemaModule)
+# class CatalogModule(SchemaModule):
+#     """
+#      class CatalogModule(SchemaModule)
 
-        A module class for the catalog schema node derived from SchemaModule.
-    """
+#         A module class for the catalog schema node derived from SchemaModule.
+#     """
 
-    NODE_TYPE = 'catalog'
-    COLLECTION_LABEL = gettext("Catalogs")
+#     NODE_TYPE = 'catalog'
+#     COLLECTION_LABEL = gettext("Catalogs")
 
 
 schema_blueprint = SchemaModule(__name__)
-catalog_blueprint = CatalogModule(__name__)
+# catalog_blueprint = CatalogModule(__name__)
 
 
 def check_precondition(f):
@@ -207,11 +207,14 @@ class SchemaView(PGChildNodeView):
     """
     node_type = schema_blueprint.node_type
 
+    # did will be cluster name
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'}
     ]
+
+    # scid will be shard_num
     ids = [
         {'type': 'int', 'id': 'scid'}
     ]
@@ -387,7 +390,8 @@ class SchemaView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'sql/properties.sql']),
             _=gettext,
-            show_sysobj=self.blueprint.show_system_objects
+            show_sysobj=self.blueprint.show_system_objects,
+            did=did,
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -417,7 +421,7 @@ class SchemaView(PGChildNodeView):
             "/".join([self.template_path, 'sql/nodes.sql']),
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
-            scid=scid
+            did=did,scid=scid
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -480,7 +484,7 @@ It may have been removed by another user.
             "/".join([self.template_path, 'sql/nodes.sql']),
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
-            scid=scid
+            did=did,scid=scid
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -924,111 +928,111 @@ It may have been removed by another user.
         return make_json_response(data=nodes)
 
 
-class CatalogView(SchemaView):
-    """
-    This class is responsible for generating routes for catalog schema node.
+# class CatalogView(SchemaView):
+#     """
+#     This class is responsible for generating routes for catalog schema node.
 
-    Methods:
-    -------
-    * __init__(**kwargs)
-      - Method is used to initialize the CatalogView and it's base view.
+#     Methods:
+#     -------
+#     * __init__(**kwargs)
+#       - Method is used to initialize the CatalogView and it's base view.
 
-    * create(gid, sid, did, scid)
-      - Raise an error - we cannot create a catalog.
+#     * create(gid, sid, did, scid)
+#       - Raise an error - we cannot create a catalog.
 
-    * update(gid, sid, did, scid)
-      - This function will update the data for the selected catalog node
+#     * update(gid, sid, did, scid)
+#       - This function will update the data for the selected catalog node
 
-    * delete(self, gid, sid, scid):
-      - Raise an error - we cannot delete a catalog.
+#     * delete(self, gid, sid, scid):
+#       - Raise an error - we cannot delete a catalog.
 
-    * get_sql(data, scid)
-      - This function will generate sql from model data
+#     * get_sql(data, scid)
+#       - This function will generate sql from model data
 
-    """
+#     """
 
-    node_type = catalog_blueprint.node_type
+#     node_type = catalog_blueprint.node_type
 
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the variables used by methods of SchemaView.
-        """
+#     def __init__(self, *args, **kwargs):
+#         """
+#         Initialize the variables used by methods of SchemaView.
+#         """
 
-        super(CatalogView, self).__init__(*args, **kwargs)
+#         super(CatalogView, self).__init__(*args, **kwargs)
 
-        self.template_initial = 'catalog'
+#         self.template_initial = 'catalog'
 
-    def _formatter(self, data, scid=None):
+#     def _formatter(self, data, scid=None):
 
-        """
-        Overriding _formatter, because - we won't show the Default
-        privileges with the catalog schema.
-        """
+#         """
+#         Overriding _formatter, because - we won't show the Default
+#         privileges with the catalog schema.
+#         """
 
-        self._formatter_no_defacl(data, scid)
+#         self._formatter_no_defacl(data, scid)
 
-        return data
+#         return data
 
-    def get_sql(self, gid, sid, data, scid=None):
-        """
-        This function will generate sql from model data
-        """
-        if scid is None:
-            return bad_request('Cannot create a catalog schema!')
+#     def get_sql(self, gid, sid, data, scid=None):
+#         """
+#         This function will generate sql from model data
+#         """
+#         if scid is None:
+#             return bad_request('Cannot create a catalog schema!')
 
-        return super(CatalogView, self).get_sql(gid, sid, data, scid)
+#         return super(CatalogView, self).get_sql(gid, sid, data, scid)
 
-    @check_precondition
-    def sql(self, gid, sid, did, scid):
-        """
-        This function will generate reverse engineered sql for schema object
+#     @check_precondition
+#     def sql(self, gid, sid, did, scid):
+#         """
+#         This function will generate reverse engineered sql for schema object
 
-         Args:
-           gid: Server Group ID
-           sid: Server ID
-           did: Database ID
-           scid: Schema ID
-        """
-        SQL = render_template(
-            "/".join([self.template_path, 'sql/properties.sql']),
-            scid=scid, _=gettext
-        )
+#          Args:
+#            gid: Server Group ID
+#            sid: Server ID
+#            did: Database ID
+#            scid: Schema ID
+#         """
+#         SQL = render_template(
+#             "/".join([self.template_path, 'sql/properties.sql']),
+#             scid=scid, _=gettext
+#         )
 
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
+#         status, res = self.conn.execute_dict(SQL)
+#         if not status:
+#             return internal_server_error(errormsg=res)
 
-        if len(res['rows']) == 0:
-            return gone(gettext("""
-Could not find the schema in the database.
-It may have been removed by another user.
-"""))
+#         if len(res['rows']) == 0:
+#             return gone(gettext("""
+# Could not find the schema in the database.
+# It may have been removed by another user.
+# """))
 
-        old_data = res['rows'][0]
-        old_data = self._formatter(old_data, scid)
+#         old_data = res['rows'][0]
+#         old_data = self._formatter(old_data, scid)
 
-        # Privileges
-        self.format_request_acls(old_data, specific=['nspacl'])
+#         # Privileges
+#         self.format_request_acls(old_data, specific=['nspacl'])
 
-        # Render sql from create & alter sql using properties & acl data
-        SQL = ''
-        SQL = render_template(
-            "/".join([self.template_path, 'sql/create.sql']),
-            _=gettext, data=old_data, conn=self.conn
-        )
+#         # Render sql from create & alter sql using properties & acl data
+#         SQL = ''
+#         SQL = render_template(
+#             "/".join([self.template_path, 'sql/create.sql']),
+#             _=gettext, data=old_data, conn=self.conn
+#         )
 
-        sql_header = u"""
--- CATALOG: {0}
+#         sql_header = u"""
+# -- CATALOG: {0}
 
--- DROP SCHEMA {0};(
+# -- DROP SCHEMA {0};(
 
-""".format(old_data['name'])
+# """.format(old_data['name'])
 
-        SQL = sql_header + SQL
+#         SQL = sql_header + SQL
 
-        return ajax_response(response=SQL.strip("\n"))
+#         return ajax_response(response=SQL.strip("\n"))
 
 
 SchemaDiffRegistry(schema_blueprint.node_type, SchemaView)
 SchemaView.register_node_view(schema_blueprint)
-CatalogView.register_node_view(catalog_blueprint)
+# CatalogView.register_node_view(catalog_blueprint)
