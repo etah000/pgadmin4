@@ -268,6 +268,7 @@ var webpackShimConfig = {
     'pgadmin.node.cluster': path.join(__dirname, './pgadmin/browser/server_groups/servers/clusters/static/js/cluster'),
     'pgadmin.node.shard': path.join(__dirname, './pgadmin/browser/server_groups/servers/clusters/shards/static/js/shard'),
     'pgadmin.node.replication': path.join(__dirname, './pgadmin/browser/server_groups/servers/clusters/shards/replications/static/js/replication'),
+    'pgadmin.node.dictionary': path.join(__dirname, './pgadmin/browser/server_groups/servers/dictionaries/static/js/dictionary'),
     'pgadmin.preferences': path.join(__dirname, './pgadmin/preferences/static/js/preferences'),
     'pgadmin.settings': path.join(__dirname, './pgadmin/settings/static/js/settings'),
     'pgadmin.server.supported_servers': '/browser/server/supported_servers',
