@@ -429,6 +429,7 @@ module.exports = [{
         ',pgadmin.node.format' +
         ',pgadmin.node.dictionary' +
         ',pgadmin.node.datatype' +
+        ',pgadmin.node.sn_function' +
         ',pgadmin.node.role' +
         ',pgadmin.node.cast' +
         ',pgadmin.node.tablespace' +
