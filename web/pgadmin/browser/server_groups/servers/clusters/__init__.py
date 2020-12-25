@@ -195,7 +195,7 @@ class DatabaseView(PGChildNodeView):
                     self.conn = self.manager.connection()
 
                 # set template path for sql scripts
-                self.template_path = 'databases/sql/#{0}#'.format(
+                self.template_path = 'clusters/sql/#{0}#'.format(
                     self.manager.version
                 )
 

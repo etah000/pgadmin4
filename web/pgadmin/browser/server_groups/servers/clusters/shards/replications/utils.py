@@ -105,7 +105,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             ver = self.manager.version
             server_type = self.manager.server_type
             # Set the template path for the SQL scripts
-            self.table_template_path = compile_template_path('tables/sql',
+            self.table_template_path = compile_template_path('replications/sql',
                                                              server_type, ver)
             self.data_type_template_path = compile_template_path(
                 'datatype/sql',
