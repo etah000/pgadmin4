@@ -23,8 +23,6 @@ define('pgadmin.node.format', [
         label: gettext('Formats'),
         type: 'coll-format',
         columns: ['name', 'is_input', 'is_output'],
-        hasStatistics: true,
-        statsPrettifyFields: [gettext('Size')],
         canDrop: true,
         canDropCascade: false,
       });
@@ -41,8 +39,6 @@ define('pgadmin.node.format', [
       hasSQL:  true,
       canDrop: true,
       hasDepends: true,
-      hasStatistics: true,
-      statsPrettifyFields: [gettext('Size')],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

@@ -82,7 +82,7 @@ class FunctionView(PGChildNodeView):
         'children': [{'get': 'children'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
+        # 'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'vopts': [{}, {'get': 'variable_options'}],

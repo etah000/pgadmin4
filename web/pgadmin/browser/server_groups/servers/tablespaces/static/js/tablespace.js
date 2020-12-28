@@ -22,7 +22,7 @@ define('pgadmin.node.tablespace', [
         node: 'tablespace',
         label: gettext('Tablespaces'),
         type: 'coll-tablespace',
-        columns: ['name', 'spcuser', 'description'],
+        columns: ['name', 'location', 'type'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size')],
         canDrop: true,
@@ -320,8 +320,8 @@ define('pgadmin.node.tablespace', [
           name: undefined,
           owner: undefined,
           is_sys_obj: undefined,
-          comment: undefined,
-          spclocation: undefined,
+          type: undefined,
+          location: undefined,
           spcoptions: [],
           spcacl: [],
           seclabels:[],
@@ -342,10 +342,7 @@ define('pgadmin.node.tablespace', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',
         },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'spclocation', label: gettext('Location'), cell: 'string',
+          id: 'location', label: gettext('Location'), cell: 'string',
           group: gettext('Definition'), type: 'text', mode: ['properties', 'edit','create'],
           readonly: function(m) {
             // To disabled it in edit mode,
@@ -353,37 +350,17 @@ define('pgadmin.node.tablespace', [
             return !m.isNew();
           },
         },{
-          id: 'spcuser', label: gettext('Owner'), cell: 'string',
-          type: 'text', control: 'node-list-by-name', node: 'role',
-          select2: {allowClear: false},
-        },{
-          id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
           id: 'is_sys_obj', label: gettext('System tablespace?'),
           cell:'boolean', type: 'switch', mode: ['properties'],
         },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline',
+          id: 'type', label: gettext('type'), cell: 'string',
+          type: 'text',
         },{
           id: 'spcoptions', label: '', type: 'collection',
           group: gettext('Parameters'), control: 'variable-collection',
           model: pgBrowser.Node.VariableModel,
           mode: ['edit', 'create'], canAdd: true, canEdit: false,
           canDelete: true,
-        },{
-          id: 'spcacl', label: gettext('Privileges'), type: 'collection',
-          group: gettext('Security'), control: 'unique-col-collection',
-          model: pgBrowser.Node.PrivilegeRoleModel.extend({privileges: ['C']}),
-          mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          uniqueCol : ['grantee'],
-          columns: ['grantee', 'grantor', 'privileges'],
-        },{
-          id: 'seclabels', label: gettext('Security labels'),
-          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          group: gettext('Security'), mode: ['edit', 'create'],
-          min_version: 90200, canAdd: true,
-          canEdit: false, canDelete: true, control: 'unique-col-collection',
         },
         ],
         validate: function() {
@@ -394,14 +371,14 @@ define('pgadmin.node.tablespace', [
             msg = gettext('Name cannot be empty.');
             this.errorModel.set('name', msg);
           } else if (this.isNew() &&
-            (_.isUndefined(this.get('spclocation'))
-              || String(this.get('spclocation')).replace(/^\s+|\s+$/g, '') == '')) {
+            (_.isUndefined(this.get('location'))
+              || String(this.get('location')).replace(/^\s+|\s+$/g, '') == '')) {
             msg = gettext('Location cannot be empty.');
-            this.errorModel.set('spclocation', msg);
+            this.errorModel.set('location', msg);
             this.errorModel.unset('name');
           } else {
             this.errorModel.unset('name');
-            this.errorModel.unset('spclocation');
+            this.errorModel.unset('location');
           }
           return null;
         },

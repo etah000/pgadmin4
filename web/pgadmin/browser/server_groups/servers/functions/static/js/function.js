@@ -22,8 +22,6 @@ define('pgadmin.node.function', [
         label: gettext('Functions'),
         type: 'coll-function',
         columns: ['name', 'alias_to', 'is_aggregate', 'case_insensitive'],
-        hasStatistics: true,
-        statsPrettifyFields: [gettext('Size')],
         canDrop: true,
         canDropCascade: false,
       });
@@ -40,8 +38,6 @@ define('pgadmin.node.function', [
       hasSQL:  true,
       canDrop: true,
       hasDepends: true,
-      hasStatistics: true,
-      statsPrettifyFields: [gettext('Size')],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

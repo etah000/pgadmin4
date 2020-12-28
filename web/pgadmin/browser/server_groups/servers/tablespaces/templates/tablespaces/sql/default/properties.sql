@@ -2,10 +2,10 @@
 SELECT
     name AS oid,
     name,
-    path AS spclocation,
+    path AS location,
     '' AS spcoptions,
     'default' AS spcuser,
-    '' AS  description,
+    type AS  type,
     '' as acl
 FROM system.disks
 {% if tsid %} WHERE name = '{{ tsid }}' {% endif %}
