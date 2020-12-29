@@ -1062,6 +1062,7 @@ define('pgadmin.browser.node', [
      * This has also been used for creating a node.
      **/
     showProperties: function(item, data, panel, action) {
+
       var that = this,
         tree = pgAdmin.Browser.tree,
         j = panel.$container.find('.obj_properties').first(),

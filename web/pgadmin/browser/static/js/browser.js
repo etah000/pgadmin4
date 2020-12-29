@@ -840,14 +840,12 @@ define('pgadmin.browser', [
         var $mnu = navbar.children(o.id).first(),
           $dropdown = $mnu.children('.dropdown-menu').first();
         $dropdown.empty();
-
         if (pgAdmin.Browser.MenuCreator(
           $dropdown, obj.menus[o.menu], obj.menu_categories
         )) {
           $mnu.removeClass('d-none');
         }
       });
-
       navbar.children('#mnu_obj').removeClass('d-none');
       obj.enable_disable_menus();
     },
