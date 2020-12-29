@@ -10,7 +10,6 @@
 from pgadmin.utils.route import BaseTestGenerator
 
 
-class RoleGeneratorTestCase(BaseTestGenerator):
-
+class DatabaseCreateTestCase(BaseTestGenerator):
     def runTest(self):
         return

@@ -1,7 +1,7 @@
 {% if fetch_database %}
 SELECT '' datname,
     '' datallowconn,
-    '' datdictionary
+    '' datfunction
 {% endif %}
 
 {% if fetch_dependents %}

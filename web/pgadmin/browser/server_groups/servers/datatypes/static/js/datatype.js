@@ -23,8 +23,6 @@ define('pgadmin.node.datatype', [
         label: gettext('Datatypes'),
         type: 'coll-datatype',
         columns: ['name', 'case_insensitive', 'alias_to'],
-        hasStatistics: true,
-        statsPrettifyFields: [gettext('Size')],
         canDrop: true,
         canDropCascade: false,
       });
@@ -41,8 +39,6 @@ define('pgadmin.node.datatype', [
       hasSQL:  true,
       canDrop: true,
       hasDepends: true,
-      hasStatistics: true,
-      statsPrettifyFields: [gettext('Size')],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

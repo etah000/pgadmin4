@@ -7,149 +7,137 @@
 #
 ##########################################################################
 
-from __future__ import print_function
-
-import os
-import pickle
-import sys
+import json
 import uuid
 
+from pgadmin.utils import server_utils as server_utils
 from regression.python_test_utils import test_utils as utils
-from regression.test_setup import config_data
 
-ROLE_URL = '/browser/role/obj/'
-file_name = os.path.basename(__file__)
+DATABASE_CONNECT_URL = '/browser/database/connect/'
 
 
-def verify_role(server, role_name):
-    """
-    This function calls the GET API for role to verify
-    :param server: server details
-    :type server: dict
-    :param role_name: role name
-    :type role_name: str
-    :return role: role record from db
-    :rtype role: dict
-    """
-    try:
-        connection = utils.get_db_connection(server['db'],
-                                             server['username'],
-                                             server['db_password'],
-                                             server['host'],
-                                             server['port'],
-                                             server['sslmode'])
-        pg_cursor = connection.cursor()
-        pg_cursor.execute(
-            "SELECT * from pg_catalog.pg_roles pr WHERE pr.rolname='%s'" %
-            role_name)
-        connection.commit()
-        role = pg_cursor.fetchone()
-        connection.close()
-        return role
-    except Exception as exception:
-        exception = "Error while getting role: %s: line:%s %s" % (
-            file_name, sys.exc_traceback.tb_lineno, exception)
-        print(exception, file=sys.stderr)
-
-
-def test_getrole(tester):
-    if not tester:
-        return None
-
-    all_id = utils.get_ids()
-
-    server_ids = all_id["sid"]
-    role_ids_dict = all_id["lrid"][0]
-
-    role_response_data = []
-    for server_id in server_ids:
-        role_id = role_ids_dict[int(server_id)]
-        role_response_data.append(
-            verify_role(server_id, role_id))
-    return role_response_data
-
-
-def get_role_data(lr_pwd):
-    """This function returns the role data"""
+def get_db_data(db_owner):
+    """This function returns the database details in dict format"""
     data = {
-        "rolcanlogin": "true",
-        "rolconnlimit": -1,
-        "rolcreaterole": "true",
-        "rolinherit": "true",
-        "rolmembership": [],
-        "rolname": "test_role_%s" % str(uuid.uuid4())[1:8],
-        "rolpassword": lr_pwd,
-        "rolvaliduntil": "12/27/2017",
-        "seclabels": [],
-        "variables": [{"name": "work_mem",
-                       "database": "postgres",
-                       "value": 65}]
+        "datconnlimit": -1,
+        "datowner": db_owner,
+        "deffuncacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "X",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
+        "defseqacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "r",
+                "privilege": True,
+                "with_grant": False
+            }, {
+                "privilege_type": "w",
+                "privilege": True,
+                "with_grant": False
+            }, {
+                "privilege_type": "U",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
+        "deftblacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "a",
+                "privilege": True,
+                "with_grant": True
+            }, {
+                "privilege_type": "r",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
+        "deftypeacl": [{
+            "grantee": db_owner,
+            "grantor": db_owner,
+            "privileges": [{
+                "privilege_type": "U",
+                "privilege": True,
+                "with_grant": False
+            }]
+        }],
+        "encoding": "UTF8",
+        "name": "db_add_%s" % str(uuid.uuid4())[1: 8],
+        "privileges": [],
+        "securities": [],
+        "variables": []
     }
     return data
 
 
-def create_role(server, role_name):
-    """
-    This function create the role.
-    :param server:
-    :param role_name:
-    :return:
-    """
+def create_database(connection, db_name):
+    """This function used to create database"""
     try:
-        connection = utils.get_db_connection(server['db'],
-                                             server['username'],
-                                             server['db_password'],
-                                             server['host'],
-                                             server['port'],
-                                             server['sslmode'])
+        old_isolation_level = connection.isolation_level
+        connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
-        pg_cursor.execute("CREATE ROLE %s LOGIN" % role_name)
-        connection.commit()
-        # Get 'oid' from newly created tablespace
         pg_cursor.execute(
-            "SELECT pr.oid from pg_catalog.pg_roles pr WHERE pr.rolname='%s'" %
-            role_name)
-        oid = pg_cursor.fetchone()
-        role_id = ''
-        if oid:
-            role_id = oid[0]
-        connection.close()
-        return role_id
+            '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name
+        )
+        connection.set_isolation_level(old_isolation_level)
+        connection.commit()
+        return pg_cursor
     except Exception as exception:
-        exception = "Error while deleting role: %s: line:%s %s" % (
-            file_name, sys.exc_traceback.tb_lineno, exception)
-        print(exception, file=sys.stderr)
+        raise Exception("Error while creating database. %s" % exception)
 
 
-def delete_role(connection, role_names):
+def connect_database(self, server_group, server_id, db_id):
     """
-    This function use to delete the existing roles in the servers
+    This function verifies that database is exists and whether it connect
+    successfully or not
 
-    :param connection: db connection
-    :type connection: connection object
-    :param role_name: role name
-    :type role_name: str
-    :return: None
+    :param self: class object of test case class
+    :type self: class
+    :param server_group: server group id
+    :type server_group: int
+    :param server_id: server id
+    :type server_id: str
+    :param db_id: database id
+    :type db_id: str
+    :return: temp_db_con
+    :rtype: list
     """
-    if not isinstance(role_names, list):
-        role_names = [role_names]
 
-    try:
-        for role_name in role_names:
-            pg_cursor = connection.cursor()
-            pg_cursor.execute(
-                "SELECT * FROM pg_catalog.pg_roles WHERE rolname='%s'" %
-                role_name)
-            role_count = pg_cursor.fetchone()
-            if role_count:
-                old_isolation_level = connection.isolation_level
-                connection.set_isolation_level(0)
-                pg_cursor = connection.cursor()
-                pg_cursor.execute("DROP ROLE %s" % role_name)
-                connection.set_isolation_level(old_isolation_level)
-                connection.commit()
-        connection.close()
-    except Exception as exception:
-        exception = "Error while deleting role: %s: line:%s %s" % (
-            file_name, sys.exc_traceback.tb_lineno, exception)
-        print(exception, file=sys.stderr)
+    # Verify servers
+    server_utils.connect_server(self, server_id)
+
+    # Connect to database
+    db_con = self.tester.post(
+        '{0}{1}/{2}/{3}'.format(
+            DATABASE_CONNECT_URL,
+            server_group,
+            server_id,
+            db_id
+        ),
+        follow_redirects=True
+    )
+    assert db_con.status_code == 200
+    db_con = json.loads(db_con.data.decode('utf-8'))
+    return db_con
+
+
+def disconnect_database(self, server_id, db_id):
+    """This function disconnect the db"""
+    db_con = self.tester.delete(
+        '{0}{1}/{2}/{3}'.format(
+            'browser/database/connect/',
+            utils.SERVER_GROUP,
+            server_id,
+            db_id
+        ),
+        follow_redirects=True
+    )
+    assert db_con.status_code == 200

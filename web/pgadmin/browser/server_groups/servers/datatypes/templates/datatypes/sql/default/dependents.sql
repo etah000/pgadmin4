@@ -1,7 +1,7 @@
 {% if fetch_database %}
 SELECT '' datname,
     '' datallowconn,
-    '' datformat
+    '' datdatatype
 {% endif %}
 
 {% if fetch_dependents %}

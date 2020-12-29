@@ -429,6 +429,7 @@ module.exports = [{
         ',pgadmin.node.format' +
         ',pgadmin.node.dictionary' +
         ',pgadmin.node.datatype' +
+        ',pgadmin.node.sn_function' +
         ',pgadmin.node.role' +
         ',pgadmin.node.cast' +
         ',pgadmin.node.tablespace' +
@@ -469,7 +470,10 @@ module.exports = [{
         ',pgadmin.node.mview' +
         ',pgadmin.node.table' +
         ',pgadmin.node.partition' +
-        ',pgadmin.node.compound_trigger',
+        ',pgadmin.node.compound_trigger' +
+        ',pgadmin.node.cluster' +
+        ',pgadmin.node.shard' +
+        ',pgadmin.node.replication',
       },
     }, {
       test: require.resolve('./node_modules/acitree/js/jquery.aciTree.min'),
