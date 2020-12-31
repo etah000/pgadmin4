@@ -49,6 +49,7 @@ define('pgadmin.node.mview', [
    */
   if (!pgBrowser.Nodes['mview']) {
     pgBrowser.Nodes['mview'] = schemaChild.SchemaChildNode.extend({
+      parent_type: 'database',
       type: 'mview',
       sqlAlterHelp: 'sql-altermaterializedview.html',
       sqlCreateHelp: 'sql-creatematerializedview.html',

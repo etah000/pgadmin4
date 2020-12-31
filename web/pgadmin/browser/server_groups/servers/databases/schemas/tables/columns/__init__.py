@@ -67,7 +67,7 @@ class ColumnsModule(CollectionNodeModule):
         self.max_ver = None
         super(ColumnsModule, self).__init__(*args, **kwargs)
 
-    def get_nodes(self, gid, sid, did, scid, **kwargs):
+    def get_nodes(self, gid, sid, did, scid=0, **kwargs):
         """
         Generate the collection node
         """
@@ -163,7 +163,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'},
-        {'type': 'int', 'id': 'scid'},
+        # {'type': 'int', 'id': 'scid'},
         {'type': 'string', 'id': 'tid'}
     ]
     ids = [
@@ -222,7 +222,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         return wrap
 
     @check_precondition
-    def list(self, gid, sid, did, scid, tid):
+    def list(self, gid, sid, did, tid, scid=0):
         """
         This function is used to list all the schema nodes within that
         collection.
@@ -252,7 +252,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid, tid, clid=None):
+    def nodes(self, gid, sid, did, tid, scid=0, clid=None):
         """
         This function will used to create all the child node within that
         collection. Here it will create all the schema node.
@@ -311,7 +311,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def properties(self, gid, sid, did, scid, tid, clid):
+    def properties(self, gid, sid, did, tid, clid, scid=0):
         """
         This function will show the properties of the selected schema node.
 
@@ -352,7 +352,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def create(self, gid, sid, did, scid, tid):
+    def create(self, gid, sid, did, tid, scid=0):
         """
         This function will creates new the schema object
 
@@ -432,7 +432,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, tid, clid=None):
+    def delete(self, gid, sid, did, tid, scid=0, clid=None):
         """
         This function will updates existing the schema object
 
@@ -501,7 +501,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def update(self, gid, sid, did, scid, tid, clid):
+    def update(self, gid, sid, did, tid, clid, scid=0):
         """
         This function will updates existing the schema object
 
@@ -544,7 +544,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def msql(self, gid, sid, did, scid, tid, clid=None):
+    def msql(self, gid, sid, did, tid, scid=0, clid=None):
         """
         This function will generates modified sql for schema object
 
@@ -584,7 +584,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, scid, tid, clid, data, is_sql=False):
+    def get_sql(self, tid, clid, data, scid=0, is_sql=False):
         """
         This function will genrate sql from model data
         """
@@ -674,7 +674,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, tid, clid):
+    def sql(self, gid, sid, did, tid, clid, scid=0):
         """
         This function will generates reverse engineered sql for schema object
 
@@ -740,7 +740,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def dependents(self, gid, sid, did, scid, tid, clid):
+    def dependents(self, gid, sid, did, tid, clid, scid=0):
         """
         This function get the dependents and return ajax response
         for the column node.
@@ -799,7 +799,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def dependencies(self, gid, sid, did, scid, tid, clid):
+    def dependencies(self, gid, sid, did, tid, clid, scid=0):
         """
         This function get the dependencies and return ajax response
         for the column node.
@@ -830,7 +830,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         )
 
     @check_precondition
-    def statistics(self, gid, sid, did, scid, tid, clid):
+    def statistics(self, gid, sid, did, tid, clid, scid=0):
         """
         Statistics
 

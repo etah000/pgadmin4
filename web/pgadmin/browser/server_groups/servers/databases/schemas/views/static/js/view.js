@@ -45,6 +45,7 @@ define('pgadmin.node.view', [
    */
   if (!pgBrowser.Nodes['view']) {
     pgBrowser.Nodes['view'] = schemaChild.SchemaChildNode.extend({
+      parent_type: 'database',
       type: 'view',
       sqlAlterHelp: 'sql-alterview.html',
       sqlCreateHelp: 'sql-createview.html',

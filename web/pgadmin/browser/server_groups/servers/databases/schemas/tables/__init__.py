@@ -68,7 +68,7 @@ class TableModule(SchemaChildModule):
         self.max_ver = None
         self.min_ver = None
 
-    def get_nodes(self, gid, sid, did, scid):
+    def get_nodes(self, gid, sid, did, scid=0):
         """
         Generate the collection node
         """
@@ -244,7 +244,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'},
-        {'type': 'int', 'id': 'scid'}
+        # {'type': 'int', 'id': 'scid'}
     ]
     ids = [
         {'type': 'string', 'id': 'tid'}
@@ -289,7 +289,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
     })
 
     @BaseTableView.check_precondition
-    def list(self, gid, sid, did, scid):
+    def list(self, gid, sid, did, scid=0):
         """
         This function is used to list all the table nodes within that
         collection.
@@ -340,7 +340,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             get_icon_css_class(table_info, default_val)
 
     @BaseTableView.check_precondition
-    def node(self, gid, sid, did, scid, tid):
+    def node(self, gid, sid, did, tid, scid=0):
         """
         This function is used to list all the table nodes within that
         collection.
@@ -385,7 +385,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         )
 
     @BaseTableView.check_precondition
-    def nodes(self, gid, sid, did, scid):
+    def nodes(self, gid, sid, did, scid=0):
         """
         This function is used to list all the table nodes within that
         collection.
@@ -429,7 +429,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         )
 
     @BaseTableView.check_precondition
-    def get_all_tables(self, gid, sid, did, scid, tid=None):
+    def get_all_tables(self, gid, sid, did, scid=0, tid=None):
         """
         Args:
             gid: Server Group Id
@@ -495,7 +495,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         )
 
     @BaseTableView.check_precondition
-    def get_access_methods(self, gid, sid, did, scid, tid=None):
+    def get_access_methods(self, gid, sid, did, scid=0, tid=None):
         """
         This function returns access methods.
 
@@ -518,7 +518,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         )
 
     @BaseTableView.check_precondition
-    def get_oper_class(self, gid, sid, did, scid, tid=None):
+    def get_oper_class(self, gid, sid, did, scid=0, tid=None):
         """
 
         Args:
@@ -546,7 +546,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def get_operator(self, gid, sid, did, scid, tid=None):
+    def get_operator(self, gid, sid, did, scid=0, tid=None):
         """
 
         Args:
@@ -575,7 +575,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def properties(self, gid, sid, did, scid, tid):
+    def properties(self, gid, sid, did, tid, scid=0):
         """
         This function will show the properties of the selected table node.
 
@@ -590,7 +590,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         Returns:
             JSON of selected table node
         """
-        status, res = self._fetch_properties(did, scid, tid)
+        status, res = self._fetch_properties(did, tid, scid)
         if not status:
             return res
         if not res['rows']:
@@ -600,7 +600,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             gid, sid, did, scid, tid, res
         )
 
-    def _fetch_properties(self, did, scid, tid):
+    def _fetch_properties(self, did, tid, scid=0):
         """
         This function is used to fetch the properties of the specified object
         :param did:
@@ -693,7 +693,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return True, res
 
     @BaseTableView.check_precondition
-    def types(self, gid, sid, did, scid, tid=None, clid=None):
+    def types(self, gid, sid, did, scid=0, tid=None, clid=None):
         """
         Returns:
             This function will return list of types available for column node
@@ -722,7 +722,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         )
 
     @BaseTableView.check_precondition
-    def get_columns(self, gid, sid, did, scid, tid=None):
+    def get_columns(self, gid, sid, did, scid=0, tid=None):
         """
         Returns the Table Columns.
 
@@ -773,7 +773,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def get_oftype(self, gid, sid, did, scid, tid=None):
+    def get_oftype(self, gid, sid, did, scid=0, tid=None):
         """
         Returns:
             This function will return list of types available for table node
@@ -823,7 +823,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def get_inherits(self, gid, sid, did, scid, tid=None):
+    def get_inherits(self, gid, sid, did, scid=0, tid=None):
         """
         Returns:
             This function will return list of tables available for inheritance
@@ -856,7 +856,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def get_attach_tables(self, gid, sid, did, scid, tid=None):
+    def get_attach_tables(self, gid, sid, did, scid=0, tid=None):
         """
         Returns:
             This function will return list of tables available to be attached
@@ -889,7 +889,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def get_relations(self, gid, sid, did, scid, tid=None):
+    def get_relations(self, gid, sid, did, scid=0, tid=None):
         """
         Returns:
             This function will return list of tables available for
@@ -921,7 +921,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def create(self, gid, sid, did, scid):
+    def create(self, gid, sid, did, scid=0):
         """
         This function will creates new the table object
 
@@ -1049,7 +1049,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def update(self, gid, sid, did, scid, tid):
+    def update(self, gid, sid, did, tid, scid=0):
         """
         This function will update an existing table object
 
@@ -1076,7 +1076,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data[k] = v
 
         try:
-            status, res = self._fetch_properties(did, scid, tid)
+            status, res = self._fetch_properties(did, tid, scid)
             if not status:
                 return res
 
@@ -1086,7 +1086,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def delete(self, gid, sid, did, scid, tid=None):
+    def delete(self, gid, sid, did, scid=0, tid=None):
         """
         This function will deletes the table object
 
@@ -1141,7 +1141,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def truncate(self, gid, sid, did, scid, tid):
+    def truncate(self, gid, sid, did, tid, scid=0):
         """
         This function will truncate the table object
 
@@ -1174,7 +1174,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def enable_disable_triggers(self, gid, sid, did, scid, tid):
+    def enable_disable_triggers(self, gid, sid, did, tid, scid=0):
         """
         This function will enable/disable trigger(s) on the table object
 
@@ -1228,7 +1228,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition
-    def reset(self, gid, sid, did, scid, tid):
+    def reset(self, gid, sid, did, tid, scid=0):
         """
         This function will reset statistics of table
 
@@ -1250,7 +1250,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         res = None
         sid = kwargs['sid']
         did = kwargs['did']
-        scid = kwargs['scid']
+        scid = kwargs.get('scid', 0)
         tid = kwargs['tid']
         diff_data = kwargs['diff_data'] if 'diff_data' in kwargs else None
         json_resp = kwargs['json_resp'] if 'json_resp' in kwargs else True
@@ -1287,7 +1287,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return sql
 
     @BaseTableView.check_precondition
-    def msql(self, gid, sid, did, scid, tid=None):
+    def msql(self, gid, sid, did, scid=0, tid=None):
         """
         This function will create modified sql for table object
 
@@ -1313,11 +1313,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         return self._fetch_sql(did, scid, tid, data)
 
-    def _fetch_sql(self, did, scid, tid, data, json_resp=True):
+    def _fetch_sql(self, did,tid, data, scid=0, json_resp=True):
         res = None
 
         if tid is not None:
-            status, res = self._fetch_properties(did, scid, tid)
+            status, res = self._fetch_properties(did, tid, scid)
             if not status:
                 return res
 
@@ -1337,7 +1337,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         )
 
     @BaseTableView.check_precondition
-    def dependents(self, gid, sid, did, scid, tid):
+    def dependents(self, gid, sid, did, tid, scid=0):
         """
         This function get the dependents and return ajax response
         for the table node.
@@ -1352,7 +1352,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return BaseTableView.get_table_dependents(self, tid)
 
     @BaseTableView.check_precondition
-    def dependencies(self, gid, sid, did, scid, tid):
+    def dependencies(self, gid, sid, did, tid, scid=0):
         """
         This function get the dependencies and return ajax response
         for the table node.
@@ -1367,7 +1367,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return BaseTableView.get_table_dependencies(self, tid)
 
     @BaseTableView.check_precondition
-    def sql(self, gid, sid, did, scid, tid):
+    def sql(self, gid, sid, did, tid, scid=0):
         """
         This function will creates reverse engineered sql for
         the table object
@@ -1381,7 +1381,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         main_sql = []
 
-        status, res = self._fetch_properties(did, scid, tid)
+        status, res = self._fetch_properties(did, tid, scid)
         if not status:
             return res
 
@@ -1394,7 +1394,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             self, did, scid, tid, main_sql, data)
 
     @BaseTableView.check_precondition
-    def select_sql(self, gid, sid, did, scid, tid):
+    def select_sql(self, gid, sid, did, tid, scid=0):
         """
         SELECT script sql for the object
 
@@ -1442,7 +1442,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return ajax_response(response=sql)
 
     @BaseTableView.check_precondition
-    def insert_sql(self, gid, sid, did, scid, tid):
+    def insert_sql(self, gid, sid, did, tid, scid=0):
         """
         INSERT script sql for the object
 
@@ -1493,7 +1493,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return ajax_response(response=sql)
 
     @BaseTableView.check_precondition
-    def update_sql(self, gid, sid, did, scid, tid):
+    def update_sql(self, gid, sid, did, tid, scid=0):
         """
         UPDATE script sql for the object
 
@@ -1546,7 +1546,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return ajax_response(response=sql)
 
     @BaseTableView.check_precondition
-    def delete_sql(self, gid, sid, did, scid, tid, json_resp=True):
+    def delete_sql(self, gid, sid, did, tid, scid, json_resp=True):
         """
         DELETE script sql for the object
 
@@ -1584,7 +1584,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return ajax_response(response=sql)
 
     @BaseTableView.check_precondition
-    def statistics(self, gid, sid, did, scid, tid=None):
+    def statistics(self, gid, sid, did, scid=0, tid=None):
         """
         Statistics
 
@@ -1602,7 +1602,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return BaseTableView.get_table_statistics(self, scid, tid)
 
     @BaseTableView.check_precondition
-    def count_rows(self, gid, sid, did, scid, tid):
+    def count_rows(self, gid, sid, did, tid, scid=0):
         """
         Count the rows of a table.
         Args:
@@ -1639,7 +1639,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         )
 
     @BaseTableView.check_precondition
-    def get_drop_sql(self, sid, did, scid, tid):
+    def get_drop_sql(self, sid, did, tid, scid=0):
         SQL = render_template("/".join(
             [self.table_template_path, 'properties.sql']),
             did=did, scid=scid, tid=tid,
@@ -1656,7 +1656,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return sql
 
     @BaseTableView.check_precondition
-    def fetch_tables(self, sid, did, scid, tid=None):
+    def fetch_tables(self, sid, did, scid=0, tid=None):
         """
         This function will fetch the list of all the tables
         and will be used by schema diff.
@@ -1673,7 +1673,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             sub_modules.append('compound_trigger')
 
         if tid:
-            status, data = self._fetch_properties(did, scid, tid)
+            status, data = self._fetch_properties(did, tid, scid)
 
             if not status:
                 current_app.logger.error(data)
@@ -1695,7 +1695,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 return False
 
             for row in tables['rows']:
-                status, data = self._fetch_properties(did, scid, row['oid'])
+                status, data = self._fetch_properties(did, row['oid'], scid)
 
                 if status:
                     data = super(TableView, self).properties(

@@ -29,6 +29,7 @@ define('pgadmin.node.collation', [
 
   if (!pgBrowser.Nodes['collation']) {
     pgAdmin.Browser.Nodes['collation'] = schemaChild.SchemaChildNode.extend({
+      parent_type: 'database',
       type: 'collation',
       sqlAlterHelp: 'sql-altercollation.html',
       sqlCreateHelp: 'sql-createcollation.html',
