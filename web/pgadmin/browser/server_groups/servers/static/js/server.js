@@ -715,9 +715,9 @@ define('pgadmin.node.server', [
           sslmode: 'prefer',
           host: '',
           hostaddr: '',
-          port: 5432,
-          db: 'postgres',
-          username: current_user.name,
+          port: 9000,
+          db: 'default',
+          username: 'default',
           role: null,
           connect_now: true,
           password: undefined,
@@ -739,6 +739,13 @@ define('pgadmin.node.server', [
           tunnel_authentication: 0,
           save_tunnel_password: false,
           connect_timeout: 10,
+          ssh_host: undefined,
+          ssh_port: 22,
+          ssh_username: undefined,
+          ssh_password: undefined,
+          ssh_authentication_type: 0,
+          save_ssh_password: false,
+          ssh_key_file: undefined,
         },
         // Default values!
         initialize: function(attrs, args) {
@@ -1010,7 +1017,16 @@ define('pgadmin.node.server', [
           type: 'int', group: gettext('Advanced'),
           mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
           min: 0,
-        }],
+        }, {
+            id: 'ssh_host', label: gettext(''),
+            ssh_port: 22,
+            ssh_username: undefined,
+            ssh_password: undefined,
+            ssh_authentication_type: 0,
+            save_ssh_password: false,
+            ssh_key_file: undefined,
+          },
+        ],
         validate: function() {
           const validateModel = new modelValidation.ModelValidation(this);
           return validateModel.validate();
