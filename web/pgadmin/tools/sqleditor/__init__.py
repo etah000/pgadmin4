@@ -260,7 +260,8 @@ def start_view_data(trans_id):
 
         # Execute sql asynchronously
         try:
-            status, result = conn.execute_async(sql)
+            #status, result = conn.execute_async(sql)
+            status, result = conn.execute(sql)
         except (ConnectionLost, SSHTunnelConnectionLost) as e:
             raise
     else:
@@ -540,7 +541,8 @@ def fetch(trans_id, fetch_all=None):
                                   status=404)
 
     if status and conn is not None and session_obj is not None:
-        status, result = conn.async_fetchmany_2darray(fetch_row_cnt)
+        #status, result = conn.async_fetchmany_2darray(fetch_row_cnt)
+        status, result = conn.fetchmany_2darray(fetch_row_cnt)
         if not status:
             status = 'Error'
         else:
@@ -599,8 +601,8 @@ def fetch_pg_types(columns_info, trans_obj):
 
     if oids:
         status, res = default_conn.execute_dict(
-            u"SELECT oid, format_type(oid, NULL) AS typname FROM pg_type "
-            u"WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
+            """SELECT name as oid, name as typname FROM system.data_type_families WHERE oid IN ({0}) ORDER BY oid;
+            """.format(oids)
         )
 
         if not status:

@@ -15,6 +15,7 @@ import decimal
 import simplejson as json
 from flask import Response
 from flask_babelex import gettext as _
+from uuid import UUID
 
 
 class DataTypeJSONEncoder(json.JSONEncoder):
@@ -26,7 +27,10 @@ class DataTypeJSONEncoder(json.JSONEncoder):
             return (datetime.datetime.min + obj).time().isoformat()
         if isinstance(obj, decimal.Decimal):
             return float(obj)
-
+        if isinstance(obj, UUID):
+            return str(obj)
+        else:
+            return str(obj)
         return json.JSONEncoder.default(self, obj)
 
 

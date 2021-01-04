@@ -150,7 +150,6 @@ class Connection(BaseConnection):
                  use_binary_placeholder=False, array_to_string=False):
         assert (manager is not None)
         assert (conn_id is not None)
-
         self.conn_id = conn_id
         self.manager = manager
         self.db = db if db is not None else manager.db
@@ -304,7 +303,7 @@ class Connection(BaseConnection):
                 database=database,
                 user=user,
                 password=password or '',
-                # async_=self.async_,
+                async_=self.async_,
                 # passfile=get_complete_file_path(passfile),
                 # sslmode=manager.ssl_mode,
                 # sslcert=get_complete_file_path(manager.sslcert),
@@ -396,13 +395,13 @@ class Connection(BaseConnection):
 
         register_string_typecasters(self.conn)
 
-        if self.array_to_string:
-            register_array_to_string_typecasters(self.conn)
+        # if self.array_to_string:
+        #     register_array_to_string_typecasters(self.conn)
 
         # Register type casters for binary data only after registering array to
         # string type casters.
-        if self.use_binary_placeholder:
-            register_binary_typecasters(self.conn)
+        # if self.use_binary_placeholder:
+        #     register_binary_typecasters(self.conn)
 
         postgres_encoding, self.python_encoding, typecast_encoding = \
             getEncoding('utf-8')
@@ -665,8 +664,8 @@ class Connection(BaseConnection):
 
         params = self.escape_params_sqlascii(params)
         cur.execute(query, params)
-        if self.async_ == 1:
-            self._wait(cur.connection)
+        # if self.async_ == 1:
+        #     self._wait(cur.connection)
 
     def execute_on_server_as_csv(self,
                                  query, params=None,
@@ -917,7 +916,7 @@ class Connection(BaseConnection):
         """
 
         # Convert the params based on python_encoding
-        params = self.escape_params_sqlascii(params)
+        #params = self.escape_params_sqlascii(params)
 
         self.__async_cursor = None
         status, cur = self.__cursor()
@@ -926,33 +925,35 @@ class Connection(BaseConnection):
             return False, str(cur)
         query_id = random.randint(1, 9999999)
 
-        encoding = self.python_encoding
+        #encoding = self.python_encoding
 
-        query = query.encode(encoding)
+        #query = query.encode(encoding)
 
-        dsn = self.conn.get_dsn_parameters()
-        current_app.logger.log(
-            25,
-            u"Execute (async) by {pga_user} on {db_user}@{db_host}/{db_name} "
-            u"#{server_id} - {conn_id} (Query-id: "
-            u"{query_id}):\n{query}".format(
-                pga_user=current_user.username,
-                db_user=dsn['user'],
-                db_host=dsn['host'],
-                db_name=dsn['dbname'],
-                server_id=self.manager.sid,
-                conn_id=self.conn_id,
-                query=query.decode(encoding),
-                query_id=query_id
-            )
-        )
+        # dsn = self.conn.get_dsn_parameters()
+        # current_app.logger.log(
+        #     25,
+        #     u"Execute (async) by {pga_user} on {db_user}@{db_host}/{db_name} "
+        #     u"#{server_id} - {conn_id} (Query-id: "
+        #     u"{query_id}):\n{query}".format(
+        #         pga_user=current_user.username,
+        #         db_user=dsn['user'],
+        #         db_host=dsn['host'],
+        #         db_name=dsn['dbname'],
+        #         server_id=self.manager.sid,
+        #         conn_id=self.conn_id,
+        #         query=query.decode(encoding),
+        #         query_id=query_id
+        #     )
+        # )
 
         try:
             self.__notices = []
             self.__notifies = []
             self.execution_aborted = False
-            cur.execute(query, params)
-            res = self._wait_timeout(cur.connection)
+            #cur.execute(query, params)
+            self.__internal_blocking_execute(cur, query, params)
+            # res = self._wait_timeout(cur.connection)
+            res = 1
         except PError as pe:
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
@@ -1205,10 +1206,10 @@ class Connection(BaseConnection):
                 "Cursor could not be found for the async connection."
             )
 
-        if self.conn.isexecuting():
-            return False, gettext(
-                "Asynchronous query execution/operation underway."
-            )
+        # if self.conn.isexecuting():
+        #     return False, gettext(
+        #         "Asynchronous query execution/operation underway."
+        #     )
 
         if self.row_count > 0:
             result = []
@@ -1310,7 +1311,8 @@ Failed to reset the connection to the server due to following error:
 
     def transaction_status(self):
         if self.conn:
-            return self.conn.get_transaction_status()
+            # return self.conn.get_transaction_status()
+            return 0
         return None
 
     def ping(self):
@@ -1328,7 +1330,7 @@ Failed to reset the connection to the server due to following error:
         """
         This function is used for the asynchronous connection,
         it will call poll method in a infinite loop till poll
-        returns psycopg2.extensions.POLL_OK. This is a blocking
+        returns psycopg2.POLL_OK. This is a blocking
         call.
 
         Args:
@@ -1336,13 +1338,14 @@ Failed to reset the connection to the server due to following error:
         """
 
         while 1:
-            state = conn.poll()
-            if state == psycopg2.extensions.POLL_OK:
+            # state = conn.poll()
+            state = psycopg2.POLL_OK
+            if state == psycopg2.POLL_OK:
                 break
-            elif state == psycopg2.extensions.POLL_WRITE:
+            elif state == psycopg2.POLL_WRITE:
                 select.select([], [conn.fileno()], [],
                               self.ASYNC_WAIT_TIMEOUT)
-            elif state == psycopg2.extensions.POLL_READ:
+            elif state == psycopg2.POLL_READ:
                 select.select([conn.fileno()], [], [],
                               self.ASYNC_WAIT_TIMEOUT)
             else:
@@ -1353,7 +1356,7 @@ Failed to reset the connection to the server due to following error:
         """
         This function is used for the asynchronous connection,
         it will call poll method and return the status. If state is
-        psycopg2.extensions.POLL_WRITE and psycopg2.extensions.POLL_READ
+        psycopg2.POLL_WRITE and psycopg2.POLL_READ
         function will wait for the given timeout.This is not a blocking call.
 
         Args:
@@ -1362,11 +1365,11 @@ Failed to reset the connection to the server due to following error:
         """
 
         while 1:
-            state = conn.poll()
-
-            if state == psycopg2.extensions.POLL_OK:
+            # state = conn.poll()
+            state = psycopg2.POLL_OK
+            if state == psycopg2.POLL_OK:
                 return self.ASYNC_OK
-            elif state == psycopg2.extensions.POLL_WRITE:
+            elif state == psycopg2.POLL_WRITE:
                 # Wait for the given time and then check the return status
                 # If three empty lists are returned then the time-out is
                 # reached.
@@ -1375,7 +1378,7 @@ Failed to reset the connection to the server due to following error:
                 )
                 if timeout_status == ([], [], []):
                     return self.ASYNC_WRITE_TIMEOUT
-            elif state == psycopg2.extensions.POLL_READ:
+            elif state == psycopg2.POLL_READ:
                 # Wait for the given time and then check the return status
                 # If three empty lists are returned then the time-out is
                 # reached.
@@ -1751,8 +1754,8 @@ Failed to reset the connection to the server due to following error:
         Check for the notify messages by polling the connection or after
         execute is there in notifies.
         """
-        if self.conn and required_polling:
-            self.conn.poll()
+        # if self.conn and required_polling:
+        #     self.conn.poll()
 
         if self.conn and hasattr(self.conn, 'notifies') and \
                 len(self.conn.notifies) > 0:
