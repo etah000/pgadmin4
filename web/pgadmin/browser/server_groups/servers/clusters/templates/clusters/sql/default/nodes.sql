@@ -6,7 +6,7 @@ FROM ( SELECT DISTINCT
         '' AS spcname,
         1 AS datallowconn,
         1 AS cancreate,
-        currentUser () AS owner
+        db.user AS owner
     FROM
         system.clusters AS db
     WHERE 1

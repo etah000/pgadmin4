@@ -19,7 +19,7 @@ SELECT
     0 AS is_sys_table,
     0 AS isrepl,
     replica_num AS name,
-    0 AS oid,
+    replica_num AS oid,
     NULL AS relacl_str,
     0 AS relhasoids,
     0 AS relhassubclass,
@@ -45,7 +45,19 @@ SELECT
     NULL AS toast_reloptions,
     '0' AS triggercount,
     NULL AS typname,
-    NULL AS typoid
+    NULL AS typoid,
+    cluster,
+    shard_num,
+    shard_weight,
+    replica_num,
+    host_name,
+    host_address,
+    port,
+    is_local,
+    user,
+    default_database,
+    errors_count,
+    estimated_recovery_time
 FROM
    system.clusters
 WHERE

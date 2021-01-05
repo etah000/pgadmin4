@@ -10,7 +10,9 @@ SELECT DISTINCT
     '' AS tblacl,
     '' AS seqacl,
     '' AS funcacl,
-    '' AS seclabels
+    '' AS seclabels,
+    shard_weight,
+    user
 FROM
     system.clusters
 WHERE 1
