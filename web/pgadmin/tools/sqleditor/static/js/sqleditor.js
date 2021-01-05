@@ -2732,17 +2732,16 @@ define('tools.querytool', [
           // To show column label and data type in multiline,
           // The elements should be put inside the div.
           // Create column label and type.
-          var col_type = '',
-            column_label = '',
+          var column_label = '',
             col_cell;
-          var type = pg_types[c.type_code] ?
-            pg_types[c.type_code][0] :
+          // var type = pg_types[c.type_code] ?
+          //   pg_types[c.type_code][0] :
             // This is the case where user might
             // have use casting so we will use type
             // returned by cast function
-            pg_types[pg_types.length - 1][0] ?
-              pg_types[pg_types.length - 1][0] : 'unknown';
-
+            // pg_types[pg_types.length - 1][0] ?
+            //   pg_types[pg_types.length - 1][0] : 'unknown';
+          /*
           if (!is_primary_key)
             col_type += type;
           else
@@ -2811,24 +2810,25 @@ define('tools.querytool', [
           default:
             col_cell = 'string';
           }
+          */
+          // column_label = c.display_name + '<br>' + col_type;
+          column_label = c.display_name ;
 
-          column_label = c.display_name + '<br>' + col_type;
-
-          var array_type_bracket_index = type.lastIndexOf('[]'),
-            col = {
-              'name': c.name,
-              'display_name': c.display_name,
-              'column_type': col_type,
-              'column_type_internal': type,
-              'pos': c.pos,
-              'label': column_label,
-              'cell': col_cell,
-              'can_edit': (c.name == 'oid') ? false : is_editable,
-              'type': type,
-              'not_null': c.not_null,
-              'has_default_val': c.has_default_val,
-              'is_array': array_type_bracket_index > -1 && array_type_bracket_index + 2 == type.length,
-            };
+          var col = {
+            'name': c.name,
+            'display_name': c.display_name,
+            // 'column_type': col_type,
+            'column_type': '',
+            // 'column_type_internal': type,
+            'pos': c.pos,
+            'label': column_label,
+            'cell': col_cell,
+            'can_edit': (c.name == 'oid') ? false : is_editable,
+            // 'type': type,
+            'not_null': c.not_null,
+            'has_default_val': c.has_default_val,
+            // 'is_array': array_type_bracket_index > -1 && array_type_bracket_index + 2 == type.length,
+          };
           columns.push(col);
         });
 

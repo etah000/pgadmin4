@@ -432,23 +432,23 @@ def poll(trans_id):
                             col_type['internal_size'] = col['internal_size']
                             columns[col['name']] = col_type
 
-                if columns:
-                    st, types = fetch_pg_types(columns, trans_obj)
-
-                    if not st:
-                        return internal_server_error(types)
-
-                    for col_name, col_info in columns.items():
-                        for col_type in types:
-                            if col_type['oid'] == col_info['type_code']:
-                                typname = col_type['typname']
-                                col_info['type_name'] = typname
-
-                        # Using characters %, (, ) in the argument names is not
-                        # supported in psycopg2
-                        col_info['pgadmin_alias'] = \
-                            re.sub("[%()]+", "|", col_name)
-                    session_obj['columns_info'] = columns
+                # if columns:
+                #     st, types = fetch_pg_types(columns, trans_obj)
+                #
+                #     if not st:
+                #         return internal_server_error(types)
+                #
+                #     for col_name, col_info in columns.items():
+                #         for col_type in types:
+                #             if col_type['oid'] == col_info['type_code']:
+                #                 typname = col_type['typname']
+                #                 col_info['type_name'] = typname
+                #
+                #         Using characters %, (, ) in the argument names is not
+                #         supported in psycopg2
+                        # col_info['pgadmin_alias'] = \
+                        #     re.sub("[%()]+", "|", col_name)
+                    # session_obj['columns_info'] = columns
 
                 # status of async_fetchmany_2darray is True and result is none
                 # means nothing to fetch
@@ -541,8 +541,7 @@ def fetch(trans_id, fetch_all=None):
                                   status=404)
 
     if status and conn is not None and session_obj is not None:
-        #status, result = conn.async_fetchmany_2darray(fetch_row_cnt)
-        status, result = conn.fetchmany_2darray(fetch_row_cnt)
+        status, result = conn.async_fetchmany_2darray(fetch_row_cnt)
         if not status:
             status = 'Error'
         else:
@@ -903,7 +902,7 @@ def set_limit(trans_id):
         res = None
 
         # Call the set_limit method of transaction object
-        trans_obj.set_limit(limit)
+        # trans_obj.set_limit(limit)
 
         # As we changed the transaction object we need to
         # restore it and update the session variable.
