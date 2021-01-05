@@ -12,6 +12,7 @@
 import re
 from functools import wraps
 
+
 import simplejson as json
 from flask import render_template, current_app, request, jsonify
 from flask_babelex import gettext as _
@@ -24,7 +25,7 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
     parse_sec_labels_from_db, parse_variables_from_db
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
-from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.browser.utils import PGChildNodeView, PGChildModule
 from pgadmin.utils.ajax import gone
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, unauthorized
@@ -1141,6 +1142,32 @@ class DatabaseView(PGChildNodeView):
             status=200
         )
 
+    def get_children_nodes(self, manager, **kwargs):
+        """
+        Returns the list of children nodes for the current nodes.
+
+        :param manager: Server Manager object
+        :param kwargs: Parameters to generate the correct set of browser tree
+          node
+        :return:
+        """
+        nodes = []
+        for module in self.blueprint.submodules[:1]:
+
+            for mod in module.submodules:
+                if mod.NODE_TYPE not in ('table', 'view', 'mview'):
+                    continue
+
+                if isinstance(mod, PGChildModule):
+                    if (
+                        manager is not None and
+                        module.BackendSupported(manager, **kwargs)
+                    ):
+                        nodes.extend(mod.get_nodes(**kwargs))
+                else:
+                    nodes.extend(mod.get_nodes(**kwargs))
+
+        return nodes
 
 SchemaDiffRegistry(blueprint.node_type, DatabaseView)
 DatabaseView.register_node_view(blueprint)

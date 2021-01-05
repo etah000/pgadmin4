@@ -153,7 +153,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'},
-        {'type': 'int', 'id': 'scid'}
+        # {'type': 'int', 'id': 'scid'}
     ]
     ids = [
         {'type': 'string', 'id': 'coid'}
@@ -209,7 +209,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         return wrap
 
     @check_precondition
-    def list(self, gid, sid, did, scid):
+    def list(self, gid, sid, did, scid=0):
         """
         This function is used to list all the collation nodes within that
         collection.
@@ -236,7 +236,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid):
+    def nodes(self, gid, sid, did, scid=0):
         """
         This function will used to create all the child node within that
         collection.
@@ -274,7 +274,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def node(self, gid, sid, did, scid, coid):
+    def node(self, gid, sid, did, coid, scid=0):
         """
         This function will fetch properties of the collation node.
 
@@ -309,7 +309,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         return gone(gettext("Could not find the specified collation."))
 
     @check_precondition
-    def properties(self, gid, sid, did, scid, coid):
+    def properties(self, gid, sid, did, coid, scid=0):
         """
         This function will show the properties of the selected collation node.
 
@@ -325,7 +325,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             JSON of selected collation node
         """
 
-        status, res = self._fetch_properties(scid, coid)
+        status, res = self._fetch_properties(coid, scid)
         if not status:
             return res
 
@@ -334,7 +334,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
-    def _fetch_properties(self, scid, coid):
+    def _fetch_properties(self, coid, scid=0):
         """
         This function fetch the properties for the specified object.
 
@@ -361,7 +361,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         return True, res['rows'][0]
 
     @check_precondition
-    def get_collation(self, gid, sid, did, scid, coid=None):
+    def get_collation(self, gid, sid, did, scid=0, coid=None):
         """
         This function will return list of collation available
         as AJAX response.
@@ -440,7 +440,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         return missing_definition_flag
 
     @check_precondition
-    def create(self, gid, sid, did, scid):
+    def create(self, gid, sid, did, scid=0):
         """
         This function will creates new the collation object
 
@@ -514,7 +514,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, coid=None, only_sql=False):
+    def delete(self, gid, sid, did, scid=0, coid=None, only_sql=False):
         """
         This function will delete existing the collation object
 
@@ -580,7 +580,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def update(self, gid, sid, did, scid, coid):
+    def update(self, gid, sid, did, coid, scid=0):
         """
         This function will updates existing the collation object
 
@@ -624,7 +624,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def msql(self, gid, sid, did, scid, coid=None):
+    def msql(self, gid, sid, did, scid=0, coid=None):
         """
         This function will generates modified sql for collation object
 
@@ -662,7 +662,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
-    def get_sql(self, gid, sid, data, scid, coid=None):
+    def get_sql(self, gid, sid, data, scid=0, coid=None):
         """
         This function will genrate sql from model data
         """
@@ -704,7 +704,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             return SQL.strip('\n'), data['name']
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, coid, diff_schema=None,
+    def sql(self, gid, sid, did, coid, scid=0, diff_schema=None,
             json_resp=True):
         """
         This function will generates reverse engineered sql for collation
@@ -753,7 +753,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         return ajax_response(response=SQL)
 
     @check_precondition
-    def dependents(self, gid, sid, did, scid, coid):
+    def dependents(self, gid, sid, did, coid, scid=0):
         """
         This function get the dependents and return ajax response
         for the Collation node.
@@ -775,7 +775,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def dependencies(self, gid, sid, did, scid, coid):
+    def dependencies(self, gid, sid, did, coid, scid=0):
         """
         This function get the dependencies and return ajax response
         for the Collation node.
@@ -797,7 +797,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def fetch_objects_to_compare(self, sid, did, scid):
+    def fetch_objects_to_compare(self, sid, did, scid=0):
         """
         This function will fetch the list of all the collations for
         specified schema id.
@@ -815,13 +815,13 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=res)
 
         for row in rset['rows']:
-            status, data = self._fetch_properties(scid, row['oid'])
+            status, data = self._fetch_properties(row['oid'], scid)
             if status:
                 res[row['name']] = data
 
         return res
 
-    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
+    def get_sql_from_diff(self, gid, sid, did, oid, scid=0, data=None,
                           diff_schema=None, drop_sql=False):
         """
         This function is used to get the DDL/DML statements.

@@ -117,7 +117,7 @@ def show_filter():
 
 @blueprint.route(
     '/initialize/datagrid/<int:trans_id>/<int:cmd_type>/<obj_type>/'
-    '<int:sgid>/<int:sid>/<int:did>/<int:obj_id>',
+    '<int:sgid>/<int:sid>/<string:did>/<int:obj_id>',
     methods=["PUT", "POST"],
     endpoint="initialize_datagrid"
 )
@@ -289,7 +289,7 @@ def panel(trans_id):
 
 
 @blueprint.route(
-    '/initialize/query_tool/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    '/initialize/query_tool/<int:trans_id>/<int:sgid>/<int:sid>/<string:did>',
     methods=["POST"], endpoint='initialize_query_tool_with_did'
 )
 @blueprint.route(
@@ -413,7 +413,7 @@ def close(trans_id):
 
 
 @blueprint.route(
-    '/filter/validate/<int:sid>/<int:did>/<int:obj_id>',
+    '/filter/validate/<int:sid>/<string:did>/<int:obj_id>',
     methods=["PUT", "POST"], endpoint='filter_validate'
 )
 @login_required

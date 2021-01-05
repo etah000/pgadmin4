@@ -87,7 +87,7 @@ class ViewModule(SchemaChildModule):
         self.min_ver = None
         self.max_ver = None
 
-    def get_nodes(self, gid, sid, did, scid):
+    def get_nodes(self, gid, sid, did, scid=0):
         """
         Generate the collection node
         """
@@ -316,7 +316,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'},
-        {'type': 'int', 'id': 'scid'}
+        # {'type': 'int', 'id': 'scid'}
     ]
     ids = [
         {'type': 'string', 'id': 'vid'}
@@ -385,7 +385,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         return '#gpdb#{0}#'.format(ver)
 
     @check_precondition
-    def list(self, gid, sid, did, scid):
+    def list(self, gid, sid, did, scid=0):
         """
         Fetches all views properties and render into properties tab
         """
@@ -401,7 +401,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def node(self, gid, sid, did, scid, vid):
+    def node(self, gid, sid, did, vid, scid=0):
         """
         Lists all views under the Views Collection node
         """
@@ -429,7 +429,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def nodes(self, gid, sid, did, scid):
+    def nodes(self, gid, sid, did, scid=0):
         """
         Lists all views under the Views Collection node
         """
@@ -456,12 +456,12 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def properties(self, gid, sid, did, scid, vid):
+    def properties(self, gid, sid, did, vid, scid=0):
         """
         Fetches the properties of an individual view
         and render in the properties tab
         """
-        status, res = self._fetch_properties(scid, vid)
+        status, res = self._fetch_properties(vid, scid)
         if not status:
             return res
 
@@ -470,7 +470,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             status=200
         )
 
-    def _fetch_properties(self, scid, vid):
+    def _fetch_properties(self, vid, scid=0):
         """
         This function is used to fetch the properties of the specified object
         :param scid:
@@ -525,7 +525,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         return frmtd_result
 
     @check_precondition
-    def create(self, gid, sid, did, scid):
+    def create(self, gid, sid, did, scid=0):
         """
         This function will create a new view object
         """
@@ -584,7 +584,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def update(self, gid, sid, did, scid, vid):
+    def update(self, gid, sid, did, vid, scid=0):
         """
         This function will update a view object
         """
@@ -630,7 +630,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def delete(self, gid, sid, did, scid, vid=None, only_sql=False):
+    def delete(self, gid, sid, did, scid=0, vid=None, only_sql=False):
         """
         This function will drop a view object
         """
@@ -695,7 +695,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
-    def _get_schema(self, scid):
+    def _get_schema(self, scid=0):
         """
         Returns Schema Name from its OID.
 
@@ -713,7 +713,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         return schema_name
 
     @check_precondition
-    def msql(self, gid, sid, did, scid, vid=None):
+    def msql(self, gid, sid, did, scid=0, vid=None):
         """
         This function returns modified SQL
         """
@@ -1209,7 +1209,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         return SQL_data
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, vid, diff_schema=None,
+    def sql(self, gid, sid, did, vid, scid=0, diff_schema=None,
             json_resp=True):
         """
         This function will generate sql to render into the sql panel
@@ -1300,7 +1300,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         return ajax_response(response=SQL_data)
 
     @check_precondition
-    def get_tblspc(self, gid, sid, did, scid):
+    def get_tblspc(self, gid, sid, did, scid=0):
         """
         This function to return list of tablespaces
         """
@@ -1328,7 +1328,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def dependents(self, gid, sid, did, scid, vid):
+    def dependents(self, gid, sid, did, vid, scid=0):
         """
         This function gets the dependents and returns an ajax response
         for the view node.
@@ -1346,7 +1346,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def dependencies(self, gid, sid, did, scid, vid):
+    def dependencies(self, gid, sid, did, vid, scid=0):
         """
         This function gets the dependencies and returns an ajax response
         for the view node.
@@ -1364,7 +1364,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         )
 
     @check_precondition
-    def select_sql(self, gid, sid, did, scid, vid):
+    def select_sql(self, gid, sid, did, vid, scid=0):
         """
         SELECT script sql for the object
 
@@ -1425,7 +1425,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         return ajax_response(response=sql)
 
     @check_precondition
-    def insert_sql(self, gid, sid, did, scid, vid):
+    def insert_sql(self, gid, sid, did, vid, scid=0):
         """
         INSERT script sql for the object
 
@@ -1491,7 +1491,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         return ajax_response(response=sql)
 
     @check_precondition
-    def fetch_objects_to_compare(self, sid, did, scid, oid=None):
+    def fetch_objects_to_compare(self, sid, did, scid=0, oid=None):
         """
         This function will fetch the list of all the views for
         specified schema id.
@@ -1513,11 +1513,11 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 return False
 
             for row in views['rows']:
-                status, data = self._fetch_properties(scid, row['oid'])
+                status, data = self._fetch_properties(row['oid'], scid)
                 if status:
                     res[row['name']] = data
         else:
-            status, data = self._fetch_properties(scid, oid)
+            status, data = self._fetch_properties(oid, scid)
             if not status:
                 current_app.logger.error(data)
                 return False
@@ -1525,7 +1525,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         return res
 
-    def get_sql_from_diff(self, gid, sid, did, scid, oid, data=None,
+    def get_sql_from_diff(self, gid, sid, did, oid, scid=0, data=None,
                           diff_schema=None, drop_sql=False):
         sql = ''
         if data:
@@ -1760,7 +1760,7 @@ class MViewNode(ViewNode, VacuumSettings):
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
-    def sql(self, gid, sid, did, scid, vid, diff_schema=None,
+    def sql(self, gid, sid, did, vid, scid=0, diff_schema=None,
             json_resp=True):
         """
         This function will generate sql to render into the sql panel
@@ -1772,7 +1772,7 @@ class MViewNode(ViewNode, VacuumSettings):
             display_comments = False
 
         SQL_data = ''
-        status, result = self._fetch_properties(did, scid, vid)
+        status, result = self._fetch_properties(did, vid, scid)
 
         if not status:
             return result
@@ -1832,7 +1832,7 @@ class MViewNode(ViewNode, VacuumSettings):
         return ajax_response(response=SQL_data)
 
     @check_precondition
-    def get_table_vacuum(self, gid, sid, did, scid):
+    def get_table_vacuum(self, gid, sid, did, scid=0):
         """
         Fetch the default values for autovacuum
         fields, return an array of
@@ -1849,7 +1849,7 @@ class MViewNode(ViewNode, VacuumSettings):
         )
 
     @check_precondition
-    def get_toast_table_vacuum(self, gid, sid, did, scid):
+    def get_toast_table_vacuum(self, gid, sid, did, scid=0):
         """
         Fetch the default values for autovacuum
         fields, return an array of
@@ -1866,12 +1866,12 @@ class MViewNode(ViewNode, VacuumSettings):
         )
 
     @check_precondition
-    def properties(self, gid, sid, did, scid, vid):
+    def properties(self, gid, sid, did, vid, scid=0):
         """
         Fetches the properties of an individual view
         and render in the properties tab
         """
-        status, res = self._fetch_properties(did, scid, vid)
+        status, res = self._fetch_properties(did, vid, scid)
 
         if not status:
             return res
@@ -1881,7 +1881,7 @@ class MViewNode(ViewNode, VacuumSettings):
             status=200
         )
 
-    def _fetch_properties(self, did, scid, vid):
+    def _fetch_properties(self, did, vid, scid=0):
         """
         This function is used to fetch the properties of the specified object
         :param did:
@@ -1979,7 +1979,7 @@ class MViewNode(ViewNode, VacuumSettings):
         return True, result
 
     @check_precondition
-    def refresh_data(self, gid, sid, did, scid, vid):
+    def refresh_data(self, gid, sid, did, vid, scid):
         """
         This function will refresh view object
         """
@@ -2105,7 +2105,7 @@ class MViewNode(ViewNode, VacuumSettings):
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
-    def fetch_objects_to_compare(self, sid, did, scid, oid=None):
+    def fetch_objects_to_compare(self, sid, did, scid=0, oid=None):
         """
         This function will fetch the list of all the mviews for
         specified schema id.
@@ -2131,7 +2131,7 @@ class MViewNode(ViewNode, VacuumSettings):
         return res
 
     @check_precondition
-    def check_utility_exists(self, gid, sid, did, scid, vid):
+    def check_utility_exists(self, gid, sid, did, vid, scid=0):
         """
         This function checks the utility file exist on the given path.
 

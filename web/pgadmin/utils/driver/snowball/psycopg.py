@@ -7,6 +7,12 @@ from .cursor import DictCursor as Cursor
 __version__ = 0
 __libpq_version__ = 0
 
+"""psycopg asynchronous connection polling values"""
+POLL_OK = 0
+POLL_READ = 1
+POLL_WRITE = 2
+POLL_ERROR = 3
+
 class Connection(_connection):
     def cursor(self):
         """
@@ -23,7 +29,7 @@ class Connection(_connection):
 
 
 def connect(dsn=None, user=None, password=None, host=None, port=None,
-            database=None, **kwargs):
+            database=None, async_=None, **kwargs):
     """
     Create a new database connection.
 

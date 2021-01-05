@@ -40,6 +40,7 @@ define('pgadmin.node.table', [
 
   if (!pgBrowser.Nodes['table']) {
     pgBrowser.Nodes['table'] = SchemaChild.SchemaChildNode.extend({
+      parent_type: 'database',
       type: 'table',
       label: gettext('Table'),
       collection_type: 'coll-table',
