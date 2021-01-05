@@ -802,34 +802,17 @@ class DatabaseView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            if res is None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified database could not be found.\n'
-                    )
-                )
-            else:
+            # TODO: UPDATE DRIVER WRAPPER & uncomment the following
+            # status = self.manager.release(did=did)
 
-                status = self.manager.release(did=did)
+            # if not status:
+            #     # reconnect if database drop failed.
+            #     msg = 'database drop failed'
+            #     conn = self.manager.connection(did=did,
+            #                                     auto_reconnect=True)
+            #     status, errmsg = conn.connect()
 
-                SQL = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    datname=res, conn=self.conn
-                )
-
-                status, msg = default_conn.execute_scalar(SQL)
-                if not status:
-                    # reconnect if database drop failed.
-                    conn = self.manager.connection(did=did,
-                                                   auto_reconnect=True)
-                    status, errmsg = conn.connect()
-
-                    return internal_server_error(errormsg=msg)
+            #     return internal_server_error(errormsg=msg)
 
         return make_json_response(success=1)
 
