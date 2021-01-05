@@ -322,7 +322,8 @@ define('pgadmin.node.shard', [
       dialogHelp: url_for('help.static', {'filename': 'shard_dialog.html'}),
       label: gettext('Shard'),
       hasSQL:  true,
-      canDrop: true,
+      canDrop: false,
+      canEdit:false,
       canDropCascade: true,
       hasDepends: true,
       Init: function() {
@@ -332,23 +333,25 @@ define('pgadmin.node.shard', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
-          name: 'create_shard_on_coll', node: 'coll-shard', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Shard...'),
-          icon: 'wcTabIcon icon-shard', data: {action: 'create'},
-        },{
-          name: 'create_shard', node: 'shard', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Shard...'),
-          icon: 'wcTabIcon icon-shard', data: {action: 'create'},
-        },{
-          name: 'create_shard', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Shard...'),
-          icon: 'wcTabIcon icon-shard', data: {action: 'create'},
-          enable: 'can_create_shard',
-        },
+        pgBrowser.add_menus([
+        //   {
+        //   name: 'create_shard_on_coll', node: 'coll-shard', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Shard...'),
+        //   icon: 'wcTabIcon icon-shard', data: {action: 'create'},
+        // },
+        // {
+        //   name: 'create_shard', node: 'shard', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Shard...'),
+        //   icon: 'wcTabIcon icon-shard', data: {action: 'create'},
+        // },{
+        //   name: 'create_shard', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Shard...'),
+        //   icon: 'wcTabIcon icon-shard', data: {action: 'create'},
+        //   enable: 'can_create_shard',
+        // },
         ]);
       },
       can_create_shard: function(node) {

@@ -36,11 +36,12 @@ define('pgadmin.node.cluster', [
       sqlCreateHelp: 'sql-createcluster.html',
       dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
       hasSQL: true,
+      canEdit:false,
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       canDrop: function(node) {
-        return node.canDrop;
+        return false;
       },
       label: gettext('Cluster'),
       node_image: function() {
@@ -53,7 +54,8 @@ define('pgadmin.node.cluster', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
+        pgBrowser.add_menus([
+          {
           name: 'create_cluster_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Cluster...'),
@@ -71,17 +73,19 @@ define('pgadmin.node.cluster', [
           category: 'create', priority: 4, label: gettext('Cluster...'),
           icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
           enable: 'can_create_cluster',
-        },{
-          name: 'connect_cluster', node: 'cluster', module: this,
-          applies: ['object', 'context'], callback: 'connect_cluster',
-          category: 'connect', priority: 4, label: gettext('Connect Cluster...'),
-          icon: 'fa fa-link', enable : 'is_not_connected',
-        },{
-          name: 'disconnect_cluster', node: 'cluster', module: this,
-          applies: ['object', 'context'], callback: 'disconnect_cluster',
-          category: 'drop', priority: 5, label: gettext('Disconnect Cluster...'),
-          icon: 'fa fa-chain-broken', enable : 'is_connected',
-        }]);
+        }
+        // ,{
+        //   name: 'connect_cluster', node: 'cluster', module: this,
+        //   applies: ['object', 'context'], callback: 'connect_cluster',
+        //   category: 'connect', priority: 4, label: gettext('Connect Cluster...'),
+        //   icon: 'fa fa-link', enable : 'is_not_connected',
+        // },{
+        //   name: 'disconnect_cluster', node: 'cluster', module: this,
+        //   applies: ['object', 'context'], callback: 'disconnect_cluster',
+        //   category: 'drop', priority: 5, label: gettext('Disconnect Cluster...'),
+        //   icon: 'fa fa-chain-broken', enable : 'is_connected',
+        // }
+      ]);
 
         _.bindAll(this, 'connection_lost');
         pgBrowser.Events.on(

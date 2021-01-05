@@ -46,6 +46,7 @@ define('pgadmin.node.replication', [
       collection_type: 'coll-replication',
       hasSQL: true,
       hasDepends: true,
+      canEdit: false,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Replication size'),
         gettext('TOAST replication size'), gettext('Tuple length'),
@@ -53,7 +54,8 @@ define('pgadmin.node.replication', [
       sqlAlterHelp: 'sql-alterreplication.html',
       sqlCreateHelp: 'sql-createreplication.html',
       dialogHelp: url_for('help.static', {'filename': 'replication_dialog.html'}),
-      hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
+      // hasScriptTypes: ['create', 'select', 'insert', 'update', 'delete'],
+      hasScriptTypes: null,
       width: '650px',
       Init: function() {
         /* Avoid multiple registration of menus */

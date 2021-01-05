@@ -54,6 +54,8 @@ define('pgadmin.browser.utils',
      'server_group', 'server', 'coll-tablespace', 'tablespace',
      'coll-role', 'role', 'coll-resource_group', 'resource_group',
      'coll-database','coll-format','format','coll-datatype','datatype',
+     'coll-cluster','cluster','coll-shard','coll-replication','replication',
+     'shard',
      'coll-dictionary','dictionary','coll-function','function'
   ];
 

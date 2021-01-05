@@ -455,6 +455,7 @@ define('pgadmin.browser', [
       initializeBrowserTree(obj);
 
       // Build the treeview context menu
+      //单击右键触发方法
       $('#tree').contextMenu({
         selector: '.aciTreeLine',
         autoHide: false,
@@ -464,7 +465,6 @@ define('pgadmin.browser', [
             menus = obj.menus['context'][d._type],
             $div = $('<div></div>'),
             context_menu = {};
-
           pgAdmin.Browser.MenuCreator(
             $div, menus, obj.menu_categories, d, item, context_menu
           );

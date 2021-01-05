@@ -53,7 +53,8 @@ define('pgadmin.node.database', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
+        pgBrowser.add_menus([
+          {
           name: 'create_database_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Database...'),
@@ -81,7 +82,8 @@ define('pgadmin.node.database', [
           applies: ['object', 'context'], callback: 'disconnect_database',
           category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
           icon: 'fa fa-chain-broken', enable : 'is_connected',
-        }]);
+        }
+      ]);
 
         _.bindAll(this, 'connection_lost');
         pgBrowser.Events.on(
