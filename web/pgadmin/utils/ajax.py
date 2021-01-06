@@ -20,9 +20,8 @@ from uuid import UUID
 
 class DataTypeJSONEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime.datetime) \
-                or hasattr(obj, 'isoformat'):
-            return obj.isoformat()
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat(' ')
         elif isinstance(obj, datetime.timedelta):
             return (datetime.datetime.min + obj).time().isoformat()
         if isinstance(obj, decimal.Decimal):
