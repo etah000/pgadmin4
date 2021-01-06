@@ -22,6 +22,7 @@ SELECT
     '' AS funcacl,
     '' AS acl
 FROM system.databases
-{% if did %} WHERE name = '{{ did }}' {% endif %}
-{% if name %} WHERE name = '{{ name }}' {% endif %}
-ORDER BY name;
+    {% if did %} WHERE name = '{{ did }}' {% endif %}
+    {% if name %} WHERE name = '{{ name }}' {% endif %}
+ORDER BY 
+    name;
