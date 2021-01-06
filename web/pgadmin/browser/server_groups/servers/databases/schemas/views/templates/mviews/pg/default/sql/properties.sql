@@ -37,7 +37,26 @@ SELECT
     '' AS toast_autovacuum_freeze_table_age,
     '' AS reloptions,
     array() AS toast_reloptions,
-    0 AS hastoasttable
+    0 AS hastoasttable,
+    database,
+    uuid,
+    engine,
+    is_temporary,
+    data_paths,
+    metadata_path,
+    metadata_modification_time,
+    dependencies_database,
+    dependencies_table,
+    engine_full,
+    partition_key,
+    sorting_key,
+    primary_key,
+    sampling_key,
+    storage_policy,
+    total_rows,
+    total_bytes,
+    lifetime_rows,
+    lifetime_bytes
 FROM
     system.tables
 WHERE

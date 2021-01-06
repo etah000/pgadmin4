@@ -20,7 +20,11 @@ SELECT
     '' AS seqacl,
     {### Default ACL for Functions ###}
     '' AS funcacl,
-    '' AS acl
+    '' AS acl,
+    engine,
+    data_path,
+    metadata_path,
+    uuid
 FROM system.databases
     {% if did %} WHERE name = '{{ did }}' {% endif %}
     {% if name %} WHERE name = '{{ name }}' {% endif %}

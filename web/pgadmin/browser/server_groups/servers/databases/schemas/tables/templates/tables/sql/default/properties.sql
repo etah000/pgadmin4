@@ -19,7 +19,7 @@ SELECT
     0 AS is_sys_table,
     0 AS isrepl,
     name,
-    0 AS oid,
+    name AS oid,
     NULL AS relacl_str,
     0 AS relhasoids,
     0 AS relhassubclass,
@@ -45,7 +45,27 @@ SELECT
     NULL AS toast_reloptions,
     '0' AS triggercount,
     NULL AS typname,
-    NULL AS typoid
+    NULL AS typoid,
+    database,
+    uuid,
+    engine,
+    is_temporary,
+    data_paths,
+    metadata_path,
+    metadata_modification_time,
+    dependencies_database,
+    dependencies_table,
+    create_table_query,
+    engine_full,
+    partition_key,
+    sorting_key,
+    primary_key,
+    sampling_key,
+    storage_policy,
+    total_rows,
+    total_bytes,
+    lifetime_rows,
+    lifetime_bytes
 FROM
    system.tables
 WHERE

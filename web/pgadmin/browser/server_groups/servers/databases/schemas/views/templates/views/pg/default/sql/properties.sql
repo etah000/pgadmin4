@@ -15,7 +15,26 @@ SELECT
     0 AS system_view,
     array() AS seclabels,
     '' AS check_option,
-    '' AS security_barrier
+    '' AS security_barrier,
+    database,
+    uuid,
+    engine,
+    is_temporary,
+    data_paths,
+    metadata_path,
+    metadata_modification_time,
+    dependencies_database,
+    dependencies_table,
+    engine_full,
+    partition_key,
+    sorting_key,
+    primary_key,
+    sampling_key,
+    storage_policy,
+    total_rows,
+    total_bytes,
+    lifetime_rows,
+    lifetime_bytes
 FROM system.tables
 WHERE engine in ('View','LiveView')
 {% if did %}

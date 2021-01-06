@@ -3,7 +3,7 @@ SELECT
     0 AS attlen,
     0 AS attndims,
     0 AS attnotnull,
-    rowNumberInAllBlocks() AS attnum,
+    position AS attnum,
     NULL AS attoptions,
     -1 AS attstattarget,
     'p' AS attstorage,
@@ -23,7 +23,19 @@ SELECT
     name,
     NULL AS seclabels,
     name AS typname,
-    'public' AS typnspname
+    'public' AS typnspname,
+    database,
+    table,
+    default_kind,
+    default_expression,
+    data_compressed_bytes,
+    data_uncompressed_bytes,
+    marks_bytes,
+    comment,
+    is_in_partition_key,
+    is_in_primary_key,
+    is_in_sampling_key,
+    compression_codec
 FROM system.columns
 WHERE database = '{{ did }}' AND table = '{{ tid }}'
 {% if clid %}
