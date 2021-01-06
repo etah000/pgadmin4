@@ -784,8 +784,8 @@ class Connection(BaseConnection):
                 # This is to handle the case in which column name is non-ascii
                 column_name = c._asdict()['name']
                 header.append(column_name)
-                if c.to_sdict()['type_code'] in ALL_JSON_TYPES:
-                    json_columns.append(column_name)
+                # if c.to_sdict()['type_code'] in ALL_JSON_TYPES:
+                json_columns.append(column_name)
 
             res_io = StringIO()
 
@@ -828,8 +828,8 @@ class Connection(BaseConnection):
                 results = cur.fetchmany(records)
 
                 if not results:
-                    if not self.cursor_closed(cur):
-                        cur.close()
+                    # if not self.cursor_closed(cur):
+                    cur.close()
                     break
                 res_io = StringIO()
 
@@ -1516,7 +1516,8 @@ Failed to reset the connection to the server due to following error:
             )
         )
 
-        return cur.statusmessage
+        # return cur.statusmessage
+        return 0
 
     def rows_affected(self):
         """
