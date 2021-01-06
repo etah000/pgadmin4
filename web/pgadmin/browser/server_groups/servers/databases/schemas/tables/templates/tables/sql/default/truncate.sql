@@ -1,1 +1,1 @@
-TRUNCATE TABLE {{conn|qtIdent(data.schema, data.name)}}{% if cascade %} CASCADE{% endif %};
+TRUNCATE TABLE IF EXISTS {{did}}.{{tid}};

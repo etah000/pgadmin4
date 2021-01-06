@@ -1106,28 +1106,28 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         try:
             for tid in data['ids']:
-                SQL = render_template(
-                    "/".join([self.table_template_path, 'properties.sql']),
-                    did=did, scid=scid, tid=tid,
-                    datlastsysoid=self.datlastsysoid
-                )
-                status, res = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
+                # SQL = render_template(
+                #     "/".join([self.table_template_path, 'properties.sql']),
+                #     did=did, scid=scid, tid=tid,
+                #     datlastsysoid=self.datlastsysoid
+                # )
+                # status, res = self.conn.execute_dict(SQL)
+                # if not status:
+                #     return internal_server_error(errormsg=res)
 
-                if not res['rows']:
-                    return make_json_response(
-                        success=0,
-                        errormsg=gettext(
-                            'Error: Object not found.'
-                        ),
-                        info=gettext(
-                            'The specified table could not be found.\n'
-                        )
-                    )
+                # if not res['rows']:
+                #     return make_json_response(
+                #         success=0,
+                #         errormsg=gettext(
+                #             'Error: Object not found.'
+                #         ),
+                #         info=gettext(
+                #             'The specified table could not be found.\n'
+                #         )
+                #     )
 
                 status, res = super(TableView, self).delete(gid, sid, did,
-                                                            scid, tid, res)
+                                                            scid, tid, res=None)
 
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -1154,20 +1154,20 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         """
 
         try:
-            SQL = render_template(
-                "/".join([self.table_template_path, 'properties.sql']),
-                did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
-            )
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            # SQL = render_template(
+            #     "/".join([self.table_template_path, 'properties.sql']),
+            #     did=did, scid=scid, tid=tid,
+            #     datlastsysoid=self.datlastsysoid
+            # )
+            # status, res = self.conn.execute_dict(SQL)
+            # if not status:
+            #     return internal_server_error(errormsg=res)
 
-            if len(res['rows']) == 0:
-                return gone(gettext("The specified table could not be found."))
+            # if len(res['rows']) == 0:
+            #     return gone(gettext("The specified table could not be found."))
 
             return super(TableView, self).truncate(
-                gid, sid, did, scid, tid, res
+                gid, sid, did, scid, tid, res=None
             )
 
         except Exception as e:

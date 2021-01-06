@@ -1420,18 +1420,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
            scid: Schema ID
            tid: Table ID
         """
-        # Below will decide if it's simple drop or drop with cascade call
-        data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
-        )
-        # Convert str 'true' to boolean type
-        is_cascade = json.loads(data['cascade'])
-
-        data = res['rows'][0]
-
         SQL = render_template("/".join([self.table_template_path,
                                         'truncate.sql']),
-                              data=data, cascade=is_cascade)
+                              did=did, tid=tid,)
         status, res = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -1473,7 +1464,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
            tid: Table ID
         """
 
-        SQL = self.get_delete_sql(res)
+        SQL = render_template(
+            "/".join([self.table_template_path, 'delete.sql']),
+            did=did, tid=tid,
+        )
 
         status, res = self.conn.execute_scalar(SQL)
         if not status:
