@@ -21,7 +21,7 @@ define('pgadmin.node.dictionary', [
         node: 'dictionary',
         label: gettext('Dictionaries'),
         type: 'coll-dictionary',
-        columns: ['name', 'source', 'origin', 'type', 'key', 'status'],
+        columns: ['name', 'source', 'origin', 'type', 'key', 'status', 'attribute_names', 'attribute_types', 'element_count'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size')],
         canDrop: true,
@@ -38,8 +38,8 @@ define('pgadmin.node.dictionary', [
       dialogHelp: url_for('help.static', {'filename': 'dictionary_dialog.html'}),
       label: gettext('Dictionary'),
       hasSQL:  true,
-      canDrop: true,
-      hasDepends: true,
+      canDrop: false,
+      hasDepends: false,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size')],
       Init: function() {
@@ -324,6 +324,9 @@ define('pgadmin.node.dictionary', [
           key: undefined,
           type: undefined,
           source: undefined,
+          attribute_names: undefined,
+          attribute_types: undefined,
+          element_count: undefined,
           origin: undefined,
           spclocation: undefined,
           spcoptions: [],
@@ -359,6 +362,15 @@ define('pgadmin.node.dictionary', [
           type: 'text',
         },{
           id: 'status', label: gettext('status'), cell: 'string',
+          type: 'text',
+        },{
+          id: 'attribute_names', label: gettext('attribute.names'), cell: 'string',
+          type: 'text',
+        },{
+          id: 'attribute_types', label: gettext('attribute.types'), cell: 'string',
+          type: 'text',
+        },{
+          id: 'element_count', label: gettext('element_count'), cell: 'string',
           type: 'text',
         },
         ],

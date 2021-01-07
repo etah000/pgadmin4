@@ -36,8 +36,8 @@ define('pgadmin.node.function', [
       dialogHelp: url_for('help.static', {'filename': 'function_dialog.html'}),
       label: gettext('Function'),
       hasSQL:  true,
-      canDrop: true,
-      hasDepends: true,
+      canDrop: false,
+      hasDepends: false,
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
