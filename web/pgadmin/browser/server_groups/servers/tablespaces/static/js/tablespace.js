@@ -39,8 +39,8 @@ define('pgadmin.node.tablespace', [
       dialogHelp: url_for('help.static', {'filename': 'tablespace_dialog.html'}),
       label: gettext('Tablespace'),
       hasSQL:  true,
-      canDrop: true,
-      hasDepends: true,
+      canDrop: false,
+      hasDepends: false,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size')],
       Init: function() {

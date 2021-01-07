@@ -37,8 +37,8 @@ define('pgadmin.node.datatype', [
       dialogHelp: url_for('help.static', {'filename': 'datatype_dialog.html'}),
       label: gettext('Datatype'),
       hasSQL:  true,
-      canDrop: true,
-      hasDepends: true,
+      canDrop: false,
+      hasDepends: false,
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

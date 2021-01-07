@@ -37,8 +37,8 @@ define('pgadmin.node.format', [
       dialogHelp: url_for('help.static', {'filename': 'format_dialog.html'}),
       label: gettext('Format'),
       hasSQL:  true,
-      canDrop: true,
-      hasDepends: true,
+      canDrop: false,
+      hasDepends: false,
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

@@ -742,7 +742,10 @@ def create_app(app_name=None):
     @app.errorhandler(Exception)
     def all_exception_handler(e):
         current_app.logger.error(e, exc_info=True)
-        return internal_server_error(errormsg=str(e))
+        if str(e).find('Stack trace:'):
+            pos = str(e).find('Stack trace:')
+            es=str(e)[:pos]
+        return internal_server_error(errormsg=es)
 
     # Exclude HTTPexception from above handler (all_exception_handler)
     # HTTPException are user defined exceptions and those should be returned
