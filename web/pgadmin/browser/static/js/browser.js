@@ -465,6 +465,8 @@ define('pgadmin.browser', [
             menus = obj.menus['context'][d._type],
             $div = $('<div></div>'),
             context_menu = {};
+          console.log(d._type);
+          // console.log(menus);
           pgAdmin.Browser.MenuCreator(
             $div, menus, obj.menu_categories, d, item, context_menu
           );

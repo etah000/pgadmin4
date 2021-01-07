@@ -53,7 +53,7 @@ define('pgadmin.node.cluster', [
           return;
 
         this.initialized = true;
-
+        
         pgBrowser.add_menus([
           {
           name: 'create_cluster_on_server', node: 'server', module: this,

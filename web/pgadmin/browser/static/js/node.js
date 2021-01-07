@@ -286,11 +286,11 @@ define('pgadmin.browser.node', [
       if (!this.type || this.type == '')
         // We have no information, how to generate view for this type.
         return null;
-
       if (this.model) {
         // This will be the URL, used for object manipulation.
         // i.e. Create, Update in these cases
         var urlBase = this.generate_url(item, type, node, false, null, that.url_jump_after_node);
+        console.log(urlBase);
 
         if (!urlBase)
           // Ashamed of myself, I don't know how to manipulate this
@@ -318,7 +318,7 @@ define('pgadmin.browser.node', [
           fields = Backform.generateViewSchema(
             info, newModel, type, this, node
           );
-
+        
         if (type == 'create' || type == 'edit') {
 
           if (callback && ctx) {
@@ -577,7 +577,6 @@ define('pgadmin.browser.node', [
 
         // Make sure - the properties dialog type registered
         pgBrowser.Node.register_node_panel();
-
         // No node selected.
         if (!d)
           return;
@@ -617,7 +616,9 @@ define('pgadmin.browser.node', [
             if(screen.height < 600) {
               h = pgAdmin.toPx(el, '95%', 'height', true);
             } else {
+              console.log(self.type);
               h = pgAdmin.toPx(el, self.height || pgBrowser.stdH.default+'px', 'height', true);
+             console.log("h:"+h);
 
               /* Fit to standard sizes */
               if(h <= pgBrowser.stdH.sm) {
@@ -642,13 +643,11 @@ define('pgadmin.browser.node', [
                 y: y + 'px',
               }
             );
-
             b.removeChild(el);
             // delete(el);
 
             return p;
           };
-
         if (args.action == 'create') {
           // If we've parent, we will get the information of it for
           // proper object manipulation.
@@ -695,6 +694,9 @@ define('pgadmin.browser.node', [
           p = addPanel();
 
           setTimeout(function() {
+            // console.log(i);
+            // console.log(d);
+            // console.log(p);
             o.showProperties(i, d, p, args.action);
           }, 10);
         } else {
@@ -1070,7 +1072,6 @@ define('pgadmin.browser.node', [
         content = $('<div></div>')
           .addClass('pg-prop-content col-12'),
         confirm_close = true;
-
       // Handle key press events for Cancel, save and help button
       var handleKeyDown = function(event, context) {
         // If called on panel other than node_props, return
@@ -1097,7 +1098,6 @@ define('pgadmin.browser.node', [
           break;
         }
       }.bind(panel);
-
       setTimeout(function() {
         // Register key press events with panel element
         panel.$container.find('.backform-tab').on('keydown', function(event) {
@@ -1206,8 +1206,8 @@ define('pgadmin.browser.node', [
           that.footer = $('<div></div>').addClass(
             'pg-prop-footer'
           ).appendTo(j);
-
           // Create a view to show the properties in fieldsets
+
           view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
           if (view) {
             // Save it for release it later
@@ -1457,7 +1457,9 @@ define('pgadmin.browser.node', [
           };
 
           // Create a view to edit/create the properties in fieldsets
+          console.log(item);
           view = that.getView(item, action, content, data, 'dialog', updateButtons, j, onCancelFunc);
+          console.log(view);
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);

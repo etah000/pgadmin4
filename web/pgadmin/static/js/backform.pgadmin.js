@@ -2071,7 +2071,6 @@ define([
       if (_.isEmpty(groups)) {
         return null;
       }
-
       if (!noSQL && node && node.hasSQL && (mode == 'create' || mode == 'edit')) {
         groups[gettext('SQL')] = [{
           name: 'sql',
