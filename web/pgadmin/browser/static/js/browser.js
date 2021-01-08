@@ -425,7 +425,7 @@ define('pgadmin.browser', [
       obj.editor = CodeMirror.fromTextArea(
         document.getElementById('sql-textarea'), {
           lineNumbers: true,
-          mode: 'text/x-pgsql',
+          mode: 'text/x-chsql',
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
           screenReaderLabel: gettext('SQL'),

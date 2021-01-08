@@ -200,7 +200,7 @@ export default class QueryHistoryDetails {
         this.parentNode.find('#history-detail-query div')[0],
         {
           tabindex: -1,
-          mode: 'text/x-pgsql',
+          mode: 'text/x-chsql',
           readOnly: true,
         }
       );
