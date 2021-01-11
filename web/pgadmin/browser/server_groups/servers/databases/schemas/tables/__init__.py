@@ -599,6 +599,27 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return super(TableView, self).properties(
             gid, sid, did, scid, tid, res
         )
+    def _fetch_ddl(self, did, tid, scid=0):
+        """
+        This function is used to fetch the create table query of the specified object
+        :param did:
+        :param scid:
+        :param tid:
+        :return:
+        """
+        SQL = render_template(
+            "/".join([self.table_template_path, 'get_ddl.sql']),
+            did=did, scid=scid, tid=tid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return False, internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return False, gone(
+                gettext("The specified table could not be found."))
+        return True, res
 
     def _fetch_properties(self, did, tid, scid=0):
         """
@@ -1381,7 +1402,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         """
         main_sql = []
 
-        status, res = self._fetch_properties(did, tid, scid)
+        status, res = self._fetch_ddl(did, tid, scid)
         if not status:
             return res
 
@@ -1390,7 +1411,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         data = res['rows'][0]
 
-        return BaseTableView.get_reverse_engineered_sql(
+        return BaseTableView.get_create_table_sql(
             self, did, scid, tid, main_sql, data)
 
     @BaseTableView.check_precondition
@@ -1599,7 +1620,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         otherwise it will return statistics for all the tables in that
         schema.
         """
-        return BaseTableView.get_table_statistics(self, scid, tid)
+        return BaseTableView.get_table_statistics(self, did, tid)
 
     @BaseTableView.check_precondition
     def count_rows(self, gid, sid, did, tid, scid=0):

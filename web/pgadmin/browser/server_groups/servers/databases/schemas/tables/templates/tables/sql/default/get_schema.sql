@@ -1,1 +1,4 @@
-SELECT nsp.nspname FROM pg_namespace nsp WHERE nsp.oid = {{ scid|qtLiteral }};
+select
+       name as nspname
+FROM system.databases
+{% if did %} WHERE name = '{{ did }}' {% endif %}
