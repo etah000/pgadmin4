@@ -56,6 +56,16 @@ class ExecuteQuery {
   execute(sqlStatement, explainPlan, connect) {
     // If it is an empty query, do nothing.
     if (sqlStatement.length <= 0) return;
+    if (sqlStatement.indexOf(';') >= 0) {
+      sqlStatement = sqlStatement.replace(';','');
+    }
+    // Ignore limit option, if user's sql had limit definition
+    if (sqlStatement.indexOf(' limit ') <= 0) {
+      var rowLimit = $('#btn-rows-limit option:selected').val();
+      if (rowLimit != -1) {
+        sqlStatement = sqlStatement + ' limit ' + rowLimit;
+      }
+    }
 
     const self = this;
     self.explainPlan = explainPlan;
