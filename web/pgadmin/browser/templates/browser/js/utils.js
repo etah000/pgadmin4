@@ -93,6 +93,7 @@ define('pgadmin.browser.utils',
         obj.add_menus({{ MENU_ITEMS(key, current_app.menu_items['%s_items' % key.lower()])}});
         {% endfor %}
         obj.create_menus();
+        
       } else {
          //recall after some time
          setTimeout(function(){ self.addMenus(obj); }, 3000);

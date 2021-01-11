@@ -363,7 +363,6 @@ define('pgadmin.browser', [
         {m: 'help', id:'#mnu_help'}], function(o) {
         _.each( obj.menus[o.m], function(m) { update_menuitem(m); });
       });
-
       // Create the object menu dynamically
       if (item && obj.menus['object'] && obj.menus['object'][d._type]) {
         pgAdmin.Browser.MenuCreator(
@@ -465,7 +464,6 @@ define('pgadmin.browser', [
             menus = obj.menus['context'][d._type],
             $div = $('<div></div>'),
             context_menu = {};
-          console.log(d._type);
           // console.log(menus);
           pgAdmin.Browser.MenuCreator(
             $div, menus, obj.menu_categories, d, item, context_menu
@@ -790,7 +788,10 @@ define('pgadmin.browser', [
             else {
               menus = pgMenu[a];
             }
-
+            // if(m.applies=='tools'){
+            //    console.log(menus);
+            // }
+          
             let get_menuitem_obj = function(m) {
               return new MenuItem({
                 name: m.name, label: m.label, module: m.module,
@@ -803,7 +804,6 @@ define('pgadmin.browser', [
                 node: m.node, checked: m.checked,
               });
             };
-
             if (!_.has(menus, m.name)) {
               menus[m.name] = get_menuitem_obj(m);
 
@@ -816,6 +816,7 @@ define('pgadmin.browser', [
                 menus[m.name]['menu_items'] = sub_menu_items;
               }
             }
+            //  this.menus=pgMenu;
           } else  {
             console.warn(
               'Developer warning: Category \'' +
@@ -828,7 +829,6 @@ define('pgadmin.browser', [
     },
     // Create the menus
     create_menus: function() {
-
       /* Create menus */
       var navbar = $('#navbar-menu > ul').first();
       var obj = this;

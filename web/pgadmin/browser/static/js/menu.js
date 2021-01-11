@@ -288,6 +288,7 @@ define([
   pgAdmin.Browser.MenuCreator = function(
     $mnu, menus, categories, d, item, menu_items
   ) {
+    // console.log(categories);
     var groups = {
         'common': [],
       },
@@ -310,8 +311,9 @@ define([
         }
       },
       ctxIdx = 1;
-
+    // console.log(menus);
     for (idx in menus) {
+      // console.log(menus[idx]);
       update_menuitem(menus[idx]);
     }
 
@@ -320,9 +322,8 @@ define([
 
     common = groups['common'];
     delete groups['common'];
-
+    // console.log(common);
     var prev = true;
-
     for (var name in groups) {
       var g = groups[name],
         c = categories[name] || {
@@ -353,6 +354,7 @@ define([
     common.sort(function(a, b) {
       return a.priority - b.priority;
     });
+
     var len = _.size(common);
 
     for (idx in common) {
@@ -376,7 +378,6 @@ define([
       }
       ctxIdx++;
     }
-
     return (len > 0);
   };
 

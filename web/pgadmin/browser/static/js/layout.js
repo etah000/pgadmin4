@@ -38,8 +38,8 @@ _.extend(pgBrowser, {
     docker.addPanel('sql', wcDocker.DOCK.STACKED, dashboardPanel);
     docker.addPanel(
       'statistics', wcDocker.DOCK.STACKED, dashboardPanel);
-    docker.addPanel(
-      'dependencies', wcDocker.DOCK.STACKED, dashboardPanel);
+    // docker.addPanel(
+    //   'dependencies', wcDocker.DOCK.STACKED, dashboardPanel);
     docker.addPanel(
       'dependents', wcDocker.DOCK.STACKED, dashboardPanel);
   },

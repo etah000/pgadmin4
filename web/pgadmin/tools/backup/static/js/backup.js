@@ -639,7 +639,7 @@ define([
           ),
         });
       }
-
+      // console.log(menus);
       pgBrowser.add_menus(menus);
       return this;
     },

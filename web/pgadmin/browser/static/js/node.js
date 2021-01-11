@@ -616,9 +616,9 @@ define('pgadmin.browser.node', [
             if(screen.height < 600) {
               h = pgAdmin.toPx(el, '95%', 'height', true);
             } else {
-              console.log(self.type);
+              // console.log(self.type);
               h = pgAdmin.toPx(el, self.height || pgBrowser.stdH.default+'px', 'height', true);
-             console.log("h:"+h);
+            //  console.log("h:"+h);
 
               /* Fit to standard sizes */
               if(h <= pgBrowser.stdH.sm) {

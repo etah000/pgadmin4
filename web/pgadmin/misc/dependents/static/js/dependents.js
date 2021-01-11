@@ -73,47 +73,47 @@ define('misc.dependents', [
        * panel only once.
     */
     __appendGridToPanel: function() {
-      var $container = this.dependentsPanel.layout().scene().find('.pg-panel-content'),
-        $gridContainer = $container.find('.pg-panel-dependents-container'),
-        grid = new Backgrid.Grid({
-          emptyText: gettext('No data found'),
-          columns: [{
-            name: 'type',
-            label: gettext('Type'),
-            // Extend it to render the icon as per the type.
-            cell: Backgrid.Cell.extend({
-              render: function() {
-                Backgrid.Cell.prototype.render.apply(this, arguments);
-                this.$el.prepend($('<i>', {
-                  class: 'wcTabIcon ' + this.model.get('icon'),
-                }));
-                return this;
-              },
-            }),
-            editable: false,
-          },
-          {
-            name: 'name',
-            label: gettext('Name'),
-            cell: 'string',
-            editable: false,
-          },
-          {
-            name: 'field',
-            label: '', // label kept blank, it will change dynamically
-            cell: 'string',
-            editable: false,
-          },
-          ],
+      // var $container = this.dependentsPanel.layout().scene().find('.pg-panel-content'),
+      //   $gridContainer = $container.find('.pg-panel-dependents-container'),
+      //   grid = new Backgrid.Grid({
+      //     emptyText: gettext('No data found'),
+      //     columns: [{
+      //       name: 'type',
+      //       label: gettext('Type'),
+      //       // Extend it to render the icon as per the type.
+      //       cell: Backgrid.Cell.extend({
+      //         render: function() {
+      //           Backgrid.Cell.prototype.render.apply(this, arguments);
+      //           this.$el.prepend($('<i>', {
+      //             class: 'wcTabIcon ' + this.model.get('icon'),
+      //           }));
+      //           return this;
+      //         },
+      //       }),
+      //       editable: false,
+      //     },
+      //     {
+      //       name: 'name',
+      //       label: gettext('Name'),
+      //       cell: 'string',
+      //       editable: false,
+      //     },
+      //     {
+      //       name: 'field',
+      //       label: '', // label kept blank, it will change dynamically
+      //       cell: 'string',
+      //       editable: false,
+      //     },
+      //     ],
 
-          collection: this.dependentCollection,
-          className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
-        });
+      //     collection: this.dependentCollection,
+      //     className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
+      //   });
 
-      // Condition is used to save grid object to change the label of the header.
-      this.dependentGrid = grid;
+      // // Condition is used to save grid object to change the label of the header.
+      // this.dependentGrid = grid;
 
-      $gridContainer.append(grid.render().el);
+      // $gridContainer.append(grid.render().el);
 
       return true;
     },
