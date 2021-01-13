@@ -473,7 +473,8 @@ module.exports = [{
         ',pgadmin.node.compound_trigger' +
         ',pgadmin.node.cluster' +
         ',pgadmin.node.shard' +
-        ',pgadmin.node.replication',
+        ',pgadmin.node.replication' +
+        ',pgadmin.node.engine',
       },
     }, {
       test: require.resolve('./node_modules/acitree/js/jquery.aciTree.min'),

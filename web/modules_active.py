@@ -16,6 +16,7 @@ MODULES_ACTIVE = (
     'pgadmin.browser.server_groups.servers.clusters.shards',
     'pgadmin.browser.server_groups.servers.clusters.shards.replications',
     'pgadmin.browser.server_groups.servers.databases',
+    'pgadmin.browser.server_groups.servers.engines',
     # 'pgadmin.browser.server_groups.servers.databases.casts',
     # 'pgadmin.browser.server_groups.servers.databases.event_triggers',
     # 'pgadmin.browser.server_groups.servers.databases.extensions',
