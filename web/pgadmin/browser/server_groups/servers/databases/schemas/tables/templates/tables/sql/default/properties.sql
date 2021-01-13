@@ -16,7 +16,7 @@ SELECT
     NULL AS fillfactor,
     0 AS hastoasttable,
     '0' AS inherited_tables_cnt,
-    0 AS is_sys_table,
+    if (database='system',1,0) AS is_sys_table,
     0 AS isrepl,
     name,
     name AS oid,
@@ -59,7 +59,7 @@ SELECT
     engine_full,
     partition_key,
     sorting_key,
-    primary_key,
+    primary_key as primarykey,
     sampling_key,
     storage_policy,
     total_rows,
@@ -69,7 +69,7 @@ SELECT
 FROM
    system.tables
 WHERE
-    database = '{{ did }}' 
+    database = '{{ did }}'
     AND name NOT LIKE '.%'
     AND engine NOT LIKE '%View'
     {% if tid %} AND name = '{{ tid }}' {% endif %}

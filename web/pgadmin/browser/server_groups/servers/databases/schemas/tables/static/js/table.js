@@ -28,7 +28,7 @@ define('pgadmin.node.table', [
         node: 'table',
         label: gettext('Tables'),
         type: 'coll-table',
-        columns: ['name', 'relowner', 'is_partitioned', 'description'],
+        columns: ['name', 'engine', 'primarykey', 'partition_key'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
           gettext('TOAST table size'), gettext('Tuple length'),
@@ -335,64 +335,21 @@ define('pgadmin.node.table', [
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         },{
-          id: 'oid', label: gettext('OID'), type: 'text', mode: ['properties'],
+          id: 'engine', label: gettext('Engine'), type: 'text', mode: ['properties'],
         },{
-          id: 'relowner', label: gettext('Owner'), type: 'text', node: 'role',
-          mode: ['properties', 'create', 'edit'], select2: {allowClear: false},
-          disabled: 'inSchema', control: 'node-list-by-name',
+          id: 'database', label: gettext('Database'), type: 'text', mode: ['properties'],
         },{
-          id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
-          control: 'node-list-by-name', mode: ['create', 'edit'],
-          disabled: 'inSchema', filter: function(d) {
-            // If schema name start with pg_* then we need to exclude them
-            if(d && d.label.match(/^pg_/))
-            {
-              return false;
-            }
-            return true;
-          }, cache_node: 'database', cache_level: 'database',
+          id: 'primarykey', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
         },{
-          id: 'spcname', label: gettext('Tablespace'), node: 'tablespace',
-          type: 'text', control: 'node-list-by-name',
-          mode: ['properties', 'create', 'edit'],
-          filter: function(d) {
-            // If tablespace name is not "pg_global" then we need to exclude them
-            return (!(d && d.label.match(/pg_global/)));
-          },
-          deps: ['is_partitioned'],
-          disabled: 'inSchema',
+          id: 'partition_key', label: gettext('Partition Key'), type: 'text', mode: ['properties'],
         },{
-          id: 'partition', type: 'group', label: gettext('Partitions'),
-          mode: ['edit', 'create'], min_version: 100000,
-          visible: function(m) {
-            // Always show in case of create mode
-            if (m.isNew() || m.get('is_partitioned'))
-              return true;
-            return false;
-          },
+          id: 'sorting_key', label: gettext('Sorting Key'), type: 'text', mode: ['properties'],
         },{
-          id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
-          readonly: function(m) {
-            if (!m.isNew())
-              return true;
-            return false;
-          },
+          id: 'sampling_key', label: gettext('Sampling Key'), type: 'text', mode: ['properties'],
         },{
           id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
           type: 'switch', mode: ['properties'],
           disabled: 'inSchema',
-        },{
-          id: 'description', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         },{
           id: 'coll_inherits', label: gettext('Inherited from table(s)'),
           url: 'get_inherits', type: 'array', group: gettext('Columns'),
@@ -481,12 +438,17 @@ define('pgadmin.node.table', [
           id: 'advanced', label: gettext('Advanced'), type: 'group',
           visible: ShowAdvancedTab.show_advanced_tab,
         }, {
-          id: 'coll_inherits', label: gettext('Inherited from table(s)'),
+          id: 'data_paths', label: gettext('Data Paths'),
           type: 'text', group: 'advanced', mode: ['properties'],
         },{
-          id: 'inherited_tables_cnt', label: gettext('Inherited tables count'),
-          type: 'text', mode: ['properties'], group: 'advanced',
-          disabled: 'inSchema',
+          id: 'metadata_path', label: gettext('Metadata Path'),
+          type: 'text', group: 'advanced', mode: ['properties'],
+        },{
+          id: 'metadata_modification_time', label: gettext('Metadata Modification Time'),
+          type: 'text', group: 'advanced', mode: ['properties'],
+        },{
+          id: 'storage_policy', label: gettext('Storage Policy'),
+          type: 'text', group: 'advanced', mode: ['properties'],
         },{
           // Tab control for columns
           id: 'columns', label: gettext('Columns'), type: 'collection',
@@ -731,59 +693,6 @@ define('pgadmin.node.table', [
             },
           }],
         },{
-          id: 'typname', label: gettext('Of type'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-          disabled: 'checkOfType', url: 'get_oftype', group: gettext('advanced'),
-          deps: ['coll_inherits'], transform: function(data, cell) {
-            var control = cell || this,
-              m = control.model;
-            m.of_types_tables = data;
-            return data;
-          },
-          control: Backform.NodeAjaxOptionsControl.extend({
-            // When of_types changes we need to clear columns collection
-            onChange: function() {
-              Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
-              var self = this,
-                tbl_name = self.model.get('typname'),
-                data = undefined,
-                arg = undefined,
-                column_collection = self.model.get('columns');
-
-              if (!_.isUndefined(tbl_name) && !_.isNull(tbl_name) &&
-                tbl_name !== '' && column_collection.length !== 0) {
-                var title = gettext('Remove column definitions?'),
-                  msg = gettext('Changing \'Of type\' will remove column definitions.');
-
-                Alertify.confirm(
-                  title, msg, function () {
-                    // User clicks Ok, lets clear columns collection
-                    column_collection.remove(
-                      column_collection.filter(function() { return true; })
-                    );
-                  },
-                  function() {
-                    setTimeout(function() {
-                      self.model.set('typname', null);
-                    }, 10);
-                  }
-                );
-              } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
-                column_collection.remove(
-                  column_collection.filter(function() { return true; })
-                );
-              }
-
-              // Run Ajax now to fetch columns
-              if (!_.isUndefined(tbl_name) && tbl_name !== '') {
-                arg = { 'tname': tbl_name };
-                data = self.model.fetch_columns_ajax.apply(self, [arg]);
-                // Add into column collection
-                column_collection.set(data, { merge:false,remove:false });
-              }
-            },
-          }),
-        },{
           id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
           mode: ['create', 'edit'], min: 10, max: 100,
           group: gettext('advanced'),
@@ -814,57 +723,6 @@ define('pgadmin.node.table', [
           },
         },
         {
-          id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-          group: gettext('advanced'),
-          disabled: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 120000)
-              return true;
-
-            return m.inSchema();
-          },
-        },{
-          id: 'relpersistence', label: gettext('Unlogged?'), cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchemaWithModelCheck',
-          group: gettext('advanced'),
-        },{
-          id: 'conname', label: gettext('Primary key'), cell: 'string',
-          type: 'text', mode: ['properties'], group: gettext('advanced'),
-          disabled: 'inSchema',
-        },{
-          id: 'reltuples', label: gettext('Rows (estimated)'), cell: 'string',
-          type: 'text', mode: ['properties'], group: gettext('advanced'),
-          disabled: 'inSchema',
-        },{
-          id: 'rows_cnt', label: gettext('Rows (counted)'), cell: 'string',
-          type: 'text', mode: ['properties'], group: gettext('advanced'),
-          disabled: 'inSchema', control: Backform.InputControl.extend({
-            formatter: {
-              fromRaw: function (rawData) {
-                var t = pgAdmin.Browser.tree,
-                  i = t.selected(),
-                  d = i && i.length == 1 ? t.itemData(i) : undefined;
-
-                // Return the actual rows count if the selected node
-                // has already counted.
-                if(d && d.rows_cnt && parseInt(d.rows_cnt, 10) > 0)
-                  return d.rows_cnt;
-                else
-                  return rawData;
-              },
-              toRaw: function (formattedData) {
-                return formattedData;
-              },
-            },
-          }),
-        },{
-          id: 'relhassubclass', label: gettext('Inherits tables?'), cell: 'switch',
-          type: 'switch', mode: ['properties'], group: gettext('advanced'),
-          disabled: 'inSchema',
-        },{
           type: 'nested', control: 'fieldset', label: gettext('Like'),
           group: gettext('advanced'),
           schema:[{
@@ -1154,9 +1012,6 @@ define('pgadmin.node.table', [
           model: pgBrowser.SecLabelModel, editable: false, canAdd: true,
           type: 'collection', min_version: 90100, mode: ['edit', 'create'],
           group: 'security', canDelete: true, control: 'unique-col-collection',
-        },{
-          id: 'vacuum_settings_str', label: gettext('Storage settings'),
-          type: 'multiline', group: 'advanced', mode: ['properties'],
         }],
         sessChanged: function() {
           /* If only custom autovacuum option is enabled the check if the options table is also changed. */

@@ -30,7 +30,7 @@ define('pgadmin.node.mview', [
         node: 'mview',
         label: gettext('Materialized Views'),
         type: 'coll-mview',
-        columns: ['name', 'owner'],
+        columns: ['name', 'engine', 'database'],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
@@ -158,26 +158,17 @@ define('pgadmin.node.mview', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchema',
         },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
+          id: 'engine', label: gettext('Engine'), cell: 'string',
           type: 'text', mode: ['properties'],
         },{
-          id: 'owner', label: gettext('Owner'), cell: 'string',
-          control: 'node-list-by-name', select2: { allowClear: false },
-          node: 'role', disabled: 'inSchema',
-        },{
-          id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
-          control: 'node-list-by-name', type: 'text', cache_level: 'database',
-          node: 'schema', mode: ['create', 'edit'], cache_node: 'database',
-          disabled: 'inSchema', select2: { allowClear: false },
+          id: 'database', label: gettext('Database'), cell: 'string',
+          type: 'text', mode: ['properties'],
         },{
           id: 'system_view', label: gettext('System materialized view?'), cell: 'string',
           type: 'switch', mode: ['properties'],
         }, pgBrowser.SecurityGroupSchema, {
           id: 'acl', label: gettext('Privileges'),
           mode: ['properties'], type: 'text', group: gettext('Security'),
-        },{
-          id: 'comment', label: gettext('Comment'), cell: 'string',
-          type: 'multiline',
         },{
           id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
@@ -206,20 +197,9 @@ define('pgadmin.node.mview', [
           group: gettext('Storage'), mode: ['edit', 'create'],
           type: 'switch',
         },{
-          id: 'spcname', label: gettext('Tablespace'), cell: 'string',
-          type: 'text', group: gettext('Storage'), first_empty: false,
-          control: 'node-list-by-name', node: 'tablespace', select2: { allowClear: false },
-          filter: function(m) {
-            if (m.label == 'pg_global') return false;
-            else return true;
-          },
-        },{
           id: 'fillfactor', label: gettext('Fill factor'),
           group: gettext('Storage'), mode: ['edit', 'create'],
           type: 'int', min: 10, max: 100,
-        },{
-          id: 'vacuum_settings_str', label: gettext('Storage settings'),
-          type: 'multiline', group: gettext('Storage'), mode: ['properties'],
         },{
           type: 'nested', control: 'tab', id: 'materialization',
           label: gettext('Parameter'), mode: ['edit', 'create'],

@@ -341,24 +341,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             status=200
         )
 
-    def get_table_statistics(self, scid, tid):
+    def get_table_statistics(self, did, tid):
         """
         Statistics
 
         Args:
-            scid: Schema Id
+            did: Database Id
             tid: Table Id
 
         Returns the statistics for a particular table if tid is specified,
         otherwise it will return statistics for all the tables in that
         schema.
         """
-
-        # Fetch schema name
         status, schema_name = self.conn.execute_scalar(
             render_template(
                 "/".join([self.table_template_path, 'get_schema.sql']),
-                conn=self.conn, scid=scid
+                conn=self.conn, did=did
             )
         )
         if not status:
@@ -369,40 +367,23 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                 render_template(
                     "/".join([self.table_template_path,
                               'coll_table_stats.sql']), conn=self.conn,
-                    schema_name=schema_name
+                    did=did
                 )
             )
         else:
-            # For Individual table stats
 
-            # Check if pgstattuple extension is already created?
-            # if created then only add extended stats
-            status, is_pgstattuple = self.conn.execute_scalar("""
-            SELECT (count(extname) > 0) AS is_pgstattuple
-            FROM pg_extension
-            WHERE extname='pgstattuple'
-            """)
-            if not status:
-                return internal_server_error(errormsg=is_pgstattuple)
+            # Fetch schema name
 
-            # Fetch Table name
-            status, table_name = self.conn.execute_scalar(
-                render_template(
-                    "/".join([self.table_template_path, 'get_table.sql']),
-                    conn=self.conn, scid=scid, tid=tid
-                )
-            )
-            if not status:
-                return internal_server_error(errormsg=table_name)
+           if not status:
+               return internal_server_error(errormsg=table_name)
 
-            status, res = self.conn.execute_dict(
-                render_template(
-                    "/".join([self.table_template_path, 'stats.sql']),
-                    conn=self.conn, schema_name=schema_name,
-                    table_name=table_name,
-                    is_pgstattuple=is_pgstattuple, tid=tid
-                )
-            )
+           status, res = self.conn.execute_dict(
+               render_template(
+                   "/".join([self.table_template_path, 'stats.sql']),
+                   conn=self.conn, did=schema_name,
+                   tid=tid
+               )
+           )
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -411,6 +392,90 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
             data=res,
             status=200
         )
+
+    def get_create_table_sql(self, did, scid, tid, main_sql, data,
+                                   json_resp=True, diff_partition_sql=False):
+        """
+        This function will creates reverse engineered sql for
+        the table object
+
+         Args:
+           did: Database ID
+           scid: Schema ID
+           tid: Table ID
+           main_sql: List contains all the reversed engineered sql
+           data: Table's Data
+           json_resp: Json response or plain SQL
+           diff_partition_sql: In Schema diff, the Partition sql should be
+           return separately to perform further task
+        """
+        """
+        #####################################
+        # 1) Reverse engineered sql for TABLE
+        #####################################
+        """
+
+        # Table & Schema declaration so that we can use them in child nodes
+        database = data['database']
+        table = data['name']
+        engine_full = data['engine_full']
+        partition_key = data['partition_key']
+        primary_key = data['primary_key']
+        create_table_query = data['create_table_query']
+        sql_header = ''
+
+        # Now we have all lis of columns which we need
+        # to include in our create definition, Let's format them
+        if 'columns' in data:
+            for c in data['columns']:
+                if 'attacl' in c:
+                    c['attacl'] = parse_priv_to_db(
+                        c['attacl'], self.column_acl
+                    )
+
+                # check type for '[]' in it
+                if 'cltype' in c:
+                    c['cltype'], c['hasSqrBracket'] = \
+                        column_utils.type_formatter(c['cltype'])
+
+        if json_resp:
+            sql_header = u"-- Table: {0}.{1}\n\n-- ".format(
+                data['database'], data['name'])
+
+            sql_header += render_template("/".join([self.table_template_path,
+                                                    'delete.sql']),
+                                          did=did, tid=tid, conn=self.conn)
+
+            sql_header = sql_header.strip('\n')
+            sql_header += '\n'
+
+            # Add into main sql
+            main_sql.append(sql_header)
+        partition_main_sql = ""
+
+        # Parse privilege data
+        if 'relacl' in data:
+            data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
+
+        # if table is partitions then
+        if 'relispartition' in data and data['relispartition']:
+            table_sql = render_template("/".join([self.partition_template_path,
+                                                  'ddl.sql']),
+                                        data=data, conn=self.conn)
+        else:
+            table_sql = render_template("/".join([self.table_template_path,
+                                                  'ddl.sql']),
+                                        data=data, conn=self.conn, is_sql=True)
+
+        # Add into main sql
+        table_sql = re.sub('\n{2,}', '\n\n', table_sql)
+        main_sql.append(table_sql.strip('\n'))
+
+        sql = '\n'.join(main_sql)
+
+        if not json_resp:
+            return sql, partition_main_sql
+        return ajax_response(response=sql.strip('\n'))
 
     def get_reverse_engineered_sql(self, did, scid, tid, main_sql, data,
                                    json_resp=True, diff_partition_sql=False):
