@@ -11,6 +11,7 @@
 
 import simplejson as json
 import re
+import traceback
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify, url_for, current_app
@@ -720,17 +721,18 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             This function will return list of types available for column node
             for node-ajax-control
         """
-        return make_json_response(
-            data=[],
-            status=200
-        )
+        # return make_json_response(
+        #     data=[],
+        #     status=200
+        # )
 
-        condition = render_template(
-            "/".join([
-                self.table_template_path, 'get_types_where_condition.sql'
-            ]),
-            show_system_objects=self.blueprint.show_system_objects
-        )
+        # condition = render_template(
+        #     "/".join([
+        #         self.table_template_path, 'get_types_where_condition.sql'
+        #     ]),
+        #     show_system_objects=self.blueprint.show_system_objects
+        # )
+        condition = None
 
         status, types = self.get_types(self.conn, condition, True, sid)
 
@@ -981,6 +983,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                     ).format(arg)
                 )
 
+        tid = data['name']
+    
         # Parse privilege data coming from client according to database format
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
@@ -991,35 +995,35 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         # 'coll_inherits' is Array but it comes as string from browser
         # We will convert it again to list
-        if 'coll_inherits' in data and \
-                isinstance(data['coll_inherits'], str):
-            data['coll_inherits'] = json.loads(
-                data['coll_inherits'], encoding='utf-8'
-            )
+        # if 'coll_inherits' in data and \
+        #         isinstance(data['coll_inherits'], str):
+        #     data['coll_inherits'] = json.loads(
+        #         data['coll_inherits'], encoding='utf-8'
+        #     )
 
-        if 'foreign_key' in data:
-            for c in data['foreign_key']:
-                schema, table = fkey_utils.get_parent(
-                    self.conn, c['columns'][0]['references'])
-                c['remote_schema'] = schema
-                c['remote_table'] = table
+        # if 'foreign_key' in data:
+        #     for c in data['foreign_key']:
+        #         schema, table = fkey_utils.get_parent(
+        #             self.conn, c['columns'][0]['references'])
+        #         c['remote_schema'] = schema
+        #         c['remote_table'] = table
 
         try:
             partitions_sql = ''
-            if self.is_table_partitioned(data):
-                data['relkind'] = 'p'
-                # create partition scheme
-                data['partition_scheme'] = self.get_partition_scheme(data)
-                partitions_sql = self.get_partitions_sql(data)
+            # if self.is_table_partitioned(data):
+            #     data['relkind'] = 'p'
+            #     # create partition scheme
+            #     data['partition_scheme'] = self.get_partition_scheme(data)
+            #     partitions_sql = self.get_partitions_sql(data)
 
             # Update the vacuum table settings.
-            BaseTableView.update_vacuum_settings(self, 'vacuum_table', data)
+            # BaseTableView.update_vacuum_settings(self, 'vacuum_table', data)
             # Update the vacuum toast table settings.
-            BaseTableView.update_vacuum_settings(self, 'vacuum_toast', data)
+            # BaseTableView.update_vacuum_settings(self, 'vacuum_toast', data)
 
             SQL = render_template(
                 "/".join([self.table_template_path, 'create.sql']),
-                data=data, conn=self.conn
+                data=data, conn=self.conn, did=did
             )
 
             # Append SQL for partitions
@@ -1038,35 +1042,36 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
 
             # Get updated schema oid
-            SQL = render_template(
-                "/".join([self.table_template_path, 'get_schema_oid.sql']),
-                tname=data['name']
-            )
+            # SQL = render_template(
+            #     "/".join([self.table_template_path, 'get_schema_oid.sql']),
+            #     tname=data['name']
+            # )
 
-            status, new_scid = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=new_scid)
+            # status, new_scid = self.conn.execute_scalar(SQL)
+            # if not status:
+            #     return internal_server_error(errormsg=new_scid)
 
             # we need oid to to add object in tree at browser
-            SQL = render_template(
-                "/".join([self.table_template_path, 'get_oid.sql']),
-                scid=new_scid, data=data
-            )
+            # SQL = render_template(
+            #     "/".join([self.table_template_path, 'get_oid.sql']),
+            #     scid=new_scid, data=data
+            # )
 
-            status, tid = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=tid)
+            # status, tid = self.conn.execute_scalar(SQL)
+            # if not status:
+            #     return internal_server_error(errormsg=tid)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     tid,
-                    new_scid,
+                    'public',
                     data['name'],
                     icon=self.get_icon_css_class(data),
                     is_partitioned=self.is_table_partitioned(data)
                 )
             )
         except Exception as e:
+            traceback.print_exc()
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition

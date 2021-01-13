@@ -153,7 +153,7 @@ class ServerManager(object):
 
     @property
     def version(self):
-        return self.sversion
+        return self.sversion or 0
 
     def MajorVersion(self):
         if self.sversion is not None:

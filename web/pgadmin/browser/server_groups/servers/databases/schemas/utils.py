@@ -135,7 +135,7 @@ class DataTypeReader:
                 max_val = 0
 
                 # Check if the type will have length and precision or not
-                if row['elemoid']:
+                if row['elemoid'] + 1:
                     length, precision, typeval = self.get_length_precision(
                         row['elemoid'])
 
@@ -174,33 +174,17 @@ class DataTypeReader:
 
         # Check against PGOID/typename for specific type
         if elemoid_or_name:
-            if elemoid_or_name in (1560, 'bit',
-                                   1561, 'bit[]',
-                                   1562, 'varbit', 'bit varying',
-                                   1563, 'varbit[]', 'bit varying[]',
-                                   1042, 'bpchar', 'character',
-                                   1043, 'varchar', 'character varying',
-                                   1014, 'bpchar[]', 'character[]',
-                                   1015, 'varchar[]', 'character varying[]'):
+            if elemoid_or_name in (1560, 'FixedString',
+                                    ):
                 typeval = 'L'
             elif elemoid_or_name in (1083, 'time', 'time without time zone',
-                                     1114, 'timestamp',
-                                     'timestamp without time zone',
-                                     1115, 'timestamp[]',
-                                     'timestamp without time zone[]',
-                                     1183, 'time[]',
-                                     'time without time zone[]',
-                                     1184, 'timestamptz',
-                                     'timestamp with time zone',
-                                     1185, 'timestamptz[]',
-                                     'timestamp with time zone[]',
-                                     1186, 'interval',
-                                     1187, 'interval[]', 'interval[]',
-                                     1266, 'timetz', 'time with time zone',
-                                     1270, 'timetz', 'time with time zone[]'):
+                                    ):
                 typeval = 'D'
-            elif elemoid_or_name in (1231, 'numeric[]',
-                                     1700, 'numeric'):
+            elif elemoid_or_name in (1231, 'Decimal',
+                                     'Decimal128',
+                                     'Decimal256',
+                                     'Decimal32',
+                                     'Decimal64',):
                 typeval = 'P'
             else:
                 typeval = ' '
