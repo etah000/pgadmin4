@@ -791,7 +791,7 @@ define('pgadmin.browser', [
             // if(m.applies=='tools'){
             //    console.log(menus);
             // }
-          
+
             let get_menuitem_obj = function(m) {
               return new MenuItem({
                 name: m.name, label: m.label, module: m.module,
@@ -2133,7 +2133,7 @@ define('pgadmin.browser', [
 
     editor_shortcut_keys: {
       // Autocomplete sql command
-      'Ctrl-Space': 'autocomplete',
+      'Ctrl-B': 'autocomplete',
       'Cmd-Space': 'autocomplete',
 
       // Select All text

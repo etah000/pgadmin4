@@ -33,7 +33,6 @@ from pgadmin.utils import html, does_utility_exist
 from pgadmin.model import Server
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 
-
 """
     This module is responsible for generating two nodes
     1) View
@@ -793,10 +792,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 old_def = re.sub(r"\W", "", res['rows'][0]['definition']
                                  ).split('FROM')
                 if 'definition' in data and (
-                        len(old_def) > 1 or len(new_def) > 1
+                    len(old_def) > 1 or len(new_def) > 1
                 ) and (
-                        old_def[0] != new_def[0] and
-                        old_def[0] not in new_def[0]
+                    old_def[0] != new_def[0] and
+                    old_def[0] not in new_def[0]
                 ):
                     data['del_sql'] = True
 
@@ -1000,9 +999,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         SQL_data = ''
         if self.manager.server_type == 'ppas' \
-                and self.manager.version >= 120000:
+            and self.manager.version >= 120000:
 
-            from pgadmin.browser.server_groups.servers.databases.schemas.utils\
+            from pgadmin.browser.server_groups.servers.databases.schemas.utils \
                 import trigger_definition
 
             # Define template path
@@ -1208,96 +1207,102 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             SQL_data += SQL
         return SQL_data
 
+    def _fetch_ddl(self, did, vid, scid=0):
+        """
+        This function is used to fetch the create table query of the specified object
+        :param did:
+        :param scid:
+        :param vid:
+        :return:
+        """
+        SQL = render_template(
+            "/".join([self.template_path, 'sql/get_ddl.sql']),
+            did=did, scid=scid, vid=vid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return False, internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return False, gone(
+                gettext("The specified view could not be found."))
+        return True, res
+
+    def get_create_view_sql(self, did, vid, main_sql, data,
+                            json_resp=True):
+        """
+        This function will creates reverse engineered sql for
+        the table object
+
+         Args:
+           did: Database ID
+           vid: View ID
+           main_sql: List contains all the reversed engineered sql
+           data: Table's Data
+           json_resp: Json response or plain SQL
+           return separately to perform further task
+        """
+
+        create_table_query = data['create_table_query']
+        sql_header = ''
+
+        if json_resp:
+            sql_header = u"-- View: {0}.{1}\n\n-- ".format(
+                data['database'], data['name'])
+
+            sql_header += render_template("/".join([self.template_path,
+                                                    'sql/delete.sql']),
+                                          did=did, vid=vid, conn=self.conn)
+
+            sql_header = sql_header.strip('\n')
+            sql_header += '\n'
+
+            # Add into main sql
+            main_sql.append(sql_header)
+        partition_main_sql = ""
+
+        # if table is partitions then
+        table_sql = render_template("/".join([self.template_path,
+                                              'sql/ddl.sql']),
+                                    data=data, conn=self.conn, is_sql=True)
+
+        # Add into main sql
+        table_sql = re.sub('\n{2,}', '\n\n', table_sql)
+        main_sql.append(table_sql.strip('\n'))
+
+        sql = '\n'.join(main_sql)
+
+        if not json_resp:
+            return sql, partition_main_sql
+        return ajax_response(response=sql.strip('\n'))
+
     @check_precondition
     def sql(self, gid, sid, did, vid, scid=0, diff_schema=None,
             json_resp=True):
         """
-        This function will generate sql to render into the sql panel
+        This function will creates reverse engineered sql for
+        the table object
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           vid: View ID
         """
+        main_sql = []
 
-        display_comments = True
-
-        if not json_resp:
-            display_comments = False
-
-        SQL_data = ''
-        SQL = render_template("/".join(
-            [self.template_path, 'sql/properties.sql']),
-            vid=vid,
-            datlastsysoid=self.datlastsysoid
-        )
-
-        status, res = self.conn.execute_dict(SQL)
+        status, res = self._fetch_ddl(did, vid, scid)
         if not status:
-            return internal_server_error(errormsg=res)
+            return res
+
         if len(res['rows']) == 0:
-            return gone(
-                gettext("Could not find the view on the server.")
-            )
+            return gone(gettext("The specified table could not be found."))
 
-        result = res['rows'][0]
-        if diff_schema:
-            result['definition'] = result['definition'].replace(
-                result['schema'],
-                diff_schema)
-            result['schema'] = diff_schema
+        data = res['rows'][0]
 
-        # sending result to formtter
-        frmtd_reslt = self.formatter(result)
-
-        # merging formated result with main result again
-        result.update(frmtd_reslt)
-        self.view_schema = result.get('schema')
-
-        # Fetch all privileges for view
-        SQL = render_template("/".join(
-            [self.template_path, 'sql/acl.sql']), vid=vid)
-        status, dataclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        for row in dataclres['rows']:
-            priv = parse_priv_from_db(row)
-            res['rows'][0].setdefault(row['deftype'], []).append(priv)
-
-        result.update(res['rows'][0])
-
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, 'sql/allowed_privs.json'])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
-        # Privileges
-        for aclcol in acls:
-            if aclcol in result:
-                allowedacl = acls[aclcol]
-                result[aclcol] = parse_priv_to_db(
-                    result[aclcol], allowedacl['acl']
-                )
-
-        SQL = render_template("/".join(
-            [self.template_path, 'sql/create.sql']),
-            data=result,
-            conn=self.conn,
-            display_comments=display_comments
-        )
-        SQL += "\n"
-        SQL += render_template("/".join(
-            [self.template_path, 'sql/grant.sql']), data=result)
-
-        SQL_data += SQL
-        SQL_data += self.get_rule_sql(vid, display_comments)
-        SQL_data += self.get_trigger_sql(vid, display_comments)
-        SQL_data += self.get_compound_trigger_sql(vid, display_comments)
-        SQL_data += self.get_index_sql(did, vid, display_comments)
-
-        if not json_resp:
-            return SQL_data
-        return ajax_response(response=SQL_data)
+        return self.get_create_view_sql(
+            did, vid, main_sql, data)
 
     @check_precondition
     def get_tblspc(self, gid, sid, did, scid=0):
@@ -1615,7 +1620,6 @@ class MViewNode(ViewNode, VacuumSettings):
         # )
         return 'pg/#{0}#'.format(ver)
 
-
     def getSQL(self, gid, sid, did, data, vid=None):
         """
         This function will generate sql from model data
@@ -1759,77 +1763,102 @@ class MViewNode(ViewNode, VacuumSettings):
                     [self.template_path, 'sql/grant.sql']), data=data)
         return SQL, data['name'] if 'name' in data else old_data['name']
 
+    def _fetch_ddl(self, did, vid, scid=0):
+        """
+        This function is used to fetch the create table query of the specified object
+        :param did:
+        :param scid:
+        :param vid:
+        :return:
+        """
+        SQL = render_template(
+            "/".join([self.template_path, 'sql/get_ddl.sql']),
+            did=did, scid=scid, vid=vid,
+            datlastsysoid=self.datlastsysoid
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return False, internal_server_error(errormsg=res)
+
+        if len(res['rows']) == 0:
+            return False, gone(
+                gettext("The specified view could not be found."))
+        return True, res
+
+    def get_create_view_sql(self, did, vid, main_sql, data,
+                            json_resp=True):
+        """
+        This function will creates reverse engineered sql for
+        the table object
+
+         Args:
+           did: Database ID
+           vid: View ID
+           main_sql: List contains all the reversed engineered sql
+           data: Table's Data
+           json_resp: Json response or plain SQL
+           return separately to perform further task
+        """
+
+        create_table_query = data['create_table_query']
+        sql_header = ''
+
+        if json_resp:
+            sql_header = u"-- View: {0}.{1}\n\n-- ".format(
+                data['database'], data['name'])
+
+            sql_header += render_template("/".join([self.template_path,
+                                                    'sql/delete.sql']),
+                                          did=did, vid=vid, conn=self.conn)
+
+            sql_header = sql_header.strip('\n')
+            sql_header += '\n'
+
+            # Add into main sql
+            main_sql.append(sql_header)
+        partition_main_sql = ""
+
+        # if table is partitions then
+        table_sql = render_template("/".join([self.template_path,
+                                              'sql/ddl.sql']),
+                                    data=data, conn=self.conn, is_sql=True)
+
+        # Add into main sql
+        table_sql = re.sub('\n{2,}', '\n\n', table_sql)
+        main_sql.append(table_sql.strip('\n'))
+
+        sql = '\n'.join(main_sql)
+
+        if not json_resp:
+            return sql, partition_main_sql
+        return ajax_response(response=sql.strip('\n'))
+
     @check_precondition
     def sql(self, gid, sid, did, vid, scid=0, diff_schema=None,
             json_resp=True):
         """
-        This function will generate sql to render into the sql panel
+        This function will creates reverse engineered sql for
+        the table object
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           vid: View ID
         """
+        main_sql = []
 
-        display_comments = True
-
-        if not json_resp:
-            display_comments = False
-
-        SQL_data = ''
-        status, result = self._fetch_properties(did, vid, scid)
-
+        status, res = self._fetch_ddl(did, vid, scid)
         if not status:
-            return result
+            return res
 
-        if diff_schema:
-            result['definition'] = result['definition'].replace(
-                result['schema'],
-                diff_schema)
-            result['schema'] = diff_schema
+        if len(res['rows']) == 0:
+            return gone(gettext("The specified table could not be found."))
 
-        # merge vacuum lists into one
-        vacuum_table = [item for item in result['vacuum_table']
-                        if
-                        'value' in item.keys() and item['value'] is not None]
-        vacuum_toast = [
-            {'name': 'toast.' + item['name'], 'value': item['value']}
-            for item in result['vacuum_toast'] if
-            'value' in item.keys() and item['value'] is not None]
+        data = res['rows'][0]
 
-        result['vacuum_data'] = vacuum_table + vacuum_toast
-
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, 'sql/allowed_privs.json'])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
-        # Privileges
-        for aclcol in acls:
-            if aclcol in result:
-                allowedacl = acls[aclcol]
-                result[aclcol] = parse_priv_to_db(
-                    result[aclcol], allowedacl['acl']
-                )
-
-        SQL = render_template("/".join(
-            [self.template_path, 'sql/create.sql']),
-            data=result,
-            conn=self.conn,
-            display_comments=display_comments
-        )
-        SQL += "\n"
-        SQL += render_template("/".join(
-            [self.template_path, 'sql/grant.sql']), data=result)
-
-        SQL_data += SQL
-        SQL_data += self.get_rule_sql(vid, display_comments)
-        SQL_data += self.get_trigger_sql(vid, display_comments)
-        SQL_data += self.get_index_sql(did, vid, display_comments)
-        SQL_data = SQL_data.strip('\n')
-
-        if not json_resp:
-            return SQL_data
-        return ajax_response(response=SQL_data)
+        return self.get_create_view_sql(
+            did, vid, main_sql, data)
 
     @check_precondition
     def get_table_vacuum(self, gid, sid, did, scid=0):
@@ -1922,7 +1951,9 @@ class MViewNode(ViewNode, VacuumSettings):
             res['rows'][0]['autovacuum_freeze_min_age'],
             res['rows'][0]['autovacuum_freeze_max_age'],
             res['rows'][0]['autovacuum_freeze_table_age']]) \
-            or res['rows'][0]['autovacuum_enabled'] in ('t', 'f')
+                                              or res['rows'][0][
+                                                  'autovacuum_enabled'] in (
+                                              't', 'f')
 
         res['rows'][0]['toast_autovacuum'] = any([
             res['rows'][0]['toast_autovacuum_vacuum_threshold'],
@@ -1934,18 +1965,20 @@ class MViewNode(ViewNode, VacuumSettings):
             res['rows'][0]['toast_autovacuum_freeze_min_age'],
             res['rows'][0]['toast_autovacuum_freeze_max_age'],
             res['rows'][0]['toast_autovacuum_freeze_table_age']]) \
-            or res['rows'][0]['toast_autovacuum_enabled'] in ('t', 'f')
+                                             or res['rows'][0][
+                                                 'toast_autovacuum_enabled'] in (
+                                             't', 'f')
 
         res['rows'][0]['vacuum_settings_str'] = ''
 
         if res['rows'][0]['reloptions'] is not None:
-            res['rows'][0]['vacuum_settings_str'] += '\n'.\
+            res['rows'][0]['vacuum_settings_str'] += '\n'. \
                 join(res['rows'][0]['reloptions'])
 
         if res['rows'][0]['toast_reloptions'] is not None:
             res['rows'][0]['vacuum_settings_str'] += '\n' \
                 if res['rows'][0]['vacuum_settings_str'] != "" else ""
-            res['rows'][0]['vacuum_settings_str'] += '\n'.\
+            res['rows'][0]['vacuum_settings_str'] += '\n'. \
                 join(map(lambda o: 'toast.' + o,
                          res['rows'][0]['toast_reloptions']))
 

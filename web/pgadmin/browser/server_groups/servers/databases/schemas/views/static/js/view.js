@@ -30,7 +30,7 @@ define('pgadmin.node.view', [
         node: 'view',
         label: gettext('Views'),
         type: 'coll-view',
-        columns: ['name', 'owner'],
+        columns: ['name', 'engine', 'database'],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
@@ -113,11 +113,11 @@ define('pgadmin.node.view', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'notInSchema',
         },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
+          id: 'engine', label: gettext('Engine'), cell: 'string',
           type: 'text', mode: ['properties'],
         },{
-          id: 'owner', label: gettext('Owner'), cell: 'string', control: 'node-list-by-name',
-          node: 'role', disabled: 'notInSchema', select2: { allowClear: false },
+          id: 'database', label: gettext('Database'), cell: 'string',
+          type: 'text', mode: ['properties'],
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
@@ -129,28 +129,6 @@ define('pgadmin.node.view', [
         },{
           id: 'acl', label: gettext('Privileges'),
           mode: ['properties'], type: 'text', group: gettext('Security'),
-        },{
-          id: 'comment', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', disabled: 'notInSchema',
-        },{
-          id: 'security_barrier', label: gettext('Security barrier?'),
-          type: 'switch', min_version: '90200', group: gettext('Definition'),
-          disabled: 'notInSchema',
-        },{
-          id: 'check_option', label: gettext('Check options'),
-          control: 'select2', group: gettext('Definition'), type: 'text',
-          min_version: '90400', mode:['properties', 'create', 'edit'],
-          select2: {
-            // Set select2 option width to 100%
-            allowClear: false,
-          }, disabled: 'notInSchema',
-          options:[{
-            label: gettext('No'), value: 'no',
-          },{
-            label: gettext('Local'), value: 'local',
-          },{
-            label: gettext('Cascaded'), value: 'cascaded',
-          }],
         },{
           id: 'definition', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Code'),
