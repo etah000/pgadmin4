@@ -82,7 +82,15 @@ define('pgadmin.node.view', [
           category: 'create', priority: 1, label: gettext('View...'),
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
           enable: 'canCreate',
-        },{
+        },
+        {
+          name: 'create_view_on_database', node: 'database', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 8, label: gettext('View...'),
+          icon: 'wcTabIcon icon-view', data: {action: 'create', check: false},
+          enable: false,
+        },
+        {
           name: 'create_view', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 17, label: gettext('View...'),
@@ -101,11 +109,11 @@ define('pgadmin.node.view', [
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             // Set Selected Schema and, Current User
-            var schemaLabel = args.node_info.schema._label || 'public',
-              userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({
-              'schema': schemaLabel, 'owner': userInfo.name,
-            }, {silent: true});
+            // var schemaLabel = args.node_info.schema._label || 'public',
+            //   userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            // this.set({
+            //   'schema': schemaLabel, 'owner': userInfo.name,
+            // }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },

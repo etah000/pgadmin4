@@ -1457,9 +1457,7 @@ define('pgadmin.browser.node', [
           };
 
           // Create a view to edit/create the properties in fieldsets
-          console.log(item);
           view = that.getView(item, action, content, data, 'dialog', updateButtons, j, onCancelFunc);
-          console.log(view);
           if (view) {
             // Save it to release it later
             j.data('obj-view', view);

@@ -74,7 +74,15 @@ define('pgadmin.node.table', [
           category: 'create', priority: 1, label: gettext('Table...'),
           icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
           enable: 'canCreate',
-        },{
+        },
+        {
+          name: 'create_table_on_database', node: 'database', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, label: gettext('Table...'),
+          icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
+          enable: false,
+        },
+        {
           name: 'create_table__on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Table...'),
@@ -315,10 +323,10 @@ define('pgadmin.node.table', [
                 args.node_info.server._id
               ].user,
               schemaInfo = args.node_info.schema;
-
-            this.set({
-              'relowner': userInfo.name, 'schema': schemaInfo._label,
-            }, {silent: true});
+            
+            // this.set({
+            //   'relowner': userInfo.name, 'schema': schemaInfo._label,
+            // }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
 

@@ -83,7 +83,15 @@ define('pgadmin.node.mview', [
           category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
           data: {action: 'create', check: true}, enable: 'canCreate',
           label: gettext('Materialized View...'),
-        },{
+        },
+        {
+          name: 'create_mview_on_database', node: 'database', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 9, icon: 'wcTabIcon icon-mview',
+          data: {action: 'create', check: true}, enable: false,
+          label: gettext('Materialized View...'),
+        },
+        {
           name: 'create_mview', node: 'mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
@@ -132,11 +140,11 @@ define('pgadmin.node.mview', [
         initialize: function(attrs, args) {
           if (_.size(attrs) === 0) {
             // Set Selected Schema and Current User
-            var schemaLabel = args.node_info.schema._label || 'public',
-              userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({
-              'schema': schemaLabel, 'owner': userInfo.name,
-            }, {silent: true});
+            // var schemaLabel = args.node_info.schema._label || 'public',
+            //   userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            // this.set({
+            //   'schema': schemaLabel, 'owner': userInfo.name,
+            // }, {silent: true});
           }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
