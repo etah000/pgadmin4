@@ -918,6 +918,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             This function will return list of tables available for
             like/relation combobox while creating new table
         """
+        return make_json_response(status=200)
+
         res = [{'label': '', 'value': ''}]
         try:
             SQL = render_template(
