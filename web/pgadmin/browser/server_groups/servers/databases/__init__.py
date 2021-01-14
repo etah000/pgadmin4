@@ -157,7 +157,11 @@ class DatabaseView(PGChildNodeView):
         ],
         'vopts': [
             {}, {'get': 'variable_options'}
-        ]
+        ],
+        'get_clusters': [
+            {'get': 'get_clusters'},
+            {'get': 'get_clusters'}
+        ],
     })
 
     def check_precondition(action=None):
@@ -1151,6 +1155,24 @@ class DatabaseView(PGChildNodeView):
                     nodes.extend(mod.get_nodes(**kwargs))
 
         return nodes
+
+    @check_precondition(action="get_clusters")
+    def get_clusters(self, gid, sid, did=None):
+        """
+        Returns:
+            This function will return list of clusters available for server node
+            for node-ajax-control
+        """
+
+        SQL = render_template(
+            "/".join([self.template_path, 'get_clusters.sql']),
+            did=did, conn=self.conn
+        )
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res1)
+
+        return make_json_response(data=res['rows'], status=200)
 
 SchemaDiffRegistry(blueprint.node_type, DatabaseView)
 DatabaseView.register_node_view(blueprint)

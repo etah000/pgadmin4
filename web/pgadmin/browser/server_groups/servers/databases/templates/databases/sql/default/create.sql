@@ -1,5 +1,5 @@
 {% if data %}
-CREATE DATABASE {{ conn|qtIdent(data.name) }}
+CREATE DATABASE {{ conn|qtIdent(data.name) }} {% if data.cluster %}ON CLUSTER {{ data.cluster }}{% endif %}
 {% if data.datowner %}
     WITH {% endif %}{% if data.datowner %}
 
