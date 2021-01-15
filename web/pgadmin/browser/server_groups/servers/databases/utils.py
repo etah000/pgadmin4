@@ -9,6 +9,8 @@
 
 """Database helper utilities"""
 
+from flask import render_template
+
 
 def parse_sec_labels_from_db(db_sec_labels):
     """
@@ -88,3 +90,79 @@ def parse_variables_from_db(db_variables):
                     variables_lst.append(var_dict)
 
     return {"variables": variables_lst}
+
+
+class ClusterReader:
+    """
+    ClusterReader Class.
+
+    This class includes common utilities for system.clusters.
+
+    Methods:
+    -------
+    * get_clusters(conn, ):
+      - Returns clusters.
+    """
+
+    def get_clusters(self, conn, ):
+        """
+
+        Args:
+            conn: Connection Object
+        """
+        # Check if template path is already set or not
+        # if not then we will set the template path here
+        if not hasattr(self, 'cluster_template_path'):
+            self.data_type_template_path = 'cluster/sql/' + (
+                '#{0}#'.format(self.manager.version)
+            )
+        SQL = render_template(
+            "/".join([self.data_type_template_path, 'get_clusters.sql']),
+        )
+        status, res = conn.execute_2darray(SQL)
+
+        if not status:
+            return status, res
+
+        return True, res['rows']
+
+
+
+class EngineReader:
+    """
+    EngineReader Class.
+
+    This class includes common utilities for system.table_engines.
+
+    Methods:
+    -------
+    * get_engines(conn, ):
+      - Returns engines.
+    """
+
+    def get_engines(self, conn, ):
+        """
+        Returns data-types including calculation for Length and Precision.
+
+        Args:
+            conn: Connection Object
+            condition: condition to restrict SQL statement
+            add_serials: If you want to serials type
+            schema_oid: If needed pass the schema OID to restrict the search
+        """
+
+        # Check if template path is already set or not
+        # if not then we will set the template path here
+        if not hasattr(self, 'engine_template_path'):
+            self.data_type_template_path = 'engine/sql/' + (
+                '#{0}#'.format(self.manager.version)
+            )
+        SQL = render_template(
+            "/".join([self.data_type_template_path, 'get_engines.sql']),
+        )
+        status, res = conn.execute_2darray(SQL)
+
+        if not status:
+            return status, res
+
+        return True, res['rows']
