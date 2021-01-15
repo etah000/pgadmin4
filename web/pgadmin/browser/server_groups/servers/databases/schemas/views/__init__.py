@@ -1424,7 +1424,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         sql = u"SELECT {0}\n\tFROM {1};".format(
             columns,
-            self.qtIdent(self.conn, data_view['schema'], data_view['name'])
+            self.qtIdent(self.conn, did, data_view['name'])
         )
 
         return ajax_response(response=sql)

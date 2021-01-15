@@ -986,7 +986,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 )
 
         tid = data['name']
-    
+
         # Parse privilege data coming from client according to database format
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
@@ -1465,7 +1465,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         sql = u"SELECT {0}\n\tFROM {1};".format(
             columns,
-            self.qtIdent(self.conn, data['schema'], data['name'])
+            self.qtIdent(self.conn, did, data['name'])
         )
         return ajax_response(response=sql)
 
@@ -1643,10 +1643,10 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         Returns the total rows of a table.
         """
         data = {}
-        data['schema'], data['name'] = \
-            super(TableView, self).get_schema_and_table_name(tid)
+        data['did'] = did
+        data['tid'] = tid
 
-        if data['name'] is None:
+        if data['tid'] is None:
             return gone(gettext("The specified table could not be found."))
 
         SQL = render_template(
