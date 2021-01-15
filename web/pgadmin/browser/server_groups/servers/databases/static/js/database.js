@@ -33,7 +33,7 @@ define('pgadmin.node.database', [
       parent_type: 'server',
       type: 'database',
       width: '250px',
-      height: '150px',
+      height: '250px',
       sqlAlterHelp: 'sql-alterdatabase.html',
       sqlCreateHelp: 'sql-createdatabase.html',
       dialogHelp: url_for('help.static', {'filename': 'database_dialog.html'}),
@@ -287,6 +287,7 @@ define('pgadmin.node.database', [
         idAttribute: 'did',
         defaults: {
           name: undefined,
+          cluster: undefined,
           // owner: undefined,
           // is_sys_obj: undefined,
           // comment: undefined,
@@ -323,6 +324,12 @@ define('pgadmin.node.database', [
           id: 'name', label: gettext('Database'), cell: 'string',
           editable: false, type: 'text',
         },
+        {
+          id: 'cluster', label: gettext('cluster1'),
+          editable: false, type: 'text', node: 'database',
+          // control: this.get_database_cluster, select2: { allowClear: false },
+          control: 'node-list-by-name', url: 'get_clusters',select2: { allowClear: false },
+        },
         ],
         validate: function() {
           var name = this.get('name');
@@ -338,6 +345,7 @@ define('pgadmin.node.database', [
         },
       }),
     });
+    
 
     pgBrowser.SecurityGroupSchema = {
       id: 'security', label: gettext('Security'), type: 'group',

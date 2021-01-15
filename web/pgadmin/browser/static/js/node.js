@@ -694,9 +694,6 @@ define('pgadmin.browser.node', [
           p = addPanel();
 
           setTimeout(function() {
-            // console.log(i);
-            // console.log(d);
-            // console.log(p);
             o.showProperties(i, d, p, args.action);
           }, 10);
         } else {
