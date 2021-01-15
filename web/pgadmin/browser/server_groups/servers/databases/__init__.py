@@ -22,7 +22,7 @@ import pgadmin.browser.server_groups.servers as servers
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.utils import \
-    parse_sec_labels_from_db, parse_variables_from_db
+    parse_sec_labels_from_db, parse_variables_from_db, ClusterReader, EngineReader
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView, PGChildModule
@@ -96,7 +96,7 @@ class DatabaseModule(CollectionNodeModule):
 blueprint = DatabaseModule(__name__)
 
 
-class DatabaseView(PGChildNodeView):
+class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
     node_type = blueprint.node_type
 
     parent_ids = [
@@ -159,8 +159,12 @@ class DatabaseView(PGChildNodeView):
             {}, {'get': 'variable_options'}
         ],
         'get_clusters': [
-            {'get': 'get_clusters'},
-            {'get': 'get_clusters'}
+            {'get': 'clusters'},
+            {'get': 'clusters'}
+        ],
+        'get_engines': [
+            {'get': 'engines'},
+            {'get': 'engines'}
         ],
     })
 
@@ -1157,22 +1161,40 @@ class DatabaseView(PGChildNodeView):
         return nodes
 
     @check_precondition(action="get_clusters")
-    def get_clusters(self, gid, sid, did=None):
+    def clusters(self, gid, sid, did=None):
         """
         Returns:
-            This function will return list of clusters available for server node
+            This function will return list of cluster available 
             for node-ajax-control
         """
 
-        SQL = render_template(
-            "/".join([self.template_path, 'get_clusters.sql']),
-            did=did, conn=self.conn
-        )
-        status, res = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res1)
+        status, types = self.get_clusters(self.conn, )
 
-        return make_json_response(data=res['rows'], status=200)
+        if not status:
+            return internal_server_error(errormsg=types)
+
+        return make_json_response(
+            data=types,
+            status=200
+        )
+
+    @check_precondition(action="get_engines")
+    def engines(self, gid, sid, did=None):
+        """
+        Returns:
+            This function will return list of cluster available 
+            for node-ajax-control
+        """
+
+        status, types = self.get_engines(self.conn, )
+
+        if not status:
+            return internal_server_error(errormsg=types)
+
+        return make_json_response(
+            data=types,
+            status=200
+        )
 
 SchemaDiffRegistry(blueprint.node_type, DatabaseView)
 DatabaseView.register_node_view(blueprint)
