@@ -335,8 +335,14 @@ define('pgadmin.node.table', [
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         },{
-          id: 'engine', label: gettext('Engine'), type: 'text', mode: ['properties'],
-        },{
+          id: 'engine', label: gettext('Engine'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'relowner', label: gettext('Owner'), type: 'text', node: 'role',
+          mode: ['properties', 'create', 'edit'], select2: {allowClear: false},
+          disabled: 'inSchema', control: 'node-list-by-name',
+        },
+        {
           id: 'database', label: gettext('Database'), type: 'text', mode: ['properties'],
         },{
           id: 'primarykey', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
@@ -723,6 +729,59 @@ define('pgadmin.node.table', [
           },
         },
         {
+            id: 'typname', label: gettext('Of type'), type: 'text',
+          mode: ['properties', 'create', 'edit'],
+          disabled: 'checkOfType', url: 'get_oftype', group: gettext('advanced'),
+          deps: ['coll_inherits'], transform: function(data, cell) {
+            var control = cell || this,
+              m = control.model;
+            m.of_types_tables = data;
+            return data;
+          },
+          control: Backform.NodeAjaxOptionsControl.extend({
+            // When of_types changes we need to clear columns collection
+            onChange: function() {
+              Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
+              var self = this,
+                tbl_name = self.model.get('typname'),
+                data = undefined,
+                arg = undefined,
+                column_collection = self.model.get('columns');
+
+              if (!_.isUndefined(tbl_name) && !_.isNull(tbl_name) &&
+                tbl_name !== '' && column_collection.length !== 0) {
+                var title = gettext('Remove column definitions?'),
+                  msg = gettext('Changing \'Of type\' will remove column definitions.');
+
+                Alertify.confirm(
+                  title, msg, function () {
+                    // User clicks Ok, lets clear columns collection
+                    column_collection.remove(
+                      column_collection.filter(function() { return true; })
+                    );
+                  },
+                  function() {
+                    setTimeout(function() {
+                      self.model.set('typname', null);
+                    }, 10);
+                  }
+                );
+              } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
+                column_collection.remove(
+                  column_collection.filter(function() { return true; })
+                );
+              }
+
+              // Run Ajax now to fetch columns
+              if (!_.isUndefined(tbl_name) && tbl_name !== '') {
+                arg = { 'tname': tbl_name };
+                data = self.model.fetch_columns_ajax.apply(self, [arg]);
+                // Add into column collection
+                column_collection.set(data, { merge:false,remove:false });
+              }
+            },
+          }),
+        },{
           type: 'nested', control: 'fieldset', label: gettext('Like'),
           group: gettext('advanced'),
           schema:[{

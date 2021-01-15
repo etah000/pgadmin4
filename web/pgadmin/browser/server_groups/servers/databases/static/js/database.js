@@ -325,7 +325,7 @@ define('pgadmin.node.database', [
           editable: false, type: 'text',
         },
         {
-          id: 'cluster', label: gettext('cluster1'),
+          id: 'cluster', label: gettext('cluster'),
           editable: false, type: 'text', node: 'database',
           // control: this.get_database_cluster, select2: { allowClear: false },
           control: 'node-list-by-name', url: 'get_clusters',select2: { allowClear: false },

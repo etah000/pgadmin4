@@ -882,7 +882,6 @@ define('pgadmin.node.column', [
         // Checks weather to enable/disable control
         inSchemaWithColumnCheck: function(m) {
           var node_info = this.node_info || m.node_info || m.top.node_info;
-
           // disable all fields if column is listed under view or mview
           if (node_info && ('view' in node_info || 'mview' in node_info)) {
             if (this && _.has(this, 'name') && (this.name != 'defval')) {
@@ -890,7 +889,7 @@ define('pgadmin.node.column', [
             }
           }
 
-          if(node_info &&  'schema' in node_info)
+          if(node_info &&  ('schema' in node_info||'database' in node_info))
           {
             // We will disable control if it's system columns
             // inheritedfrom check is useful when we use this schema in table node
