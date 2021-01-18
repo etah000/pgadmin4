@@ -1,4 +1,4 @@
 {# SQL query for getting databases #}
-SELECT d.datname
-    FROM pg_catalog.pg_database d
+SELECT d.name
+    FROM system.databases d
     ORDER BY 1

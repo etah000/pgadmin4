@@ -52,12 +52,8 @@ def Candidate(
 ):
     return _Candidate(
         completion, prio, meta, synonyms or [completion], prio2,
-        display or completion
+                                display or completion
     )
-
-
-# Used to strip trailing '::some_type' from default-value expressions
-arg_default_type_strip_regex = re.compile(r'::[\w\.]+(\[\])?$')
 
 
 def normalize_ref(ref):
@@ -81,10 +77,10 @@ class SQLAutoComplete(object):
     """
     class SQLAutoComplete
 
-        This class is used to provide the postgresql's autocomplete feature.
-        This class used sqlparse to parse the given sql and psycopg2 to make
-        the connection and get the tables, schemas, functions etc. based on
-        the query.
+        This class is used to provide the snowball's autocomplete feature.
+        This class used sqlparse to parse the given sql and snowball driver
+        to make the connection and get the tables, schemas, functions etc.
+        based on the query.
     """
     def __init__(self, **kwargs):
         """
@@ -112,6 +108,151 @@ class SQLAutoComplete(object):
 
         self.search_path = []
         schema_names = []
+        keywordDict = {
+            'add ': 3,
+            'after ': 3,
+            'all ': 3,
+            'alias ': 3,
+            'alter ': 3,
+            'and ': 3,
+            'any ': 3,
+            'as ': 3,
+            'ascending ': 3,
+            'asc ': 3,
+            'async ': 3,
+            'attach ': 3,
+            'between ': 3,
+            'by ': 3,
+            'case ': 3,
+            'cast ': 3,
+            'check ': 3,
+            'cluster ': 3,
+            'column ': 3,
+            'collate ': 3,
+            'codec ': 3,
+            'create ': 3,
+            'cross ': 3,
+            'day ': 3,
+            'delete ': 3,
+            'describe ': 3,
+            'descending ': 3,
+            'desc ': 3,
+            'database ': 3,
+            'databases ': 3,
+            # 'default ': 3,
+            'detach ': 3,
+            'disk ': 3,
+            'distinct ': 3,
+            'drop ': 3,
+            'else ': 3,
+            'end ': 3,
+            'engine ': 3,
+            'exists ': 3,
+            'fetch ': 3,
+            'final ': 3,
+            'first ': 3,
+            'from ': 3,
+            'freeze ': 3,
+            'format ': 3,
+            'full ': 3,
+            'global ': 3,
+            'group ': 3,
+            'having ': 3,
+            'hour ': 3,
+            'id ': 3,
+            'if ': 3,
+            'inner ': 3,
+            'insert ': 3,
+            'interval ': 3,
+            'into ': 3,
+            'in ': 3,
+            'is ': 3,
+            'join ': 3,
+            'kill': 3,
+            'last ': 3,
+            'left ': 3,
+            'like ': 3,
+            'limit ': 3,
+            'main ': 3,
+            'materialized ': 3,
+            'minute ': 3,
+            'modify ': 3,
+            'month ': 3,
+            'not ': 3,
+            'null ': 3,
+            'nulls ': 3,
+            'offset ': 3,
+            'on ': 3,
+            'optimize ': 3,
+            'order ': 3,
+            'or ': 3,
+            'outfile ': 3,
+            'partition ': 3,
+            'populate ': 3,
+            'prewhere ': 3,
+            'processlist ': 3,
+            'query ': 3,
+            'rename ': 3,
+            'return ': 3,
+            'right ': 3,
+            'sample ': 3,
+            'second ': 3,
+            'select ': 3,
+            'set ': 3,
+            'settings ': 3,
+            'show ': 3,
+            'sync ': 3,
+            'table ': 3,
+            'tables ': 3,
+            'temporary ': 3,
+            'test ': 3,
+            'then ': 3,
+            'totals ': 3,
+            'to ': 3,
+            'ttl ': 3,
+            'outer': 3,
+            'values ': 3,
+            'volume ': 3,
+            'view ': 3,
+            'union ': 3,
+            'use ': 3,
+            'using ': 3,
+            'week ': 3,
+            'when ': 3,
+            'where ': 3,
+            'with ': 3,
+            'year ': 3,
+            'array ': 1,
+            'tuple ': 1,
+            'nullable ': 1,
+            'float32 ': 1,
+            'float64 ': 1,
+            'uint8 ': 1,
+            'uint16 ': 1,
+            'uint32 ': 1,
+            'uint64 ': 1,
+            'int8 ': 1,
+            'int16 ': 1,
+            'int32 ': 1,
+            'int64 ': 1,
+            'enum8 ': 1,
+            'enum16 ': 1,
+            'uuid ': 1,
+            'date ': 1,
+            'datetime ': 1,
+            'string ': 1,
+            'fixedstring ': 1,
+            'interval_year ': 1,
+            'interval_month ': 1,
+            'interval_week ': 1,
+            'interval_day ': 1,
+            'interval_hour ': 1,
+            'interval_minute ': 1,
+            'interval_second ': 1,
+            'aggregate_function ': 1,
+            'remote': 0,
+            'on': 0,
+        }
         if self.conn.connected():
             # Fetch the search path
             query = render_template(
@@ -133,21 +274,13 @@ class SQLAutoComplete(object):
                 pref.preference('keywords_in_uppercase').get()
 
             # Fetch the keywords
-            query = render_template("/".join([self.sql_path, 'keywords.sql']))
             # If setting 'Keywords in uppercase' is set to True in
             # Preferences then fetch the keywords in upper case.
-            if keywords_in_uppercase:
-                query = render_template(
-                    "/".join([self.sql_path, 'keywords.sql']), upper_case=True)
-            status, res = self.conn.execute_dict(query)
-            if status:
-                for record in res['rows']:
-                    # 'public' is a keyword in EPAS database server. Don't add
-                    # this into the list of keywords.
-                    # This is a hack to fix the issue in autocomplete.
-                    if record['word'].lower() == 'public':
-                        continue
-                    self.keywords.append(record['word'])
+            for k, v in keywordDict.items():
+                if keywords_in_uppercase:
+                    self.keywords.append((k.upper()))
+                else:
+                    self.keywords.append(k)
 
         self.prioritizer = PrevalenceCounter(self.keywords)
 
@@ -261,7 +394,7 @@ class SQLAutoComplete(object):
         """
         metadata = self.dbmetadata[kind]
         for schema, relname, colname, datatype, \
-                has_default, default in column_data:
+            has_default, default in column_data:
             (schema, relname, colname) = self.escaped_names(
                 [schema, relname, colname])
             column = ColumnMetadata(
@@ -302,10 +435,10 @@ class SQLAutoComplete(object):
 
         self._arg_list_cache = \
             dict((usage,
-                 dict((meta, self._arg_list(meta, usage))
-                      for sch, funcs in self.dbmetadata['functions'].items()
-                      for func, metas in funcs.items()
-                      for meta in metas))
+                  dict((meta, self._arg_list(meta, usage))
+                       for sch, funcs in self.dbmetadata['functions'].items()
+                       for func, metas in funcs.items()
+                       for meta in metas))
                  for usage in ('call', 'call_display', 'signature'))
 
     def extend_foreignkeys(self, fk_data):
@@ -327,7 +460,7 @@ class SQLAutoComplete(object):
             if childtable not in meta[childschema] or \
                 parenttable not in meta[parentschema] or \
                 childcol not in meta[childschema][childtable] or \
-                    parcol not in meta[parentschema][parenttable]:
+                parcol not in meta[parentschema][parenttable]:
                 continue
 
             childcolmeta = meta[childschema][childtable][childcol]
@@ -523,8 +656,8 @@ class SQLAutoComplete(object):
     def get_column_matches(self, suggestion, word_before_cursor):
         schema = None
         if len(suggestion.table_refs) > 0 and \
-                hasattr(suggestion.table_refs[0], 'schema') and \
-                suggestion.table_refs[0].schema != '':
+            hasattr(suggestion.table_refs[0], 'schema') and \
+            suggestion.table_refs[0].schema != '':
             schema = suggestion.table_refs[0].schema
 
         # Tables and Views should be populated first.
@@ -550,6 +683,7 @@ class SQLAutoComplete(object):
         def flat_cols():
             return [make_cand(c.name, t.ref) for t, cols in scoped_cols.items()
                     for c in cols]
+
         if suggestion.require_last_table:
             # require_last_table is used for 'tb11 JOIN tbl2 USING
             # (...' which should
@@ -573,6 +707,7 @@ class SQLAutoComplete(object):
                         p.match(col.default)
                         for p in self.insert_col_skip_patterns
                     )
+
                 scoped_cols = \
                     dict((t, [col for col in cols if filter(col)])
                          for t, cols in scoped_cols.items())
@@ -755,10 +890,10 @@ class SQLAutoComplete(object):
 
         # Unless we're sure the user really wants them, hide schema names
         # starting with pg_, which are mostly temporary schemas
-        if not word_before_cursor.startswith('pg_'):
-            schema_names = [s
-                            for s in schema_names
-                            if not s.startswith('pg_')]
+        # if not word_before_cursor.startswith('pg_'):
+        #     schema_names = [s
+        #                     for s in schema_names
+        #                     if not s.startswith('pg_')]
 
         if suggestion.quoted:
             schema_names = [self.escape_schema(s) for s in schema_names]
@@ -813,8 +948,6 @@ class SQLAutoComplete(object):
             return None
         if arg.has_default:
             arg_default = 'NULL' if arg.default is None else arg.default
-            # Remove trailing ::(schema.)type
-            arg_default = arg_default_type_strip_regex.sub('', arg_default)
         else:
             arg_default = ''
         return template.format(
@@ -860,7 +993,7 @@ class SQLAutoComplete(object):
         # Unless we're sure the user really wants them, don't suggest the
         # pg_catalog tables that are implicitly on the search path
         if not suggestion.schema and (
-                not word_before_cursor.startswith('pg_')):
+            not word_before_cursor.startswith('pg_')):
             tables = [t for t in tables if not t.name.startswith('pg_')]
         tables = [self._make_cand(t, alias, suggestion) for t in tables]
         return self.find_matches(word_before_cursor, tables,
@@ -870,7 +1003,7 @@ class SQLAutoComplete(object):
         views = self.populate_schema_objects(suggestion.schema, 'views')
 
         if not suggestion.schema and (
-                not word_before_cursor.startswith('pg_')):
+            not word_before_cursor.startswith('pg_')):
             views = [v for v in views if not v.name.startswith('pg_')]
         views = [self._make_cand(v, alias, suggestion) for v in views]
         return self.find_matches(word_before_cursor, views,
@@ -1068,7 +1201,7 @@ class SQLAutoComplete(object):
         data = []
 
         if schema:
-            in_clause = '\'' + schema + '\''
+            in_clause = '\'' + str(schema) + '\''
         else:
             for r in self.search_path:
                 in_clause += '\'' + r + '\','
@@ -1076,14 +1209,9 @@ class SQLAutoComplete(object):
             if len(in_clause) > 0:
                 in_clause = in_clause[:-1]
 
-        if obj_type == 'tables':
+        if obj_type == 'tables' or obj_type == 'views':
             query = render_template("/".join([self.sql_path, 'tableview.sql']),
-                                    schema_names=in_clause,
-                                    object_name='tables')
-        elif obj_type == 'views':
-            query = render_template("/".join([self.sql_path, 'tableview.sql']),
-                                    schema_names=in_clause,
-                                    object_name='views')
+                                    schema_names=in_clause)
         elif obj_type == 'datatypes':
             query = render_template("/".join([self.sql_path, 'datatypes.sql']),
                                     schema_names=in_clause)
@@ -1101,10 +1229,6 @@ class SQLAutoComplete(object):
             self.extend_columns(
                 self.fetch_columns(in_clause, obj_type), obj_type
             )
-            if obj_type == 'tables':
-                self.extend_foreignkeys(
-                    self.fetch_foreign_keys(in_clause, obj_type)
-                )
         elif obj_type == 'datatypes' and len(data) > 0:
             self.extend_datatypes(data)
 
@@ -1166,13 +1290,9 @@ class SQLAutoComplete(object):
         """
 
         data = []
-        query = render_template("/".join([self.sql_path, 'columns.sql']),
-                                schema_names=schemas,
-                                object_name='table')
-        if obj_type == 'views':
+        if obj_type == 'views' or obj_type == 'tables':
             query = render_template("/".join([self.sql_path, 'columns.sql']),
-                                    schema_names=schemas,
-                                    object_name='view')
+                                    schema_names=schemas)
         if self.conn.connected():
             status, res = self.conn.execute_dict(query)
             if status:
@@ -1181,29 +1301,5 @@ class SQLAutoComplete(object):
                         row['schema_name'], row['table_name'],
                         row['column_name'], row['type_name'],
                         row['has_default'], row['default']
-                    ))
-        return data
-
-    def fetch_foreign_keys(self, schemas, obj_type):
-        """
-        This function is used to fetch the foreign_keys for the given
-        schema name
-        :param schemas:
-        :param obj_type:
-        :return:
-        """
-
-        data = []
-        query = render_template("/".join([self.sql_path, 'foreign_keys.sql']),
-                                schema_names=schemas)
-
-        if self.conn.connected():
-            status, res = self.conn.execute_dict(query)
-            if status:
-                for row in res['rows']:
-                    data.append(ForeignKey(
-                        row['parentschema'], row['parenttable'],
-                        row['parentcolumn'], row['childschema'],
-                        row['childtable'], row['childcolumn']
                     ))
         return data
