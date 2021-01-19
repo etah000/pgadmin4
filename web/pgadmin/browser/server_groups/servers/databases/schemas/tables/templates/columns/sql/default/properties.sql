@@ -1,4 +1,4 @@
-SELECT 
+SELECT
     NULL AS attacl,
     0 AS attlen,
     0 AS attndims,
@@ -10,10 +10,10 @@ SELECT
     0 AS atttypid,
     -1 AS atttypmod,
     type AS cltype,
+    type ,
     '' AS collspcname,
     'p' AS defaultstorage,
     NULL AS defval,
-    NULL AS description,
     name AS displaytypname,
     23 AS elemoid,
     is_in_sorting_key AS indkey,
@@ -31,7 +31,7 @@ SELECT
     data_compressed_bytes,
     data_uncompressed_bytes,
     marks_bytes,
-    comment,
+    comment as description,
     is_in_partition_key,
     is_in_primary_key,
     is_in_sampling_key,
