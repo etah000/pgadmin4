@@ -22,7 +22,7 @@ define('pgadmin.node.column', [
         node: 'column',
         label: gettext('Columns'),
         type: 'coll-column',
-        columns: ['name', 'atttypid', 'description'],
+        columns: ['name', 'attnum', 'description'],
         canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: false,
       });
@@ -104,7 +104,7 @@ define('pgadmin.node.column', [
       collection_type: ['coll-table', 'coll-view', 'coll-mview'],
       type: 'column',
       label: gettext('Column'),
-      hasSQL:  true,
+      hasSQL: false,
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
       dialogHelp: url_for('help.static', {'filename': 'column_dialog.html'}),
@@ -288,60 +288,6 @@ define('pgadmin.node.column', [
           id: 'attnum', label: gettext('Position'), cell: 'string',
           type: 'text', disabled: 'notInSchema', mode: ['properties'],
         },{
-          id: 'cltype', label: gettext('Data type'),
-          cell: Backgrid.Extension.NodeAjaxOptionsCell,
-          type: 'text', disabled: 'inSchemaWithColumnCheck',
-          control: 'node-ajax-options', url: 'get_types', node: 'table',
-          cellHeaderClasses:'width_percent_30', first_empty: true,
-          select2: { allowClear: false }, group: gettext('Definition'),
-          cache_node: 'table',
-          transform: function(data, cell) {
-            /* 'transform' function will be called by control, and cell both.
-             * The way, we use the transform in cell, and control is different.
-             * Because - options are shared using 'column' object in backgrid,
-             * hence - the cell is passed as second parameter, while the control
-             * uses (this) as a object.
-             */
-            var control = cell || this,
-              m = control.model;
-
-            /* We need different data in create mode & in edit mode
-             * if we are in create mode then return data as it is
-             * if we are in edit mode then we need to filter data
-             */
-            control.model.datatypes = data;
-            var edit_types = m.get('edit_types'),
-              result = [];
-
-            // If called from Table, We will check if in edit mode
-            // then send edit_types only
-            if( !_.isUndefined(m.top) && !m.top.isNew() ) {
-              _.each(data, function(t) {
-                if (_.indexOf(edit_types, t.value) != -1) {
-                  result.push(t);
-                }
-              });
-              // There may be case that user adds new column in  existing collection
-              // we will not have edit types then
-              return result.length > 0 ? result : data;
-            }
-
-            // If called from Column
-            if(m.isNew()) {
-              return data;
-            } else {
-              //edit mode
-              _.each(data, function(t) {
-                if (_.indexOf(edit_types, t.value) != -1) {
-                  result.push(t);
-                }
-              });
-
-              return result;
-            }
-          },
-          editable: 'editable_check_for_table',
-        },{
           // Need to show this field only when creating new table [in SubNode control]
           id: 'inheritedfrom', label: gettext('Inherited from table'),
           type: 'text', readonly: true, editable: false,
@@ -350,8 +296,11 @@ define('pgadmin.node.column', [
             return _.isUndefined(m.top.node_info['table'] || m.top.node_info['view'] || m.top.node_info['mview']);
           },
         },{
-          id: 'attlen', label: gettext('Length/Precision'), cell: IntegerDepCell,
-          deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
+          id: 'type', label: gettext('Data Type'), cell: 'string',
+          type: 'text', group: gettext('Definition'),
+        },{
+          id: 'default_expression', label: gettext('Default expression'), cell: 'string',
+          type: 'text', group: gettext('Definition'),
           disabled: function(m) {
             var of_type = m.get('cltype'),
               flag = true;
@@ -406,270 +355,36 @@ define('pgadmin.node.column', [
             return flag;
           },
         },{
-          id: 'attprecision', label: gettext('Scale'), cell: IntegerDepCell,
-          deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
-          disabled: function(m) {
-            var of_type = m.get('cltype'),
-              flag = true;
-            _.each(m.datatypes, function(o) {
-              if ( of_type == o.value ) {
-                if(o.precision) {
-                  m.set('min_val_attprecision', 0, {silent: true});
-                  m.set('max_val_attprecision', o.max_val, {silent: true});
-                  flag = false;
-                }
-              }
-            });
-
-            flag && setTimeout(function() {
-              if(m.get('attprecision')) {
-                m.set('attprecision', null);
-              }
-            },10);
-            return flag;
-          },
-          editable: function(m) {
-            // inheritedfrom has value then we should disable it
-            if(!_.isUndefined(m.get('inheritedfrom'))) {
-              return false;
-            }
-
-            if (!m.datatypes) {
-              // datatypes not loaded yet, may be this call is from CallByNeed from backgrid cell initialize.
-              return true;
-            }
-
-            var of_type = m.get('cltype'),
-              flag = false;
-            _.each(m.datatypes, function(o) {
-              if ( of_type == o.value ) {
-                if(o.precision) {
-                  m.set('min_val_attprecision', 0, {silent: true});
-                  m.set('max_val_attprecision', o.max_val, {silent: true});
-                  flag = true;
-                }
-              }
-            });
-
-            !flag && setTimeout(function() {
-              if(m.get('attprecision')) {
-                m.set('attprecision', null);
-              }
-            },10);
-
-            return flag;
-          },
-        },{
-          id: 'collspcname', label: gettext('Collation'), cell: 'string',
-          type: 'text', control: 'node-ajax-options', url: 'get_collations',
-          group: gettext('Definition'), node: 'collation',
-          deps: ['cltype'], disabled: function(m) {
-            var of_type = m.get('cltype'),
-              flag = true;
-            _.each(m.datatypes, function(o) {
-              if ( of_type == o.value ) {
-                if(o.is_collatable)
-                {
-                  flag = false;
-                }
-              }
-            });
-            if (flag) {
-              setTimeout(function(){
-                if(m.get('collspcname') && m.get('collspcname') !== '') {
-                  m.set('collspcname', '');
-                }
-              }, 10);
-            }
-            return flag;
-          },
-        },{
-          id: 'attstattarget', label: gettext('Statistics'), cell: 'string',
+          id: 'compression_codec', label: gettext('Compression codec'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck', mode: ['properties', 'edit'],
           group: gettext('Definition'),
         },{
-          id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
-          type: 'text', mode: ['properties', 'edit'],
-          cell: 'string', disabled: 'inSchemaWithColumnCheck', first_empty: true,
-          control: 'select2', select2: { placeholder: 'Select storage',
-            allowClear: false,
-            width: '100%',
-          },
-          options: [
-            {label: 'PLAIN', value: 'p'},
-            {label: 'MAIN', value: 'm'},
-            {label: 'EXTERNAL', value: 'e'},
-            {label: 'EXTENDED', value: 'x'},
-          ],
-        },{
-          id: 'defval', label: gettext('Default'), cell: 'string',
-          type: 'text', group: gettext('Constraints'), deps: ['cltype', 'colconstype'],
-          disabled: function(m) {
-            var is_disabled = false;
-            if(!m.inSchemaWithModelCheck.apply(this, [m])) {
-              var type = m.get('cltype');
-              is_disabled = (type == 'serial' || type == 'bigserial' || type == 'smallserial');
-            }
-
-            is_disabled = is_disabled || m.get('colconstype') != 'n';
-            if (is_disabled && m.isNew()) {
-              setTimeout(function () {
-                m.set('defval', undefined);
-              }, 10);
-            }
-
-            return is_disabled;
-          },
-        },{
-          id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
-          type: 'switch', cellHeaderClasses:'width_percent_20',
-          group: gettext('Constraints'), editable: 'editable_check_for_table',
-          options: { onText: gettext('Yes'), offText: gettext('No'), onColor: 'success', offColor: 'ternary' },
-          deps: ['colconstype'],
-          disabled: function(m) {
-            if (m.get('colconstype') == 'i') {
-              setTimeout(function () {
-                m.set('attnotnull', true);
-              }, 10);
-            }
-            return m.inSchemaWithColumnCheck(m);
-          },
-        }, {
-          id: 'colconstype',
-          label: gettext('Type'),
-          cell: 'string',
-          type: 'radioModern',
-          controlsClassName: 'pgadmin-controls col-12 col-sm-9',
-          controlLabelClassName: 'control-label col-sm-3 col-12',
-          group: gettext('Constraints'),
-          options: function(m) {
-            var opt_array = [
-              {'label': gettext('NONE'), 'value': 'n'},
-              {'label': gettext('IDENTITY'), 'value': 'i'},
-            ];
-
-            if (m.top.node_info && m.top.node_info.server &&
-                m.top.node_info.server.version >= 120000) {
-              // You can't change the existing column to Generated column.
-              if (m.isNew()) {
-                opt_array.push({
-                  'label': gettext('GENERATED'),
-                  'value': 'g',
-                });
-              } else {
-                opt_array.push({
-                  'label': gettext('GENERATED'),
-                  'value': 'g',
-                  'disabled': true,
-                });
-              }
-            }
-
-            return opt_array;
-          },
-          disabled: function(m) {
-            if (!m.isNew() && m.get('colconstype') == 'g') {
-              return true;
-            }
-            return false;
-          },
-          visible: function(m) {
-            if (m.top.node_info && m.top.node_info.server &&
-                m.top.node_info.server.version >= 100000) {
-              return true;
-            }
-            return false;
-          },
-        }, {
-          id: 'attidentity', label: gettext('Identity'), control: 'select2',
-          cell: 'select2',
-          select2: {placeholder: 'Select identity', allowClear: false, width: '100%'},
-          min_version: 100000, group: gettext('Constraints'),
-          'options': [
-            {label: gettext('ALWAYS'), value: 'a'},
-            {label: gettext('BY DEFAULT'), value: 'd'},
-          ],
-          deps: ['colconstype'], visible: 'isTypeIdentity',
-          disabled: function(m) {
-            if (!m.isNew()) {
-              if (m.get('attidentity') == '' && m.get('colconstype') == 'i') {
-                setTimeout(function () {
-                  m.set('attidentity', m.get('old_attidentity'));
-                }, 10);
-              }
-            }
-            return false;
-          },
-        }, {
-          id: 'seqincrement', label: gettext('Increment'), type: 'int',
-          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
-          min: 1, deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
-          visible: 'isTypeIdentity',
-        },{
-          id: 'seqstart', label: gettext('Start'), type: 'int',
-          mode: ['properties', 'create'], group: gettext('Constraints'),
-          disabled: function(m) {
-            if (!m.isNew())
-              return true;
-            let isIdentity = m.get('attidentity');
-            if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
-              return false;
-            return true;
-          }, deps: ['attidentity', 'colconstype'],
-          visible: 'isTypeIdentity',
-        },{
-          id: 'seqmin', label: gettext('Minimum'), type: 'int',
-          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
-          deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
-          visible: 'isTypeIdentity',
-        },{
-          id: 'seqmax', label: gettext('Maximum'), type: 'int',
-          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
-          deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
-          visible: 'isTypeIdentity',
-        },{
-          id: 'seqcache', label: gettext('Cache'), type: 'int',
-          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
-          min: 1, deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
-          visible: 'isTypeIdentity',
-        },{
-          id: 'seqcycle', label: gettext('Cycled'), type: 'switch',
-          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
-          deps: ['attidentity', 'colconstype'], disabled: 'isIdentityColumn',
-          visible: 'isTypeIdentity',
-        },{
-          id: 'genexpr', label: gettext('Expression'), type: 'text',
-          mode: ['properties', 'create', 'edit'], group: gettext('Constraints'),
-          min_version: 120000, deps: ['colconstype'], visible: 'isTypeGenerated',
-          readonly: function(m) {
-            return !m.isNew();
-          },
-        },{
-          id: 'is_pk', label: gettext('Primary key?'),
+          id: 'is_in_partition_key', label: gettext('Partition key?'),
           type: 'switch', mode: ['properties'],
           group: gettext('Definition'),
         },{
-          id: 'is_fk', label: gettext('Foreign key?'),
+          id: 'is_in_primary_key', label: gettext('Primary key?'),
           type: 'switch', mode: ['properties'],
           group: gettext('Definition'),
         },{
-          id: 'is_inherited', label: gettext('Inherited?'),
+          id: 'indkey', label: gettext('Sorting key?'),
+          type: 'switch', mode: ['properties'],
+          group: gettext('Definition'),
+        },{
+          id: 'is_in_sampling_key', label: gettext('Sampling key?'),
           type: 'switch', mode: ['properties'],
           group: gettext('Definition'),
         },{
           id: 'tbls_inherited', label: gettext('Inherited from table(s)'),
-          type: 'text', mode: ['properties'], deps: ['is_inherited'],
+          type: 'text', mode: ['properties'], deps: ['is_in_sampling_key'],
           group: gettext('Definition'),
           visible: function(m) {
-            if (!_.isUndefined(m.get('is_inherited')) && m.get('is_inherited')) {
+            if (!_.isUndefined(m.get('is_in_sampling_key')) && m.get('is_in_sampling_key')) {
               return true;
             } else {
               return false;
             }
           },
-        },{
-          id: 'is_sys_column', label: gettext('System column?'), cell: 'string',
-          type: 'switch', mode: ['properties'],
         },{
           id: 'description', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],

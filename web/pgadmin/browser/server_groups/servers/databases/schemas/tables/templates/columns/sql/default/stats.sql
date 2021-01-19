@@ -1,14 +1,11 @@
 SELECT
-    null_frac AS {{ conn|qtIdent(_('Null fraction')) }},
-    avg_width AS {{ conn|qtIdent(_('Average width')) }},
-    n_distinct AS {{ conn|qtIdent(_('Distinct values')) }},
-    most_common_vals AS {{ conn|qtIdent(_('Most common values')) }},
-    most_common_freqs AS {{ conn|qtIdent(_('Most common frequencies')) }},
-    histogram_bounds AS {{ conn|qtIdent(_('Histogram bounds')) }},
-    correlation AS {{ conn|qtIdent(_('Correlation')) }}
+    c.name AS {{ conn|qtIdent(_('Column Name')) }},
+    c.data_compressed_bytes AS {{ conn|qtIdent(_('Data Compressed Bytes')) }},
+    c.data_uncompressed_bytes AS {{ conn|qtIdent(_('Data Uncompressed Bytes')) }},
+    c.marks_bytes AS {{ conn|qtIdent(_('Marks Bytes')) }}
 FROM
-    pg_stats
-WHERE
-    schemaname = {{schema|qtLiteral}}
-    AND tablename = {{table|qtLiteral}}
-    AND attname = {{column|qtLiteral}};
+    system.columns c
+WHERE database = '{{ did }}' AND table = '{{ tid }}'
+{% if clid %}
+ AND name = '{{ clid }}'
+{% endif %}

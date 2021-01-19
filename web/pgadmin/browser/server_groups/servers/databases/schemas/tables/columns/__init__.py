@@ -457,7 +457,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             for clid in data['ids']:
                 SQL = render_template(
                     "/".join([self.template_path, 'properties.sql']),
-                    tid=tid, clid=clid,
+                    did=did, tid=tid, clid=clid,
                     show_sys_objects=self.blueprint.show_system_objects
                 )
 
@@ -593,7 +593,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         if clid is not None:
             SQL = render_template(
                 "/".join([self.template_path, 'properties.sql']),
-                tid=tid, clid=clid,
+                did=did, tid=tid, clid=clid,
                 show_sys_objects=self.blueprint.show_system_objects
             )
 
@@ -686,58 +686,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            tid: Table ID
            clid: Column ID
         """
-        try:
-            SQL = render_template(
-                "/".join([self.template_path, 'properties.sql']),
-                tid=tid, clid=clid,
-                show_sys_objects=self.blueprint.show_system_objects
-            )
-
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-            if len(res['rows']) == 0:
-                return gone(
-                    gettext("Could not find the column on the server.")
-                )
-
-            data = dict(res['rows'][0])
-            # We do not want to display length as -1 in create query
-            if 'attlen' in data and data['attlen'] == -1:
-                data['attlen'] = ''
-            # Adding parent into data dict, will be using it while creating sql
-            data['schema'] = self.schema
-            data['table'] = self.table
-            # check type for '[]' in it
-            if 'cltype' in data:
-                data['cltype'], data['hasSqrBracket'] = \
-                    column_utils.type_formatter(data['cltype'])
-
-            # We will add table & schema as well
-            # Passing edit_types_list param so that it does not fetch
-            # edit types. It is not required here.
-            data = column_utils.column_formatter(self.conn, tid, clid,
-                                                 data, [])
-
-            SQL, name = self.get_sql(scid, tid, None, data, is_sql=True)
-            if not isinstance(SQL, str):
-                return SQL
-
-            sql_header = u"-- Column: {0}\n\n-- ".format(
-                self.qtIdent(
-                    self.conn, data['schema'], data['table'], data['name'])
-            )
-
-            sql_header += render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                data=data, conn=self.conn
-            )
-            SQL = sql_header + '\n\n' + SQL
-
-            return ajax_response(response=SQL.strip('\n'))
-
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        SQL = '-- No SQL could be generated for the selected object.'
+        return ajax_response(response=SQL.strip('\n'))
 
     @check_precondition
     def dependents(self, gid, sid, did, tid, clid, scid=0):
@@ -846,7 +796,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         # Fetch column name
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            tid=tid, clid=clid,
+            did=did, tid=tid, clid=clid,
             show_sys_objects=self.blueprint.show_system_objects
         )
 
@@ -864,8 +814,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         status, res = self.conn.execute_dict(
             render_template(
                 "/".join([self.template_path, 'stats.sql']),
-                conn=self.conn, schema=self.schema,
-                table=self.table, column=column
+                did=did, tid=tid, clid=clid
             )
         )
 
