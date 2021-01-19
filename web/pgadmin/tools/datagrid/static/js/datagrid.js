@@ -206,6 +206,7 @@ define('pgadmin.datagrid', [
 
       // This is a callback function to show query tool when user click on menu item.
       show_query_tool: function(url, aciTreeIdentifier) {
+        
         const transId = commonUtils.getRandomInt(1, 9999999);
         showQueryTool.showQueryTool(this, pgBrowser, alertify, url, aciTreeIdentifier, transId);
       },

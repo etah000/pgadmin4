@@ -11,6 +11,8 @@ import gettext from '../gettext';
 import $ from 'jquery';
 import url_for from '../url_for';
 import axios from 'axios';
+import pgAdmin from 'sources/pgadmin'
+import {getTreeNodeHierarchyFromIdentifier} from '../../../static/js/tree/pgadmin_tree_node';
 import * as httpErrorHandler from './query_tool_http_error_handler';
 import * as queryTxnStatus from 'sources/sqleditor/query_txn_status_constants';
 
@@ -54,6 +56,8 @@ class ExecuteQuery {
   }
 
   execute(sqlStatement, explainPlan, connect) {
+   let databaseName= document.getElementsByClassName("editor-title")[0].innerHTML.split("@")[0];
+   console.log(databaseName);
     // If it is an empty query, do nothing.
     if (sqlStatement.length <= 0) return;
     if (sqlStatement.indexOf(';') >= 0) {
@@ -112,6 +116,8 @@ class ExecuteQuery {
       }
       );
   }
+
+
 
   generateURLReconnectionFlag(shouldReconnect) {
     let url = url_for('sqleditor.query_tool_start', {

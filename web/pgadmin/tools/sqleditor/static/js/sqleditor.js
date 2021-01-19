@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
+import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 define('tools.querytool', [
   'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
   'jqueryui.position', 'underscore', 'pgadmin.alertifyjs',
@@ -1684,7 +1684,6 @@ define('tools.querytool', [
       $('#btn-flash').attr('data-click-counter', data_click_counter);
 
       this.handler.history_query_source = QuerySources.EXECUTE;
-
       queryToolActions.executeQuery(this.handler);
     },
 
@@ -2520,6 +2519,8 @@ define('tools.querytool', [
               self.update_msg_history(false, msg);
           });
       },
+
+    
 
       // Executes sql query in the editor in Query Tool mode
       _execute_sql_query: function(explain_prefix, shouldReconnect) {

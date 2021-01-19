@@ -64,6 +64,7 @@ export function showQueryTool(datagrid, pgBrowser, alertify, url, aciTreeIdentif
   }
 
   const gridUrl = generateUrl(transId, queryToolTitle, parentData);
+  // window.sessionStorage.setItem("tools_database", queryToolTitle.split("@")[0]); 
 
   datagrid.launch_grid(transId, gridUrl, true, queryToolTitle, sURL);
 }
