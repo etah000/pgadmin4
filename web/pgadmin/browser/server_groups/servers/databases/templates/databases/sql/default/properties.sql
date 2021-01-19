@@ -1,10 +1,10 @@
 SELECT
-    name AS did, 
-    name AS oid, 
-    name, 
+    name AS did,
+    name AS oid,
+    name,
     0 AS spcoid,
-    'public' AS spcname, 
-    1 AS datallowconn, 
+    'public' AS spcname,
+    1 AS datallowconn,
     'utf-8' AS encoding,
     'default' AS datowner,
     '' AS datcollate,
@@ -28,5 +28,5 @@ SELECT
 FROM system.databases
     {% if did %} WHERE name = '{{ did }}' {% endif %}
     {% if name %} WHERE name = '{{ name }}' {% endif %}
-ORDER BY 
+ORDER BY
     name;

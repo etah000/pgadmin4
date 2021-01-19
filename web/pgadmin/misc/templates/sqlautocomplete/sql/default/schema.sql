@@ -1,6 +1,6 @@
 {# SQL query for getting current_schemas #}
 {% if search_path %}
-SELECT * FROM unnest(current_schemas(true)) AS schema
+SELECT name as schema FROM system.databases ORDER BY 1
 {% else %}
-SELECT nspname AS schema FROM pg_catalog.pg_namespace ORDER BY 1
+SELECT name as schema FROM system.databases ORDER BY 1
 {% endif %}
