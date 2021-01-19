@@ -20,7 +20,7 @@ define('pgadmin.node.database', [
         node: 'database',
         label: gettext('Databases'),
         type: 'coll-database',
-        columns: ['name', 'datowner', 'comments'],
+        columns: ['name', 'engine', 'data_path', 'metadata_path'],
         hasStatistics: true,
         canDrop: true,
         canDropCascade: false,
@@ -288,6 +288,9 @@ define('pgadmin.node.database', [
         defaults: {
           name: undefined,
           cluster: undefined,
+          engine: undefined,
+          data_path: undefined,
+          metadata_path: undefined,
           // owner: undefined,
           // is_sys_obj: undefined,
           // comment: undefined,
@@ -323,12 +326,15 @@ define('pgadmin.node.database', [
         schema: [{
           id: 'name', label: gettext('Database'), cell: 'string',
           editable: false, type: 'text',
-        },
-        {
-          id: 'cluster', label: gettext('cluster'),
-          editable: false, type: 'text', node: 'database',
-          // control: this.get_database_cluster, select2: { allowClear: false },
-          control: 'node-list-by-name', url: 'get_clusters',select2: { allowClear: false },
+        },{
+          id: 'engine', label: gettext('Engine'), cell: 'string',
+          editable: false, type: 'text',
+        },{
+          id: 'data_path', label: gettext('Data Path'), cell: 'string',
+          editable: false, type: 'text',
+        },{
+          id: 'metadata_path', label: gettext('Metadata Path'), cell: 'string',
+          editable: false, type: 'text',
         },
         ],
         validate: function() {
@@ -345,7 +351,7 @@ define('pgadmin.node.database', [
         },
       }),
     });
-    
+
 
     pgBrowser.SecurityGroupSchema = {
       id: 'security', label: gettext('Security'), type: 'group',
