@@ -464,7 +464,7 @@ class Connection(BaseConnection):
 
         if cur.rowcount > 0:
             row = cur.fetchmany(1)[0]
-            version_str, = row
+            version_str = row['version()']
             version = version_str.split('.')[0]
             manager.ver = version_str
             # snowball_driver connection has no attribute 'server_version'

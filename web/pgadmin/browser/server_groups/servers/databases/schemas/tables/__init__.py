@@ -1417,9 +1417,12 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
-
-        return BaseTableView.get_create_table_sql(
-            self, did, scid, tid, main_sql, data)
+        if did=='system':
+            SQL = '-- No SQL could be generated for the selected object.'
+            return ajax_response(response=SQL.strip('\n'))
+        else:
+            return BaseTableView.get_create_table_sql(
+                self, did, scid, tid, main_sql, data)
 
     @BaseTableView.check_precondition
     def select_sql(self, gid, sid, did, tid, scid=0):

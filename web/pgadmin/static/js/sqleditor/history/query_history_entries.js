@@ -252,7 +252,7 @@ export class QueryHistoryEntries {
         <div class="toggle-and-history-container">
             <div class="query-history-toggle">
                 <label class="control-label">
-                    ` + gettext('Show queries generated internally by pgAdmin?') + `
+                    ` + gettext('Show queries generated internally by SnowAdmin?') + `
                 </label>
                 <input id="generated-queries-toggle" type="checkbox"
                   class="pgadmin-controls" data-style="quick"

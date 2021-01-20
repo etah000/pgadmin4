@@ -423,6 +423,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         primary_key = data['primary_key']
         create_table_query = data['create_table_query']
         sql_header = ''
+        reg = re.compile('CREATE TABLE (\w+\.\w+) (.*) ENGINE(.*)')
+        matches = re.search(reg, create_table_query)
+        if matches:
+            data['format'] = True
+            data['table_str'] = matches.group(1)  # match group1
+            data['column_str'] = matches.group(2)[1:-1].split(',')  # match group2
+            data['engine_str'] = matches.group(3)  # match group3
 
         # Now we have all lis of columns which we need
         # to include in our create definition, Let's format them

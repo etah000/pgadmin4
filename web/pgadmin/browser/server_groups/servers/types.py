@@ -139,4 +139,4 @@ class ServerType(object):
 
 
 # Default Server Type
-ServerType('pg', _("PostgreSQL"), -1)
+ServerType('snowball', _("SnowBall"), -1)
