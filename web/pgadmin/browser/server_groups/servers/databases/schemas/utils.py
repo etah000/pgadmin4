@@ -110,10 +110,6 @@ class DataTypeReader:
             # if not then we will set the template path here
             if not hasattr(self, 'data_type_template_path'):
                 self.data_type_template_path = 'datatype/sql/' + (
-                    '#{0}#{1}#'.format(
-                        self.manager.server_type,
-                        self.manager.version
-                    ) if self.manager.server_type == 'gpdb' else
                     '#{0}#'.format(self.manager.version)
                 )
             SQL = render_template(
@@ -129,36 +125,52 @@ class DataTypeReader:
             for row in rset['rows']:
                 # Attach properties for precision
                 # & length validation for current type
+
+                # range of precision length
                 precision = False
-                length = False
                 min_val = 0
                 max_val = 0
+                # range of scale length
+                scale = False
+                min_scale_val = 0
+                max_sacle_val = 0
+                # range of FixedString
+                length = False
+                # for DateTime and DateTime64
+                timezone = False
 
                 # Check if the type will have length and precision or not
-                if row['elemoid'] + 1:
+                if row['elemoid']:
                     length, precision, typeval = self.get_length_precision(
                         row['elemoid'])
 
                 if length:
-                    min_val = 0 if typeval == 'D' else 1
-                    if precision:
-                        max_val = 1000
-                    elif min_val:
-                        # Max of integer value
-                        max_val = 2147483647
-                    else:
-                        # Max value is 6 for data type like
-                        # interval, timestamptz, etc..
-                        if typeval == 'D':
-                            max_val = 6
-                        else:
-                            max_val = 10
+                    min_val = 1
+
+                if precision:
+                    min_val, max_val = 1, 76
+
+                if row['elemoid'] in ('DateTime64','Decimal','Decimal128','Decimal256','Decimal32','Decimal64',):
+                    scale_val_map = {
+                        'DateTime64': (1, 9),
+                        'Decimal': (0, 0),
+                        'Decimal128': (0, 38),
+                        'Decimal256': (0, 76),
+                        'Decimal32': (0, 9),
+                        'Decimal64': (0, 18),
+                    }
+                    scale = True
+                    min_scale_val, max_sacle_val = scale_val_map[row['elemoid']]
+
+                if row['elemoid'] in ('DateTime','DateTime64',):
+                    timezone = True
 
                 res.append({
                     'label': row['typname'], 'value': row['typname'],
                     'typval': typeval, 'precision': precision,
                     'length': length, 'min_val': min_val, 'max_val': max_val,
-                    'is_collatable': row['is_collatable']
+                    'is_collatable': row['is_collatable'], 'scale': scale,
+                    'min_scale_val': min_scale_val, 'max_scale_val': max_sacle_val,
                 })
 
         except Exception as e:
@@ -171,13 +183,14 @@ class DataTypeReader:
         precision = False
         length = False
         typeval = ''
+        scale = False
 
         # Check against PGOID/typename for specific type
         if elemoid_or_name:
             if elemoid_or_name in (1560, 'FixedString',
                                     ):
                 typeval = 'L'
-            elif elemoid_or_name in (1083, 'time', 'time without time zone',
+            elif elemoid_or_name in (1083, 'Date','DateTime','DateTime64',
                                     ):
                 typeval = 'D'
             elif elemoid_or_name in (1231, 'Decimal',
@@ -190,10 +203,10 @@ class DataTypeReader:
                 typeval = ' '
 
         # Set precision & length/min/max values
-        if typeval == 'P':
+        if elemoid_or_name == 'Decimal':
             precision = True
 
-        if precision or typeval in ('L', 'D'):
+        if elemoid_or_name in ('FixedString', ):
             length = True
 
         return length, precision, typeval

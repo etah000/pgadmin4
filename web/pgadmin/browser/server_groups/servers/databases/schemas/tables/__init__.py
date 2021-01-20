@@ -19,6 +19,8 @@ from flask_babelex import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule, DataTypeReader, VacuumSettings
 from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
+from pgadmin.browser.server_groups.servers.databases.utils import \
+    ClusterReader, EngineReader, TimezoneReader
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from .utils import BaseTableView
@@ -136,7 +138,8 @@ blueprint = TableModule(__name__)
 
 
 class TableView(BaseTableView, DataTypeReader, VacuumSettings,
-                SchemaDiffTableCompare):
+                SchemaDiffTableCompare, 
+                ClusterReader, EngineReader, TimezoneReader):
     """
     This class is responsible for generating routes for Table node
 
@@ -286,7 +289,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         'update_sql': [{'get': 'update_sql'}],
         'delete_sql': [{'get': 'delete_sql'}],
         'count_rows': [{'get': 'count_rows'}],
-        'compare': [{'get': 'compare'}, {'get': 'compare'}]
+        'compare': [{'get': 'compare'}, {'get': 'compare'}],
+        'get_clusters': [{'get': 'clusters'}, {'get': 'clusters'}],
+        'get_engines': [{'get': 'engines'}, {'get': 'engines'}],
+        'get_timezones': [{'get': 'timezones'}, {'get': 'timezones'}],
+
     })
 
     @BaseTableView.check_precondition
@@ -1031,6 +1038,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             # Append SQL for partitions
             SQL += '\n' + partitions_sql
 
+            # return make_json_response()
+
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1748,6 +1757,59 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
             return res
 
+    @BaseTableView.check_precondition
+    def clusters(self, gid, sid, did=None, tid=None):
+        """
+        Returns:
+            This function will return list of cluster available 
+            for node-ajax-control
+        """
+
+        status, types = self.get_clusters(self.conn, )
+
+        if not status:
+            return internal_server_error(errormsg=types)
+
+        return make_json_response(
+            data=types,
+            status=200
+        )
+
+    @BaseTableView.check_precondition
+    def engines(self, gid, sid, did=None, tid=None):
+        """
+        Returns:
+            This function will return list of cluster available 
+            for node-ajax-control
+        """
+
+        status, types = self.get_engines(self.conn, )
+
+        if not status:
+            return internal_server_error(errormsg=types)
+
+        return make_json_response(
+            data=types,
+            status=200
+        )
+
+    @BaseTableView.check_precondition
+    def timezones(self, gid, sid, did=None, tid=None):
+        """
+        Returns:
+            This function will return list of timezone available 
+            for node-ajax-control
+        """
+
+        status, types = self.get_timezones(self.conn, )
+
+        if not status:
+            return internal_server_error(errormsg=types)
+
+        return make_json_response(
+            data=types,
+            status=200
+        )
 
 SchemaDiffRegistry(blueprint.node_type, TableView)
 TableView.register_node_view(blueprint)

@@ -1,6 +1,6 @@
 SELECT 
     name AS typname,
-    rowNumberInAllBlocks() AS elemoid,
+    name AS elemoid,
     -1 AS typlen,
     'b' AS typtype,
     name AS oid,
@@ -9,4 +9,7 @@ SELECT
     0 AS is_collatable
 FROM
     system.data_type_families
-WHERE alias_to = ''
+WHERE 
+    alias_to = '' 
+    AND name not in ('AggregateFunction','Array','LowCardinality','MultiPolygon','Nested','Nothing','Nullable','Point','Polygon','Ring','SimpleAggregateFunction','Tuple')
+    AND name not like 'Interval%'

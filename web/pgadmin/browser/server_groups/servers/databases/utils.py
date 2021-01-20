@@ -9,6 +9,9 @@
 
 """Database helper utilities"""
 
+import pytz
+
+
 from flask import render_template
 
 
@@ -166,3 +169,23 @@ class EngineReader:
             return status, res
 
         return True, res['rows']
+
+
+class TimezoneReader:
+    """
+    TimezoneReader Class.
+
+    Methods:
+    -------
+    * get_timezones(conn, ):
+      - Returns engines.
+    """
+
+    def get_timezones(self, *args, **kwargs ):
+        """
+        Returns all known timezones.
+
+        """
+        res = [{'label':tz, 'value':tz} for tz in pytz.all_timezones]
+
+        return True, res
