@@ -1,0 +1,3 @@
+{% macro INDEX(idata) %}
+    INDEX {{idata.name}} {{idata.expr}} TYPE {{idata.type}} GRANULARITY {{idata.granularity}}
+{% endmacro %}

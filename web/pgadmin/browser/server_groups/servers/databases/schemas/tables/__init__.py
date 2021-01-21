@@ -1038,6 +1038,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             # Append SQL for partitions
             SQL += '\n' + partitions_sql
 
+            # print('========================\n', SQL)
             # return make_json_response()
 
             status, res = self.conn.execute_scalar(SQL)

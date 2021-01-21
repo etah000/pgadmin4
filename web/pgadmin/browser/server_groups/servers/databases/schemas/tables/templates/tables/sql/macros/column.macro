@@ -1,0 +1,34 @@
+{% macro COLUMN_PARAMS(cdata) -%}
+{# FixedString datatype #}
+{% if cdata.attlen %}
+({{ cdata.attlen }})
+{# Decimal datatype #}
+{% elif cdata.attprecision %}
+({{ cdata.attprecision }}, {{cdata.attscale}})
+{# DecimalX and DateTime64 datatype #}
+{% elif cdata.attscale %}
+({{ cdata.attscale }}{% if cdata.atttimezone %}, '{{cdata.atttimezone}}'{% endif %})
+{# Datetime datatype #}
+{% elif not cdata.attscale and cdata.atttimezone %}
+('{{cdata.atttimezone}}')
+{% endif %}
+{%- endmacro %}
+
+
+{% macro COLUMN_NULL(cdata) -%}
+{% if cdata.attnull %} NULL{% endif %}
+{%- endmacro %}
+
+
+{% macro COLUMN_DEFAULT(cdata) -%}
+{% if cdata.defval is defined and cdata.defval is not none and cdata.defval != '' %} DEFAULT {{cdata.defval}}{% endif %}
+{%- endmacro %}
+
+
+{% macro COLUMNS(data) -%}
+{% for cdata in data %}
+{% if cdata.name and cdata.cltype %} 
+  {{conn|qtIdent(cdata.name)}} {{ cdata.cltype }}{{ COLUMN_PARAMS(cdata) }}{{ COLUMN_NULL(cdata) }}{{ COLUMN_DEFAULT(cdata) }}{%- if not loop.last %},{% endif %}
+{% endif %} 
+{% endfor %}
+{%- endmacro %}

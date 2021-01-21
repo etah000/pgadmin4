@@ -1,0 +1,68 @@
+{% macro ENGINE_PARAMS(engine_name, params) -%}
+{% if engine_name == 'ReplicatedMergeTree' and params %}
+('{{ params['zoo_path'] }}', '{{ params['replica_name'] }}')
+{% elif engine_name == 'Distributed' and params %}
+('{{ params['cluster_name'] }}', '{{ params['remote_database'] }}', '{{ params['remote_table'] }}'
+{%- if params['sharding_key'] %}, {{ params['sharding_key'] }}{% endif %}
+{%- if params['sharding_key'] and params['policy_name'] %}, '{{ params['policy_name'] }}'{% endif %})
+{% else %}
+()
+{% endif %}
+{%- endmacro %}
+
+
+{% macro ENGINE_PARTITION(engine_name, pdata) -%}
+{% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and pdata %}
+    PARTITION BY (
+{%- for part in pdata %}
+{% if part.expr %}{{part.expr}}{% else %}{{part.column}}{% endif %}{% if not loop.last %}, {% endif %}
+{% endfor %})
+{% endif %}
+{%- endmacro %}
+
+
+{% macro ENGINE_PRIMARY(engine_name, pdata) -%}
+  {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and pdata %}
+    PRIMARY KEY ({{pdata[0].column}})
+  {% endif %}
+{%- endmacro %}
+
+
+{% macro ENGINE_ORDER(engine_name, odata) -%}
+{% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and odata %}
+    ORDER BY (
+{%- for order in odata %}
+{% if order.expr %}{{order.expr}}{% else %}{{order.column}}{% endif %}{% if not loop.last %}, {% endif %}
+{% endfor %})
+{% elif engine_name in ('MergeTree', 'ReplicatedMergeTree') %}
+   ORDER BY tuple()
+{% endif %}
+{%- endmacro %}
+
+
+{% macro ENGINE_SAMPLE(engine_name, sdata) -%}
+  {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and sdata %}
+    SAMPLE BY ({% if sdata[0].expr %}{{ sdata[0].expr }}{% else %}{{ sdata[0].column }}{% endif %})
+  {% endif %}
+{%- endmacro %}
+
+
+{% macro ENGINE_SETTINGS(engine_name, sdata) -%}
+{% if engine_name in ('MergeTree', 'ReplicatedMergeTree', 'Distributed') and sdata %}
+    SETTINGS {% for set in sdata -%}
+{{ set.label }} = {{ set.value }}{% if not loop.last %}, {% endif %}
+{%- endfor %}
+{% endif %}
+{%- endmacro %}
+
+
+
+{% macro ENGINE(data) -%}
+{% set engine_name = data['engine'] %}
+    ENGINE = {{ engine_name }}{{ ENGINE_PARAMS(engine_name, data['engine_params']) }}
+{{ ENGINE_PARTITION(engine_name, data['partition_keys']) }}
+{{ ENGINE_PRIMARY(engine_name, data['primary_key']) }}
+{{ ENGINE_ORDER(engine_name, data['order_keys']) }}
+{{ ENGINE_SAMPLE(engine_name, data['sample_key']) }}
+{{ ENGINE_SETTINGS(engine_name, data['settings']) }}
+{%- endmacro %}
