@@ -129,6 +129,7 @@ define('pgadmin.node.column', [
       },
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: [gettext('Data Compressed Bytes'), gettext('Data Uncompressed Bytes'), gettext('Marks Bytes')],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

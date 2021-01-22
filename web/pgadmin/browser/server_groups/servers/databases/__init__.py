@@ -404,7 +404,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
                 _("Could not find the database on the server.")
             )
 
-        result = res
+        result = res['rows'][0]
         result['acl'] = None
         result['typeacl'] = ''
         result['variables'] = []
@@ -1164,7 +1164,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
     def clusters(self, gid, sid, did=None):
         """
         Returns:
-            This function will return list of cluster available 
+            This function will return list of cluster available
             for node-ajax-control
         """
 
@@ -1182,7 +1182,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
     def engines(self, gid, sid, did=None):
         """
         Returns:
-            This function will return list of cluster available 
+            This function will return list of cluster available
             for node-ajax-control
         """
 

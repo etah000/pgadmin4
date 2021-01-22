@@ -187,7 +187,8 @@ class ServerManager(object):
             elif did in self.db_info:
                 database = self.db_info[did]['datname']
             else:
-                maintenance_db_id = u'DB:{0}'.format(self.db)
+                database = did
+                maintenance_db_id = u'DB:{0}'.format(did or self.db)
                 if maintenance_db_id in self.connections:
                     conn = self.connections[maintenance_db_id]
                     # try to connect maintenance db if not connected

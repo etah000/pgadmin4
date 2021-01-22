@@ -398,7 +398,7 @@ class SQLAutoComplete(object):
             (schema, relname, colname) = self.escaped_names(
                 [schema, relname, colname])
             column = ColumnMetadata(
-                name=colname,
+                name=self.unescape_name(colname),
                 datatype=datatype,
                 has_default=has_default,
                 default=default
@@ -415,7 +415,7 @@ class SQLAutoComplete(object):
         metadata = self.dbmetadata['functions']
 
         for f in func_data:
-            schema, func = self.escaped_names([f.schema_name, f.func_name])
+            schema, func = self.unescape_name([f.schema_name, f.func_name])
 
             if func in metadata[schema]:
                 metadata[schema][func].append(f)
@@ -440,37 +440,6 @@ class SQLAutoComplete(object):
                        for func, metas in funcs.items()
                        for meta in metas))
                  for usage in ('call', 'call_display', 'signature'))
-
-    def extend_foreignkeys(self, fk_data):
-
-        # fk_data is a list of ForeignKey namedtuples, with fields
-        # parentschema, childschema, parenttable, childtable,
-        # parentcolumns, childcolumns
-
-        # These are added as a list of ForeignKey namedtuples to the
-        # ColumnMetadata namedtuple for both the child and parent
-        meta = self.dbmetadata['tables']
-
-        for fk in fk_data:
-            e = self.escaped_names
-            parentschema, childschema = e([fk.parentschema, fk.childschema])
-            parenttable, childtable = e([fk.parenttable, fk.childtable])
-            childcol, parcol = e([fk.childcolumn, fk.parentcolumn])
-
-            if childtable not in meta[childschema] or \
-                parenttable not in meta[parentschema] or \
-                childcol not in meta[childschema][childtable] or \
-                parcol not in meta[parentschema][parenttable]:
-                continue
-
-            childcolmeta = meta[childschema][childtable][childcol]
-            parcolmeta = meta[parentschema][parenttable][parcol]
-            fk = ForeignKey(
-                parentschema, parenttable, parcol,
-                childschema, childtable, childcol
-            )
-            childcolmeta.foreignkeys.append((fk))
-            parcolmeta.foreignkeys.append((fk))
 
     def extend_datatypes(self, type_data):
 
