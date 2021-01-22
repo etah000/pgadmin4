@@ -1,0 +1,9 @@
+{% macro CONSTRAINTS(data) %}
+{% set engine_name = data['engine'] %}
+{%- if data.constraints and data.constraints|length > 0 %},
+{% for cdata in data.constraints %}
+    CONSTRAINT {{ cdata.name }} CHECK {{ cdata.expr }}{% if not loop.last %},{% endif %}
+
+{% endfor %}
+{% endif %}
+{% endmacro %}

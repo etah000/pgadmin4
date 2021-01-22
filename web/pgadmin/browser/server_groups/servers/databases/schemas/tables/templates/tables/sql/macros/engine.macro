@@ -22,9 +22,12 @@
 
 
 {% macro ENGINE_PRIMARY(engine_name, pdata) -%}
-  {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and pdata %}
-    PRIMARY KEY ({{pdata[0].column}})
-  {% endif %}
+{% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and pdata %}
+    PRIMARY KEY (
+{%- for order in pdata %}
+{% if order.expr %}{{ order.expr }}{% else %}{{ order.column }}{% endif %}{% if not loop.last %}, {% endif %}
+{% endfor %})
+{% endif %}
 {%- endmacro %}
 
 
@@ -32,7 +35,7 @@
 {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and odata %}
     ORDER BY (
 {%- for order in odata %}
-{% if order.expr %}{{order.expr}}{% else %}{{order.column}}{% endif %}{% if not loop.last %}, {% endif %}
+{% if order.expr %}{{ order.expr }}{% else %}{{ order.column }}{% endif %}{% if not loop.last %}, {% endif %}
 {% endfor %})
 {% elif engine_name in ('MergeTree', 'ReplicatedMergeTree') %}
    ORDER BY tuple()
@@ -41,9 +44,12 @@
 
 
 {% macro ENGINE_SAMPLE(engine_name, sdata) -%}
-  {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and sdata %}
-    SAMPLE BY ({% if sdata[0].expr %}{{ sdata[0].expr }}{% else %}{{ sdata[0].column }}{% endif %})
-  {% endif %}
+{% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and sdata %}
+    SAMPLE BY (
+{%- for sample in sdata %}
+{% if sample.expr %}{{ sample.expr }}{% else %}{{ sample.column }}{% endif %}{% if not loop.last %}, {% endif %}
+{% endfor %})
+{% endif %}
 {%- endmacro %}
 
 
@@ -61,8 +67,8 @@
 {% set engine_name = data['engine'] %}
     ENGINE = {{ engine_name }}{{ ENGINE_PARAMS(engine_name, data['engine_params']) }}
 {{ ENGINE_PARTITION(engine_name, data['partition_keys']) }}
-{{ ENGINE_PRIMARY(engine_name, data['primary_key']) }}
+{{ ENGINE_PRIMARY(engine_name, data['primary_keys']) }}
 {{ ENGINE_ORDER(engine_name, data['order_keys']) }}
-{{ ENGINE_SAMPLE(engine_name, data['sample_key']) }}
+{{ ENGINE_SAMPLE(engine_name, data['sample_keys']) }}
 {{ ENGINE_SETTINGS(engine_name, data['settings']) }}
 {%- endmacro %}
