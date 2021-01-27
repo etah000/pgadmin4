@@ -288,7 +288,120 @@ define('pgadmin.node.column', [
         },{
           id: 'attnum', label: gettext('Position'), cell: 'string',
           type: 'text', disabled: 'notInSchema', mode: ['properties'],
-        },{
+        },
+        {
+          id: 'attlen', label: gettext('Length/Precision'), cell: IntegerDepCell,
+          deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
+          disabled: function(m) {
+            var of_type = m.get('cltype'),
+              flag = true;
+            _.each(m.datatypes, function(o) {
+              if ( of_type == o.value ) {
+                if(o.length)
+                {
+                  m.set('min_val_attlen', o.min_val, {silent: true});
+                  m.set('max_val_attlen', o.max_val, {silent: true});
+                  flag = false;
+                }
+              }
+            });
+
+            flag && setTimeout(function() {
+              if(m.get('attlen')) {
+                m.set('attlen', null);
+              }
+            },10);
+
+            return flag;
+          },
+          editable: function(m) {
+            // inheritedfrom has value then we should disable it
+            if(!_.isUndefined(m.get('inheritedfrom'))) {
+              return false;
+            }
+
+            if (!m.datatypes) {
+              // datatypes not loaded, may be this call is from CallByNeed from backgrid cell initialize.
+              return true;
+            }
+            var of_type = m.get('cltype'),
+              flag = false;
+
+            _.each(m.datatypes, function(o) {
+              if ( of_type == o.value ) {
+                if(o.length) {
+                  m.set('min_val_attlen', o.min_val, {silent: true});
+                  m.set('max_val_attlen', o.max_val, {silent: true});
+                  flag = true;
+                }
+              }
+            });
+
+            !flag && setTimeout(function() {
+              if(m.get('attlen')) {
+                m.set('attlen', null, {silent: true});
+              }
+            },10);
+
+            return flag;
+          },
+        },
+        {
+          id: 'cltype', label: gettext('Data type'),
+          cell: Backgrid.Extension.NodeAjaxOptionsCell,
+          type: 'text', disabled: 'inSchemaWithColumnCheck',
+          control: 'node-ajax-options', url: 'get_types', node: 'table',
+          cellHeaderClasses:'width_percent_30', first_empty: true,
+          select2: { allowClear: false }, group: gettext('Definition'),
+          cache_node: 'table',
+          transform: function(data, cell) {
+            /* 'transform' function will be called by control, and cell both.
+             * The way, we use the transform in cell, and control is different.
+             * Because - options are shared using 'column' object in backgrid,
+             * hence - the cell is passed as second parameter, while the control
+             * uses (this) as a object.
+             */
+            var control = cell || this,
+              m = control.model;
+
+            /* We need different data in create mode & in edit mode
+             * if we are in create mode then return data as it is
+             * if we are in edit mode then we need to filter data
+             */
+            control.model.datatypes = data;
+            var edit_types = m.get('edit_types'),
+              result = [];
+
+            // If called from Table, We will check if in edit mode
+            // then send edit_types only
+            if( !_.isUndefined(m.top) && !m.top.isNew() ) {
+              _.each(data, function(t) {
+                if (_.indexOf(edit_types, t.value) != -1) {
+                  result.push(t);
+                }
+              });
+              // There may be case that user adds new column in  existing collection
+              // we will not have edit types then
+              return result.length > 0 ? result : data;
+            }
+
+            // If called from Column
+            if(m.isNew()) {
+              return data;
+            } else {
+              //edit mode
+              _.each(data, function(t) {
+                if (_.indexOf(edit_types, t.value) != -1) {
+                  result.push(t);
+                }
+              });
+
+              return result;
+            }
+          },
+          editable: 'editable_check_for_table',
+        },
+        {
           // Need to show this field only when creating new table [in SubNode control]
           id: 'inheritedfrom', label: gettext('Inherited from table'),
           type: 'text', readonly: true, editable: false,
@@ -355,7 +468,63 @@ define('pgadmin.node.column', [
 
             return flag;
           },
-        },{
+        },
+        {
+          id: 'attprecision', label: gettext('Scale'), cell: IntegerDepCell,
+          deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
+          disabled: function(m) {
+            var of_type = m.get('cltype'),
+              flag = true;
+            _.each(m.datatypes, function(o) {
+              if ( of_type == o.value ) {
+                if(o.precision) {
+                  m.set('min_val_attprecision', 0, {silent: true});
+                  m.set('max_val_attprecision', o.max_val, {silent: true});
+                  flag = false;
+                }
+              }
+            });
+
+            flag && setTimeout(function() {
+              if(m.get('attprecision')) {
+                m.set('attprecision', null);
+              }
+            },10);
+            return flag;
+          },
+          editable: function(m) {
+            // inheritedfrom has value then we should disable it
+            if(!_.isUndefined(m.get('inheritedfrom'))) {
+              return false;
+            }
+
+            if (!m.datatypes) {
+              // datatypes not loaded yet, may be this call is from CallByNeed from backgrid cell initialize.
+              return true;
+            }
+
+            var of_type = m.get('cltype'),
+              flag = false;
+            _.each(m.datatypes, function(o) {
+              if ( of_type == o.value ) {
+                if(o.precision) {
+                  m.set('min_val_attprecision', 0, {silent: true});
+                  m.set('max_val_attprecision', o.max_val, {silent: true});
+                  flag = true;
+                }
+              }
+            });
+
+            !flag && setTimeout(function() {
+              if(m.get('attprecision')) {
+                m.set('attprecision', null);
+              }
+            },10);
+
+            return flag;
+          },
+        },
+        {
           id: 'compression_codec', label: gettext('Compression codec'), cell: 'string',
           type: 'text', disabled: 'inSchemaWithColumnCheck', mode: ['properties', 'edit'],
           group: gettext('Definition'),
