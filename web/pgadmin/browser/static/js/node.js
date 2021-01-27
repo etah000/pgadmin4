@@ -289,8 +289,9 @@ define('pgadmin.browser.node', [
       if (this.model) {
         // This will be the URL, used for object manipulation.
         // i.e. Create, Update in these cases
+        
         var urlBase = this.generate_url(item, type, node, false, null, that.url_jump_after_node);
-        console.log(urlBase);
+        // console.log(urlBase);
 
         if (!urlBase)
           // Ashamed of myself, I don't know how to manipulate this
@@ -976,7 +977,9 @@ define('pgadmin.browser.node', [
             // Show object properties (only when the 'properties' tab
             // is active).
             console.log(b.panels['properties'].panel);
-            this.showProperties(item, d, b.panels['properties'].panel);
+            console.log(item);
+            console.log(d);
+            this.showProperties(item, d, b.panels['properties'].panel); 
           }
         }
 
@@ -1206,6 +1209,7 @@ define('pgadmin.browser.node', [
           // Create a view to show the properties in fieldsets
 
           view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
+          console.log(view);
           if (view) {
             // Save it for release it later
             j.data('obj-view', view);

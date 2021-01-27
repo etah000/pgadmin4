@@ -61,6 +61,7 @@ define('pgadmin.node.table', [
           return;
 
         this.initialized = true;
+        console.log(Backform.VacuumSettingsSchema);
 
         pgBrowser.add_menus([{
           name: 'create_table_on_coll', node: 'coll-table', module: this,
@@ -336,15 +337,32 @@ define('pgadmin.node.table', [
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         },{
           id: 'engine', label: gettext('Engine'), type: 'text', mode: ['properties','create'],
+          options: [
+            {label: gettext('MergeTree'), value: 'MergeTree'},
+            {label: gettext('ReplicatedMergeTree'), value: 'ReplicatedMergeTree'},
+            {label: gettext('Distributed'), value: 'ReplicatedMergeTree'}
+          ],
+          control: 'select2', select2: { allowClear: false, width: '100%' },
         },
         {
           id: 'relowner', label: gettext('Owner'), type: 'text', node: 'role',
-          mode: ['properties', 'create', 'edit'], select2: {allowClear: false},
+          mode: ['properties', 'edit'], select2: {allowClear: false},
           disabled: 'inSchema', control: 'node-list-by-name',
         },
         {
-          id: 'database', label: gettext('Database'), type: 'text', mode: ['properties'],
-        },{
+          id: 'database', label: gettext('Database'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'ordery_by', label: gettext('OrderyBy'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'partition_by', label: gettext('PartitionBy'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'description', label: gettext('Comment'), type: 'multiline',
+          mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
+        },
+        {
           id: 'primarykey', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
         },{
           id: 'partition_key', label: gettext('Partition Key'), type: 'text', mode: ['properties'],
@@ -610,11 +628,11 @@ define('pgadmin.node.table', [
                   _.some(columns.pluck('name')));
             },
           },{
-            id: 'foreign_key', label: '',
+            id: 'constraints', label: '',
             model: pgBrowser.Nodes['foreign_key'].model,
             subnode: pgBrowser.Nodes['foreign_key'].model,
             editable: false, type: 'collection',
-            group: gettext('Foreign Key'), mode: ['edit', 'create'],
+            group: gettext('Constraints'), mode: ['edit', 'create'],
             canEdit: true, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
             canAdd: function(m) {
@@ -630,7 +648,7 @@ define('pgadmin.node.table', [
 
               return true;
             },
-            columns : ['name', 'columns'],
+            columns : ['name', 'expr'],
             canAddRow: function(m) {
               // User can only add if there is at least one column with name.
               var columns = m.get('columns');
@@ -646,41 +664,43 @@ define('pgadmin.node.table', [
             control: 'unique-col-collection',
             canAdd: true,
             columns : ['name', 'consrc'],
-          },{
-            id: 'unique_constraint', label: '',
-            model: pgBrowser.Nodes['unique_constraint'].model,
-            subnode: pgBrowser.Nodes['unique_constraint'].model,
-            editable: false, type: 'collection',
-            group: gettext('Unique'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
-            control: 'unique-col-collection',
-            columns : ['name', 'columns'],
-            canAdd: function(m) {
-              if (m.get('is_partitioned') && !_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) && m.node_info.server.version < 110000) {
-                setTimeout(function() {
-                  var coll = m.get('unique_constraint');
-                  coll.remove(coll.filter(function() { return true; }));
-                }, 10);
-                return false;
-              }
+          },
+          // {
+          //   id: 'unique_constraint', label: '',
+          //   model: pgBrowser.Nodes['unique_constraint'].model,
+          //   subnode: pgBrowser.Nodes['unique_constraint'].model,
+          //   editable: false, type: 'collection',
+          //   group: gettext('Unique'), mode: ['edit', 'create'],
+          //   canEdit: true, canDelete: true, deps:['is_partitioned'],
+          //   control: 'unique-col-collection',
+          //   columns : ['name', 'columns'],
+          //   canAdd: function(m) {
+          //     if (m.get('is_partitioned') && !_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+          //     && !_.isUndefined(m.node_info.server.version) && m.node_info.server.version < 110000) {
+          //       setTimeout(function() {
+          //         var coll = m.get('unique_constraint');
+          //         coll.remove(coll.filter(function() { return true; }));
+          //       }, 10);
+          //       return false;
+          //     }
 
-              return true;
-            },
-            canAddRow: function(m) {
-              // User can only add if there is at least one column with name.
-              var columns = m.get('columns');
-              return _.some(columns.pluck('name'));
-            },
-          },{
-            id: 'exclude_constraint', label: '',
+          //     return true;
+          //   },
+          //   canAddRow: function(m) {
+          //     // User can only add if there is at least one column with name.
+          //     var columns = m.get('columns');
+          //     return _.some(columns.pluck('name'));
+          //   },
+          // },
+          {
+            id: 'indexes', label: '',
             model: pgBrowser.Nodes['exclusion_constraint'].model,
             subnode: pgBrowser.Nodes['exclusion_constraint'].model,
             editable: false, type: 'collection',
-            group: gettext('Exclude'), mode: ['edit', 'create'],
+            group: gettext('Indexes'), mode: ['edit', 'create'],
             canEdit: true, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
-            columns : ['name', 'columns', 'constraint'],
+            columns : ['name','expr','type','granularity'],
             canAdd: function(m) {
               if (m.get('is_partitioned')) {
                 setTimeout(function() {
@@ -697,7 +717,8 @@ define('pgadmin.node.table', [
               var columns = m.get('columns');
               return _.some(columns.pluck('name'));
             },
-          }],
+          }
+        ],
         },{
           id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
           mode: ['create', 'edit'], min: 10, max: 100,
@@ -729,7 +750,7 @@ define('pgadmin.node.table', [
           },
         },
         {
-            id: 'typname', label: gettext('Of type'), type: 'text',
+          id: 'typname', label: gettext('Of type'), type: 'text',
           mode: ['properties', 'create', 'edit'],
           disabled: 'checkOfType', url: 'get_oftype', group: gettext('advanced'),
           deps: ['coll_inherits'], transform: function(data, cell) {
@@ -1053,9 +1074,19 @@ define('pgadmin.node.table', [
         },{
           // Here - we will create tab control for storage parameters
           // (auto vacuum).
-          type: 'nested', control: 'tab', group: gettext('Parameters'),
+          type: 'nested', control: 'tab', group: gettext('Settings'),
           mode: ['edit', 'create'], deps: ['is_partitioned'],
-          schema: Backform.VacuumSettingsSchema,
+          schema: [{
+            id: 'settings', label: '',
+            model: pgBrowser.Nodes['unique_constraint'].model,
+            subnode: pgBrowser.Nodes['unique_constraint'].model,
+            editable: false, type: 'collection',
+            group: gettext('Settings'), mode: ['edit', 'create'],
+            canEdit: true, canDelete: true, deps:['is_partitioned'],
+            control: 'unique-col-collection',
+            canAdd: true,
+            columns : ['label','value'],
+          }],
         },{
           id: 'relacl_str', label: gettext('Privileges'), disabled: 'inSchema',
           type: 'text', mode: ['properties'], group: gettext('Security'),
@@ -1099,23 +1130,23 @@ define('pgadmin.node.table', [
             return msg;
           }
           this.errorModel.unset('name');
-          if (
-            _.isUndefined(schema) || _.isNull(schema) ||
-              String(schema).replace(/^\s+|\s+$/g, '') == ''
-          ) {
-            msg = gettext('Table schema cannot be empty.');
-            this.errorModel.set('schema', msg);
-            return msg;
-          }
-          this.errorModel.unset('schema');
-          if (
-            _.isUndefined(relowner) || _.isNull(relowner) ||
-              String(relowner).replace(/^\s+|\s+$/g, '') == ''
-          ) {
-            msg = gettext('Table owner cannot be empty.');
-            this.errorModel.set('relowner', msg);
-            return msg;
-          }
+          // if (
+          //   _.isUndefined(schema) || _.isNull(schema) ||
+          //     String(schema).replace(/^\s+|\s+$/g, '') == ''
+          // ) {
+          //   msg = gettext('Table schema cannot be empty.');
+          //   this.errorModel.set('schema', msg);
+          //   return msg;
+          // }
+          // this.errorModel.unset('schema');
+          // if (
+          //   _.isUndefined(relowner) || _.isNull(relowner) ||
+          //     String(relowner).replace(/^\s+|\s+$/g, '') == ''
+          // ) {
+          //   msg = gettext('Table owner cannot be empty.');
+          //   this.errorModel.set('relowner', msg);
+          //   return msg;
+          // }
           this.errorModel.unset('relowner');
           if (
             is_partitioned && this.isNew() &&

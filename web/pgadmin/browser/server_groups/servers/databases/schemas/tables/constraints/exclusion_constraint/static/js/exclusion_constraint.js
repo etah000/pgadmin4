@@ -34,7 +34,8 @@ define('pgadmin.node.exclusion_constraint', [
     schema: [{
       id: 'column', label: gettext('Column'), type:'text', editable: false,
       cell:'string',
-    },{
+    },
+    {
       id: 'oper_class', label: gettext('Operator class'), type:'text',
       node: 'table', url: 'get_oper_class', first_empty: true,
       editable: function(m) {
@@ -670,7 +671,23 @@ define('pgadmin.node.exclusion_constraint', [
         schema: [{
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], editable: true,
-        },{
+        },
+        {
+          id: 'expr', label: gettext('Expr'), type: 'text',
+          mode: ['properties', 'create', 'edit'], editable:true,
+          cellHeaderClasses:'width_percent_25',
+        },
+        {
+          id: 'type', label: gettext('Type'), type: 'text',
+          mode: ['properties', 'create', 'edit'], editable:true,
+          cellHeaderClasses:'width_percent_25',
+        },
+        {
+          id: 'granularity', label: gettext('Granularity'), type: 'text',
+          mode: ['properties', 'create', 'edit'], editable:true,
+          cellHeaderClasses:'width_percent_25',
+        },
+        {
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
         },{
@@ -1017,13 +1034,14 @@ define('pgadmin.node.exclusion_constraint', [
             msg = gettext('Please specify name for exclusion constraint.');
             this.errorModel.set('name', msg);
             return msg;
-          } else  if (
-            (_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)
-          ) {
-            msg = gettext('Please specify columns for exclusion constraint.');
-            this.errorModel.set('columns', msg);
-            return msg;
-          }
+          } 
+          // else  if (
+          //   (_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)
+          // ) {
+          //   msg = gettext('Please specify columns for exclusion constraint.');
+          //   this.errorModel.set('columns', msg);
+          //   return msg;
+          // }
 
           return null;
         },

@@ -713,7 +713,13 @@ define('pgadmin.node.foreign_key', [
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], editable:true,
           headerCell: Backgrid.Extension.CustomHeaderCell, cellHeaderClasses: 'width_percent_50',
-        },{
+        },
+        {
+          id: 'expr', label: gettext('expr'), type: 'text',
+          mode: ['properties', 'create', 'edit'], editable:true,
+          cellHeaderClasses:'width_percent_50',
+        },
+        {
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'],
         },{
@@ -1050,20 +1056,20 @@ define('pgadmin.node.foreign_key', [
 
           this.errorModel.clear();
 
-          if ((_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-            msg = gettext('Please specify columns for Foreign key.');
-            this.errorModel.set('columns', msg);
-            return msg;
-          }
+          // if ((_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
+          //   msg = gettext('Please specify columns for Foreign key.');
+          //   this.errorModel.set('columns', msg);
+          //   return msg;
+          // }
 
-          var coveringindex = this.get('coveringindex'),
-            autoindex = this.get('autoindex');
-          if (autoindex && (_.isUndefined(coveringindex) || _.isNull(coveringindex) ||
-              String(coveringindex).replace(/^\s+|\s+$/g, '') == '')) {
-            msg = gettext('Please specify covering index name.');
-            this.errorModel.set('coveringindex', msg);
-            return msg;
-          }
+          // var coveringindex = this.get('coveringindex'),
+          //   autoindex = this.get('autoindex');
+          // if (autoindex && (_.isUndefined(coveringindex) || _.isNull(coveringindex) ||
+          //     String(coveringindex).replace(/^\s+|\s+$/g, '') == '')) {
+          //   msg = gettext('Please specify covering index name.');
+          //   this.errorModel.set('coveringindex', msg);
+          //   return msg;
+          // }
 
           return null;
         },
