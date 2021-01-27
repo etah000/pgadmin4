@@ -1091,6 +1091,7 @@ class ServerNode(PGChildNodeView):
             try:
                 password = encrypt(password, crypt_key) \
                     if password is not None else server.password
+                pass
             except Exception as e:
                 current_app.logger.exception(e)
                 return internal_server_error(errormsg=str(e))
@@ -1639,6 +1640,7 @@ class ServerNode(PGChildNodeView):
             data={'is_tunnel_password_saved': False}
         )
 
+<<<<<<< HEAD
     def _check_ssh_info(self, gid, sid):
         """
         This function is used to get ssh connection information
@@ -1826,7 +1828,31 @@ class ServerNode(PGChildNodeView):
                 }
             )
 
+    def get_children_nodes(self, manager, **kwargs):
+        """
+        Returns the list of children nodes for the current nodes.
 
+        :param manager: Server Manager object
+        :param kwargs: Parameters to generate the correct set of browser tree
+          node
+        :return:
+        """
+        nodes = []
+        for module in self.blueprint.submodules[:]:
+
+            if module.NODE_TYPE in ('cluster', ):
+                continue
+
+            if isinstance(module, PGChildModule):
+                if (
+                    manager is not None and
+                    module.BackendSupported(manager, **kwargs)
+                ):
+                    nodes.extend(module.get_nodes(**kwargs))
+            else:
+                nodes.extend(module.get_nodes(**kwargs))
+
+        return nodes
 
 
 SchemaDiffRegistry(blueprint.node_type, ServerNode)

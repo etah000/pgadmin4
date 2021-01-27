@@ -25,6 +25,7 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.browser.server_groups.servers.clusters.utils import PGClusterChildNodeView
 from pgadmin.utils.ajax import gone
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error, unauthorized
@@ -95,14 +96,15 @@ class DatabaseModule(CollectionNodeModule):
 blueprint = DatabaseModule(__name__)
 
 
-class DatabaseView(PGChildNodeView):
+class DatabaseView(PGClusterChildNodeView):
     node_type = blueprint.node_type
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
-        {'type': 'int', 'id': 'sid'}
+        # {'type': 'int', 'id': 'sid'},
     ]
     ids = [
+        {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'}
     ]
 
@@ -115,48 +117,48 @@ class DatabaseView(PGChildNodeView):
             {'get': 'node'},
             {'get': 'nodes'}
         ],
-        'get_databases': [
-            {'get': 'get_databases'},
-            {'get': 'get_databases'}
-        ],
-        'sql': [
-            {'get': 'sql'}
-        ],
-        'msql': [
-            {'get': 'msql'},
-            {'get': 'msql'}
-        ],
-        'stats': [
-            {'get': 'statistics'},
-            {'get': 'statistics'}
-        ],
-        'dependency': [
-            {'get': 'dependencies'}
-        ],
-        'dependent': [
-            {'get': 'dependents'}
-        ],
+        # 'get_databases': [
+        #     {'get': 'get_databases'},
+        #     {'get': 'get_databases'}
+        # ],
+        # 'sql': [
+        #     {'get': 'sql'}
+        # ],
+        # 'msql': [
+        #     {'get': 'msql'},
+        #     {'get': 'msql'}
+        # ],
+        # 'stats': [
+        #     {'get': 'statistics'},
+        #     {'get': 'statistics'}
+        # ],
+        # 'dependency': [
+        #     {'get': 'dependencies'}
+        # ],
+        # 'dependent': [
+        #     {'get': 'dependents'}
+        # ],
         'children': [
             {'get': 'children'}
         ],
-        'connect': [
-            {
-                'get': 'connect_status',
-                'post': 'connect',
-                'delete': 'disconnect'
-            }
-        ],
-        'get_encodings': [
-            {'get': 'get_encodings'},
-            {'get': 'get_encodings'}
-        ],
-        'get_ctypes': [
-            {'get': 'get_ctypes'},
-            {'get': 'get_ctypes'}
-        ],
-        'vopts': [
-            {}, {'get': 'variable_options'}
-        ]
+        # 'connect': [
+        #     {
+        #         'get': 'connect_status',
+        #         'post': 'connect',
+        #         'delete': 'disconnect'
+        #     }
+        # ],
+        # 'get_encodings': [
+        #     {'get': 'get_encodings'},
+        #     {'get': 'get_encodings'}
+        # ],
+        # 'get_ctypes': [
+        #     {'get': 'get_ctypes'},
+        #     {'get': 'get_ctypes'}
+        # ],
+        # 'vopts': [
+        #     {}, {'get': 'variable_options'}
+        # ],
     })
 
     def check_precondition(action=None):
@@ -169,6 +171,16 @@ class DatabaseView(PGChildNodeView):
         def wrap(f):
             @wraps(f)
             def wrapped(self, *args, **kwargs):
+                sid = kwargs.get('sid', None)
+                if sid is None:
+                    gid = kwargs['gid']
+                    server = Server.query.filter_by(servergroup_id=gid).first()
+                    sid = server.id if server is not None else None
+                    kwargs['sid'] = sid
+
+                if sid is None:
+                    return make_json_response()
+
                 self.manager = get_driver(
                     PG_DEFAULT_DRIVER
                 ).connection_manager(
@@ -178,9 +190,9 @@ class DatabaseView(PGChildNodeView):
                     return gone(errormsg=_("Could not find the server."))
 
                 self.datlastsysoid = 0
-                if action and action in ["drop"]:
+                if action and action in ["drop"] and False:
                     self.conn = self.manager.connection()
-                elif 'did' in kwargs:
+                elif 'did' in kwargs and False:
                     self.conn = self.manager.connection(did=kwargs['did'])
                     self.db_allow_connection = True
                     # If connection to database is not allowed then
@@ -199,6 +211,7 @@ class DatabaseView(PGChildNodeView):
                     self.manager.version
                 )
 
+                print('args, kwargs:', args, kwargs)
                 return f(self, *args, **kwargs)
 
             return wrapped
@@ -207,8 +220,6 @@ class DatabaseView(PGChildNodeView):
 
     @check_precondition(action="list")
     def list(self, gid, sid):
-        last_system_oid = self.retrieve_last_system_oid()
-
         db_disp_res = None
         params = None
         if self.manager and self.manager.db_res:
@@ -220,22 +231,11 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             conn=self.conn,
-            last_system_oid=last_system_oid,
-            db_restrictions=db_disp_res
         )
         status, res = self.conn.execute_dict(SQL, params)
 
         if not status:
             return internal_server_error(errormsg=res)
-
-        for row in res['rows']:
-            if self.manager.db == row['name']:
-                connected = True
-                row['canDrop'] = False
-            else:
-                conn = self.manager.connection(row['name'], did=row['did'])
-                connected = conn.connected()
-                row['canDrop'] = True
 
         return ajax_response(
             response=res['rows'],
@@ -383,7 +383,8 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            did=did, conn=self.conn, last_system_oid=0
+            did=did, 
+            conn=self.conn,
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -392,62 +393,10 @@ class DatabaseView(PGChildNodeView):
 
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the database on the server.")
+                _("Could not find the virtual cluster on the server.")
             )
 
-        result = res
-        result['acl'] = None
-        result['typeacl'] = ''
-        result['variables'] = []
-
-        return ajax_response(
-            response=result,
-            status=200
-        )
-
-        SQL = render_template(
-            "/".join([self.template_path, 'acl.sql']),
-            did=did, conn=self.conn
-        )
-        status, dataclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        res = self.formatdbacl(res, dataclres['rows'])
-
-        SQL = render_template(
-            "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
-        )
-        status, defaclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        res = self.formatdbacl(res, defaclres['rows'])
-
-        result = res['rows'][0]
-        result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid)
-        # Fetching variable for database
-        SQL = render_template(
-            "/".join([self.template_path, 'get_variables.sql']),
-            did=did, conn=self.conn
-        )
-
-        status, res1 = self.conn.execute_dict(SQL)
-
-        if not status:
-            return internal_server_error(errormsg=res1)
-
-        # Get Formatted Security Labels
-        if 'seclabels' in result:
-            # Security Labels is not available for PostgreSQL <= 9.1
-            frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
-            result.update(frmtd_sec_labels)
-
-        # Get Formatted Variables
-        frmtd_variables = parse_variables_from_db(res1['rows'])
-        result.update(frmtd_variables)
+        result = res['rows']
 
         return ajax_response(
             response=result,
