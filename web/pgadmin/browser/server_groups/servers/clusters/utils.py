@@ -10,6 +10,18 @@
 """Database helper utilities"""
 
 
+from flask_babelex import gettext
+
+
+from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.model import Server
+from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.ajax import make_json_response, precondition_required,\
+    internal_server_error
+from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
+    CryptKeyMissing
+
+
 def parse_sec_labels_from_db(db_sec_labels):
     """
     Function to format the output for security label.
@@ -88,3 +100,48 @@ def parse_variables_from_db(db_variables):
                     variables_lst.append(var_dict)
 
     return {"variables": variables_lst}
+
+
+
+class PGClusterChildNodeView(PGChildNodeView):
+
+    def children(self, **kwargs):
+        """Build a list of treeview nodes from the child nodes."""
+
+        sid = kwargs.get('sid', None)
+        if sid is None:
+            gid = kwargs['gid']
+            server = Server.query.filter_by(servergroup_id=gid).first()
+            sid = server.id if server is not None else None
+            kwargs['sid'] = sid
+
+        if sid is None:
+            return make_json_response()
+
+        from pgadmin.utils.driver import get_driver
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+            sid=kwargs['sid']
+        )
+
+        try:
+            conn = manager.connection()
+            if not conn.connected():
+                status, msg = conn.connect()
+                if not status:
+                    return internal_server_error(errormsg=msg)
+        except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
+            raise
+        except Exception as e:
+            return precondition_required(
+                gettext(
+                    "Connection to the server has been lost."
+                )
+            )
+
+        # Return sorted nodes based on label
+        return make_json_response(
+            data=sorted(
+                self.get_children_nodes(manager, **kwargs),
+                key=lambda c: c['label']
+            )
+        )

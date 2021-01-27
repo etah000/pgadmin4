@@ -20,10 +20,13 @@ from pgadmin.browser.collection import CollectionNodeModule, PGChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.browser.server_groups.servers.clusters.utils import PGClusterChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone, bad_request
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.model import Server
+
 
 """
     This module is responsible for generating two nodes
@@ -132,13 +135,25 @@ def check_precondition(f):
     def wrap(*args, **kwargs):
         # Here args[0] will hold self & kwargs will hold gid,sid,did
         self = args[0]
+
+        sid = kwargs.get('sid', None)
+        if sid is None:
+            gid = kwargs['gid']
+            server = Server.query.filter_by(servergroup_id=gid).first()
+            sid = server.id if server is not None else None
+            kwargs['sid'] = sid
+
+        if sid is None:
+            return make_json_response()
+
         self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
             kwargs['sid']
         )
         if not self.manager:
             return gone(errormsg=gettext("Could not find the server."))
 
-        self.conn = self.manager.connection(did=kwargs['did'])
+        # self.conn = self.manager.connection(did=kwargs['did'])
+        self.conn = self.manager.connection()
         self.datlastsysoid = \
             self.manager.db_info[kwargs['did']]['datlastsysoid'] \
             if self.manager.db_info is not None and \
@@ -157,7 +172,7 @@ def check_precondition(f):
     return wrap
 
 
-class SchemaView(PGChildNodeView):
+class SchemaView(PGClusterChildNodeView):
     """
     This class is responsible for generating routes for schema node.
 
@@ -210,7 +225,7 @@ class SchemaView(PGChildNodeView):
     # did will be cluster name
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
-        {'type': 'int', 'id': 'sid'},
+        # {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'}
     ]
 
@@ -226,11 +241,11 @@ class SchemaView(PGChildNodeView):
         ],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'nodes'}, {'get': 'nodes'}],
-        'sql': [{'get': 'sql'}],
-        'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
-        'dependency': [{'get': 'dependencies'}],
-        'dependent': [{'get': 'dependents'}],
+        # 'sql': [{'get': 'sql'}],
+        # 'msql': [{'get': 'msql'}, {'get': 'msql'}],
+        # 'stats': [{'get': 'statistics'}],
+        # 'dependency': [{'get': 'dependencies'}],
+        # 'dependent': [{'get': 'dependents'}],
         'delete': [{'delete': 'delete'},
                    {'delete': 'delete'}]
     })
@@ -374,7 +389,7 @@ class SchemaView(PGChildNodeView):
         return data
 
     @check_precondition
-    def list(self, gid, sid, did):
+    def list(self, gid, did, sid):
         """
         This function is used to list all the schema nodes within the
         collection.

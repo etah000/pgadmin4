@@ -25,6 +25,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.browser.server_groups.servers.clusters.utils import PGClusterChildNodeView
 from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
@@ -42,9 +43,10 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     triggers import utils as trigger_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     compound_triggers import utils as compound_trigger_utils
+from pgadmin.model import Server
 
 
-class BaseTableView(PGChildNodeView, BasePartitionTable):
+class BaseTableView(PGClusterChildNodeView, BasePartitionTable):
     """
     This class is base class for tables and partitioned tables.
 
@@ -90,10 +92,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         def wrap(*args, **kwargs):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
+
+            sid = kwargs.get('sid', None)
+            if sid is None:
+                gid = kwargs['gid']
+                server = Server.query.filter_by(servergroup_id=gid).first()
+                sid = server.id if server is not None else None
+                kwargs['sid'] = sid
+
+            if sid is None:
+                return make_json_response()
+                            
             driver = get_driver(PG_DEFAULT_DRIVER)
             did = kwargs['did']
             self.manager = driver.connection_manager(kwargs['sid'])
-            self.conn = self.manager.connection(did=kwargs['did'])
+            # self.conn = self.manager.connection(did=kwargs['did'])
+            self.conn = self.manager.connection()
             self.qtIdent = driver.qtIdent
             self.qtTypeIdent = driver.qtTypeIdent
             # We need datlastsysoid to check if current table is system table

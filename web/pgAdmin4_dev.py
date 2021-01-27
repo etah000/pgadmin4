@@ -206,8 +206,12 @@ if __name__ == '__main__':
     # Reference:
     # https://github.com/pallets/werkzeug/issues/220#issuecomment-11176538
     try:
-        # print(app.url_map)
-        # exit(0)
+        cwd = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        url_file = os.path.join(cwd, 'url_map.txt')
+        with open(url_file, 'w') as fobj:
+            fobj.write(str(app.url_map))
+            # exit(0)
+            
         app.run(
             host=config.DEFAULT_SERVER,
             port=server_port,
