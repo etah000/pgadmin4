@@ -22,7 +22,7 @@ CREATE TABLE {{ data.table_str }}
 {% endfor %}
 {% endif %})
 {###  ENGINE ###}
-ENGINE = {{data.engine_str}}
+ENGINE{{data.engine_str}}
 ;
 {% endif %}
 {#===========================================#}
