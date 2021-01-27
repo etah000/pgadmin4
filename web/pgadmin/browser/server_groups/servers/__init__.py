@@ -8,6 +8,7 @@
 ##########################################################################
 
 import simplejson as json
+import paramiko
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for
@@ -30,7 +31,8 @@ from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from psycopg2 import Error as psycopg2_Error, OperationalError
-
+import os
+from pgadmin.utils import get_storage_directory
 
 def has_any(data, keys):
     """
@@ -262,6 +264,10 @@ class ServerNode(PGChildNodeView):
             [{'get': 'reload_configuration'}],
         'restore_point':
             [{'post': 'create_restore_point'}],
+        'start_server':
+            [{'post': 'start_server'}],
+        'stop_server':
+            [{'post': 'stop_server'}],
         'connect': [{
             'get': 'connect_status', 'post': 'connect', 'delete': 'disconnect'
         }],
@@ -787,7 +793,11 @@ class ServerNode(PGChildNodeView):
                 tunnel_port=data.get('tunnel_port', 22),
                 tunnel_username=data.get('tunnel_username', None),
                 tunnel_authentication=data.get('tunnel_authentication', 0),
-                tunnel_identity_file=data.get('tunnel_identity_file', None)
+                tunnel_identity_file=data.get('tunnel_identity_file', None),
+                ssh_port=data.get('ssh_port', 22),
+                ssh_username=data.get('ssh_username', 'root'),
+                ssh_authentication_type=data.get('ssh_authentication_type', 0),
+                ssh_key_file=data.get('ssh_key_file', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -804,9 +814,11 @@ class ServerNode(PGChildNodeView):
 
                 have_password = False
                 have_tunnel_password = False
+                have_ssh_password = False
                 password = None
                 passfile = None
                 tunnel_password = ''
+                ssh_password = ''
                 if 'password' in data and data["password"] != '':
                     # login with password
                     have_password = True
@@ -822,6 +834,12 @@ class ServerNode(PGChildNodeView):
                     tunnel_password = data['tunnel_password']
                     tunnel_password = \
                         encrypt(tunnel_password, crypt_key)
+
+                if 'ssh_password' in data and data["ssh_password"] != '':
+                    have_ssh_password = True
+                    ssh_password = data['ssh_password']
+                    ssh_password = \
+                        encrypt(ssh_password, crypt_key)
 
                 status, errmsg = conn.connect(
                     password=password,
@@ -852,6 +870,12 @@ class ServerNode(PGChildNodeView):
                         have_tunnel_password and \
                             config.ALLOW_SAVE_TUNNEL_PASSWORD:
                         setattr(server, 'tunnel_password', tunnel_password)
+                        db.session.commit()
+
+                    if 'save_ssh_password' in data and \
+                        data['save_ssh_password'] and \
+                        have_ssh_password:
+                        setattr(server, 'ssh_password', ssh_password)
                         db.session.commit()
 
                     user = manager.user_info
@@ -1614,6 +1638,195 @@ class ServerNode(PGChildNodeView):
             info=gettext("The saved password cleared successfully."),
             data={'is_tunnel_password_saved': False}
         )
+
+    def _check_ssh_info(self, gid, sid):
+        """
+        This function is used to get ssh connection information
+        :param gid:
+        :param sid:
+        :return: ssh_data
+        """
+        # Fetch Server Details
+        server = Server.query.filter_by(id=sid).first()
+        if server is None:
+            return bad_request(gettext("Server not found."))
+
+        if current_user and hasattr(current_user, 'id'):
+            # Fetch User Details.
+            user = User.query.filter_by(id=current_user.id).first()
+            if user is None:
+                return unauthorized(gettext("Unauthorized request."))
+        else:
+            return unauthorized(gettext("Unauthorized request."))
+
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        ) if request.data else {}
+
+        ssh_data = dict()
+        # Connect the Server
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
+        # Get enc key
+        crypt_key_present, crypt_key = get_crypt_key()
+        if not crypt_key_present:
+            raise CryptKeyMissing
+
+        if 'ssh_username' not in data:
+            ssh_data['ssh_username'] = server.ssh_username
+        else:
+            ssh_data['ssh_username'] = data['ssh_usernmae']
+
+        if 'ssh_port' not in data:
+            ssh_data['ssh_port'] = server.ssh_port
+        else:
+            ssh_data['ssh_port'] = data['ssh_port']
+
+        if 'host' not in data:
+            ssh_data['host'] = server.host
+        else:
+            ssh_data['host'] = data['host']
+
+        if 'ssh_authentication_type' not in data:
+            ssh_data['ssh_authentication_type'] = int(server.ssh_authentication_type)
+        else:
+            ssh_data['ssh_authentication_type'] = int(data['ssh_authentication_type'])
+
+        if ssh_data['ssh_authentication_type'] == 1:
+            # get ssh key file path and user email for generate an absolute path
+            if 'ssh_key_file' not in data:
+                ssh_data['ssh_key_file'] = server.ssh_key_file
+            else:
+                ssh_data['ssh_key_file'] = data['ssh_key_file']
+
+            if ssh_data['ssh_key_file'].startswith('/'):
+                ssh_data['ssh_key_file'] = ssh_data['ssh_key_file'][1:]
+            # retrieve ssh key directory path
+            storage_path = get_storage_directory()
+            if storage_path:
+                # generate full path of ssh key file
+                ssh_data['ssh_key_path'] = os.path.join(
+                    storage_path,
+                    ssh_data['ssh_key_file'].lstrip('/').lstrip('\\')
+                )
+                ssh_data['private_key'] = paramiko.RSAKey.from_private_key_file(
+                    ssh_data['ssh_key_path'])
+
+        if ssh_data['ssh_authentication_type'] == 0:
+            if 'ssh_password' not in data:
+                ssh_data['ssh_password'] = server.ssh_password
+            else:
+                ssh_data['ssh_password'] = data['ssh_password']
+
+        return ssh_data
+
+    def start_server(self, gid, sid):
+        """
+        Start the Server if server has been shutdown
+
+            Check the server ssh password is already been stored in the
+            database or not.
+            If Yes, connect the server and return connection.
+            If No, Raise HTTP error and ask for the password.
+        """
+        server = Server.query.filter_by(id=sid).first()
+        current_app.logger.info(
+            'Start Server Request for server#{0}'.format(sid)
+        )
+        # get ssh connection info
+        ssh_info = self._check_ssh_info(gid, sid)
+        if ssh_info['ssh_username'] is None or (
+            ssh_info['ssh_key_file'] is None and
+            ssh_info['ssh_password'] is None):
+            errmsg = 'please submit ssh connection information in properties!'
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
+        # Connect the Server
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
+        status = True
+        try:
+            # create ssh client obj
+            ssh = paramiko.SSHClient()
+            # allow connect host which not in known_hosts
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            # connect to host
+            if ssh_info['ssh_authentication_type'] == 1:
+                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
+                            , username=ssh_info['ssh_username'],
+                            pkey=ssh_info['private_key'])
+            elif ssh_info['ssh_authentication_type'] == 0:
+                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
+                            , username=ssh_info['ssh_username'],
+                            password=ssh_info['ssh_password'])
+            # execute ssh command
+            stdin, stdout, stderr = ssh.exec_command(
+                'service snowball-server status')
+            # get result of ssh command
+            result = stdout.read()
+            if str(result).find('is running') != -1:
+                errmsg = 'snowball server already running'
+                status = False
+            else:
+                stdin, stdout, stderr = ssh.exec_command(
+                    'service snowball-server start')
+                result = stdout.read()
+                if stderr.channel.recv_exit_status() != 0:
+                    status = False
+                    errmsg = stderr.channel.recv_stderr(4096)
+            # close connect
+            ssh.close()
+
+        except OperationalError as e:
+            current_app.logger.exception(e)
+            return internal_server_error(errormsg=str(e))
+        except Exception as e:
+            current_app.logger.exception(e)
+            return internal_server_error(errormsg=str(e))
+
+        if not status:
+            if hasattr(str, 'decode'):
+                errmsg = errmsg.decode('utf-8')
+
+            current_app.logger.error(
+                "Could not start server(#{0}) - '{1}'.\nError: {2}"
+                .format(server.id, server.name, errmsg)
+            )
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
+        else:
+            # Release Connection
+            #manager.release(database=server.maintenance_db)
+            current_app.logger.info('Server started: \
+                %s - %s' % (server.id, server.name))
+            # Update the recovery and wal pause option for the server
+            # if connected successfully
+            _, _, in_recovery, wal_paused =\
+                recovery_state(conn, manager.version)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Server started."),
+                data={
+                    'icon': server_icon_and_background(True, manager, server),
+                    'connected': True,
+                    'server_type': manager.server_type,
+                    'type': manager.server_type,
+                    'version': manager.version,
+                    'db': manager.db,
+                    'user': manager.user_info,
+                    'in_recovery': in_recovery,
+                    'wal_pause': wal_paused
+                }
+            )
+
+
 
 
 SchemaDiffRegistry(blueprint.node_type, ServerNode)

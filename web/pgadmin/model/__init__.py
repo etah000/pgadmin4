@@ -173,6 +173,19 @@ class Server(db.Model):
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(db.String(64), nullable=True)
+    ssh_port = db.Column(
+        db.Integer(),
+        db.CheckConstraint('port <= 65534'),
+        nullable=True)
+    ssh_username = db.Column(db.String(64), nullable=True)
+    ssh_authentication_type = db.Column(
+        db.Integer(),
+        db.CheckConstraint('ssh_authentication_type >= 0 AND '
+                           'ssh_authentication_type <= 1'),
+        nullable=False
+    )
+    ssh_key_file = db.Column(db.String(64), nullable=True)
+    ssh_password = db.Column(db.String(64), nullable=True)
 
 
 class ModulePreference(db.Model):

@@ -89,6 +89,16 @@ define('pgadmin.node.server', [
           category: 'connect', priority: 4, label: gettext('Connect Server'),
           icon: 'fa fa-link', enable : 'is_not_connected',
         },{
+          name: 'start_server', node: 'server', module: this,
+          applies: ['tools', 'context'], callback: 'start_server',
+          category: 'start', priority: 4, label: gettext('Start Server'),
+          icon: 'fa fa-link',
+        },{
+          name: 'stop_server', node: 'server', module: this,
+          applies: ['tools', 'context'], callback: 'stop_server',
+          category: 'stop', priority: 4, label: gettext('Stop Server'),
+          icon: 'fa fa-link',
+        },{
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
           category: 'drop', priority: 5, label: gettext('Disconnect Server'),
@@ -377,6 +387,138 @@ define('pgadmin.node.server', [
             function(evt) { evt.cancel = false; }
           ).set({'title': gettext('Restore point name')});
         },
+        /*start server*/
+        start_server: function(args, notify) {
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = 'item' in input ? input.item : t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          notify = notify || _.isUndefined(notify) || _.isNull(notify);
+
+          var start_server = function() {
+            $.ajax({
+              url: obj.generate_url(i, 'start_server', d, true),
+              type:'POST',
+            })
+              .done(function(res) {
+                if (res.success == 1) {
+                  Alertify.success(res.info);
+                  d = t.itemData(i);
+                  t.removeIcon(i);
+                  d.connected = false;
+                  d.icon = 'icon-server-not-connected';
+                  t.addIcon(i, {icon: d.icon});
+                  obj.callbacks.refresh.apply(obj, [null, i]);
+                  if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+                    delete pgBrowser.serverInfo[d._id];
+                  }
+                  // pgBrowser.enable_disable_menus(i);
+                  // Trigger server disconnect event
+                  // pgBrowser.Events.trigger(
+                  //   'pgadmin:server:disconnect',
+                  //   {item: i, data: d}, false
+                  // );
+                }
+                else {
+                  try {
+                    Alertify.error(res.errormsg);
+                  } catch (e) {
+                    console.warn(e.stack || e);
+                  }
+                  t.unload(i);
+                }
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+                t.unload(i);
+              });
+          };
+
+          if (notify) {
+            Alertify.confirm(
+              gettext('Start server'),
+              gettext('Are you sure you want to start the server %s?', d.label),
+              function() { start_server(); },
+              function() { return true;}
+            );
+          } else {
+            start_server();
+          }
+
+          return false;
+        },
+
+        /*stop server*/
+        stop_server: function(args, notify) {
+          var input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = 'item' in input ? input.item : t.selected(),
+            d = i && i.length == 1 ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          notify = notify || _.isUndefined(notify) || _.isNull(notify);
+
+          var stop_server = function() {
+            $.ajax({
+              url: obj.generate_url(i, 'stop_server', d, true),
+              type:'POST',
+            })
+              .done(function(res) {
+                if (res.success == 1) {
+                  Alertify.success(res.info);
+                  d = t.itemData(i);
+                  t.removeIcon(i);
+                  d.connected = false;
+                  d.icon = 'icon-server-not-connected';
+                  t.addIcon(i, {icon: d.icon});
+                  obj.callbacks.refresh.apply(obj, [null, i]);
+                  if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+                    delete pgBrowser.serverInfo[d._id];
+                  }
+                  pgBrowser.enable_disable_menus(i);
+                  // Trigger server disconnect event
+                  pgBrowser.Events.trigger(
+                    'pgadmin:server:disconnect',
+                    {item: i, data: d}, false
+                  );
+                }
+                else {
+                  try {
+                    Alertify.error(res.errormsg);
+                  } catch (e) {
+                    console.warn(e.stack || e);
+                  }
+                  t.unload(i);
+                }
+              })
+              .fail(function(xhr, status, error) {
+                Alertify.pgRespErrorNotify(xhr, error);
+                t.unload(i);
+              });
+          };
+
+          if (notify) {
+            Alertify.confirm(
+              gettext('Stop server'),
+              gettext('Are you sure you want to stop server %s?', d.label),
+              function() { stop_server(); },
+              function() { return true;}
+            );
+          } else {
+            stop_server();
+          }
+
+          return false;
+        },
+
 
         /* Change password */
         change_password: function(args){
@@ -994,38 +1136,64 @@ define('pgadmin.node.server', [
             return false;
           },
         }, {
-          id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+          // id: 'hostaddr', label: gettext('Hmeost address'), type: 'text', group: gettext('Advanced'),
+          // mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+        // },{
+        //   id: 'db_res', label: gettext('DB restriction'), type: 'select2', group: gettext('Advanced'),
+        //   mode: ['properties', 'edit', 'create'], readonly: 'isConnected', select2: {multiple: true, allowClear: false,
+        //     tags: true, tokenSeparators: [','], first_empty: false, selectOnClose: true, emptyOptions: true},
+        // },{
+        //   id: 'passfile', label: gettext('Password file'), type: 'text',
+        //   group: gettext('Advanced'), mode: ['edit', 'create'],
+        //   disabled: 'isValidLib', readonly: 'isConnected', control: Backform.FileControl,
+        //   dialog_type: 'select_file', supp_types: ['*'],
+        // },{
+        //   id: 'passfile', label: gettext('Password file'), type: 'text',
+        //   group: gettext('Advanced'), mode: ['properties'],
+        //   visible: function(model) {
+        //     var passfile = model.get('passfile');
+        //     return !_.isUndefined(passfile) && !_.isNull(passfile);
+        //   },
+        // },{
+        //   id: 'connect_timeout', label: gettext('Connection timeout (seconds)'),
+        //   type: 'int', group: gettext('Advanced'),
+        //   mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+        //   min: 0,
+        // },{
+          id: 'ssh_port', label: gettext('SSH port'), type: 'int', group: gettext('Advanced'),
+          mode: ['properties', 'edit', 'create'],  max: 65535,
         },{
-          id: 'db_res', label: gettext('DB restriction'), type: 'select2', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected', select2: {multiple: true, allowClear: false,
-            tags: true, tokenSeparators: [','], first_empty: false, selectOnClose: true, emptyOptions: true},
+          id: 'ssh_username', label: gettext('Username'), type: 'text', group: gettext('Advanced'),
+          mode: ['properties', 'edit', 'create'],
         },{
-          id: 'passfile', label: gettext('Password file'), type: 'text',
-          group: gettext('Advanced'), mode: ['edit', 'create'],
-          disabled: 'isValidLib', readonly: 'isConnected', control: Backform.FileControl,
-          dialog_type: 'select_file', supp_types: ['*'],
-        },{
-          id: 'passfile', label: gettext('Password file'), type: 'text',
-          group: gettext('Advanced'), mode: ['properties'],
-          visible: function(model) {
-            var passfile = model.get('passfile');
-            return !_.isUndefined(passfile) && !_.isNull(passfile);
-          },
-        },{
-          id: 'connect_timeout', label: gettext('Connection timeout (seconds)'),
-          type: 'int', group: gettext('Advanced'),
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
-          min: 0,
+          id: 'ssh_authentication_type', label: gettext('Authentication'), type: 'switch',
+          mode: ['properties', 'edit', 'create'], group: gettext('Advanced'),
+          'options': {'onText':  gettext('Identity file'),
+            'offText':  gettext('Password'), 'size': 'mini', width: '90'},
         }, {
-            id: 'ssh_host', label: gettext(''),
-            ssh_port: 22,
-            ssh_username: undefined,
-            ssh_password: undefined,
-            ssh_authentication_type: 0,
-            save_ssh_password: false,
-            ssh_key_file: undefined,
+          id: 'ssh_key_file', label: gettext('SSH Key file'), type: 'text',
+          group: gettext('Advanced'), mode: ['properties', 'edit', 'create'],
+          control: Backform.FileControl, dialog_type: 'select_file', supp_types: ['*'],
+          deps: ['ssh_authentication_type'],
+          disabled: function(model) {
+            let file = model.get('ssh_key_file');
+            if (!model.get('ssh_authentication_type') && file) {
+              setTimeout(function() {
+                model.set('ssh_key_file', null);
+              }, 10);
+            }
+            return !model.get('ssh_authentication_type');
           },
+        },{
+          id: 'ssh_password', label: gettext('Password'), type: 'password',
+          group: gettext('Advanced'), control: 'input', mode: ['properties', 'edit', 'create'],
+        }, {
+          id: 'save_ssh_password', controlLabel: gettext('Save password?'),
+          type: 'checkbox', group: gettext('Advanced'), mode: ['properties', 'edit', 'create'],
+          deps: ['connect_now'], visible: function(model) {
+            return model.get('connect_now') && model.isNew();
+          },
+        },
         ],
         validate: function() {
           const validateModel = new modelValidation.ModelValidation(this);
