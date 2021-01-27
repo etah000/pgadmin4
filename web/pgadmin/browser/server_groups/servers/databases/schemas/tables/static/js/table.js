@@ -340,9 +340,22 @@ define('pgadmin.node.table', [
           options: [
             {label: gettext('MergeTree'), value: 'MergeTree'},
             {label: gettext('ReplicatedMergeTree'), value: 'ReplicatedMergeTree'},
-            {label: gettext('Distributed'), value: 'ReplicatedMergeTree'}
+            {label: gettext('Distributed'), value: 'Distributed'}
           ],
-          control: 'select2', select2: { allowClear: false, width: '100%' },
+          control: Backform.NodeAjaxOptionsControl.extend({
+            onChange:function(){
+              let engine=document.querySelector('.General>.engine select');
+              let selectedIndex=engine.selectedIndex;
+              let engineValue=engine.options[selectedIndex].value;
+              if(engineValue=='Distributed'){
+                document.querySelector('.Constraints>div>ul>li:nth-child(2)').style.display="none";
+                document.querySelector('.Constraints>div>ul>li:nth-child(3)').style.display="none";
+              }else{
+                document.querySelector('.Constraints>div>ul>li:nth-child(2)').style.display="";
+                document.querySelector('.Constraints>div>ul>li:nth-child(3)').style.display="";
+              }
+            }
+          }), select2: { allowClear: false, width: '100%' },
         },
         {
           id: 'relowner', label: gettext('Owner'), type: 'text', node: 'role',
