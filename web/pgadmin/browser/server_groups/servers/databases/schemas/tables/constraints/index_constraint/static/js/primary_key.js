@@ -120,7 +120,13 @@ define('pgadmin.node.primary_key', [
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], editable:true,
           cellHeaderClasses:'width_percent_40',
-        },{
+        },
+        {
+          id: 'expr', label: gettext('Expr'), type: 'text',
+          mode: ['properties', 'create', 'edit'], editable:true,
+          cellHeaderClasses:'width_percent_40',
+        },
+        {
           id: 'oid', label: gettext('OID'), cell: 'string',
           type: 'text' , mode: ['properties'], editable: false,
           cellHeaderClasses:'width_percent_20',

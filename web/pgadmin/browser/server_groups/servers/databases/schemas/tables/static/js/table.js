@@ -618,7 +618,7 @@ define('pgadmin.node.table', [
             group: gettext('Primary Key'), mode: ['edit', 'create'],
             canEdit: true, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
-            columns : ['name', 'columns'],
+            columns : ['expr', 'columns'],
             canAdd: function(m) {
               if (m.get('is_partitioned') && !_.isUndefined(m.top.node_info) && !_.isUndefined(m.top.node_info.server)
               && !_.isUndefined(m.top.node_info.server.version) &&
