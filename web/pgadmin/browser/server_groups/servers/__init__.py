@@ -1640,7 +1640,6 @@ class ServerNode(PGChildNodeView):
             data={'is_tunnel_password_saved': False}
         )
 
-<<<<<<< HEAD
     def _check_ssh_info(self, gid, sid):
         """
         This function is used to get ssh connection information
