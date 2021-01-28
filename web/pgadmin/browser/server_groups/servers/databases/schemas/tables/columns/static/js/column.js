@@ -507,9 +507,9 @@ define('pgadmin.node.column', [
               flag = false;
             _.each(m.datatypes, function(o) {
               if ( of_type == o.value ) {
-                if(o.precision) {
-                  m.set('min_val_attprecision', 0, {silent: true});
-                  m.set('max_val_attprecision', o.max_val, {silent: true});
+                if(o.scale) {
+                  m.set('min_val_attprecision', o.min_scale_val, {silent: true});
+                  m.set('max_val_attprecision', o.max_scale_val, {silent: true});
                   flag = true;
                 }
               }
