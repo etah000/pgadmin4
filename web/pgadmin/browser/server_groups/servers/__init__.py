@@ -510,6 +510,10 @@ class ServerNode(PGChildNodeView):
             'tunnel_username': 'tunnel_username',
             'tunnel_authentication': 'tunnel_authentication',
             'tunnel_identity_file': 'tunnel_identity_file',
+            'ssh_port': 'ssh_port',
+            'ssh_username': 'ssh_username',
+            'ssh_authentication_type': 'ssh_authentication_type',
+            'ssh_key_file': 'ssh_key_file',
         }
 
         disp_lbl = {
@@ -709,7 +713,14 @@ class ServerNode(PGChildNodeView):
                 'tunnel_identity_file': server.tunnel_identity_file
                 if server.tunnel_identity_file else None,
                 'tunnel_authentication': server.tunnel_authentication
-                if server.tunnel_authentication else 0
+                if server.tunnel_authentication else 0,
+                'ssh_username': server.ssh_username if server.ssh_username
+                else None,
+                'ssh_port': server.ssh_port,
+                'ssh_key_file': server.ssh_key_file
+                if server.ssh_key_file else None,
+                'ssh_authentication_type': server.ssh_authentication_type
+                if server.ssh_authentication_type else 0
             }
         )
 
@@ -1713,12 +1724,14 @@ class ServerNode(PGChildNodeView):
                 )
                 ssh_data['private_key'] = paramiko.RSAKey.from_private_key_file(
                     ssh_data['ssh_key_path'])
+            ssh_data['ssh_password'] = None
 
         if ssh_data['ssh_authentication_type'] == 0:
             if 'ssh_password' not in data:
                 ssh_data['ssh_password'] = server.ssh_password
             else:
                 ssh_data['ssh_password'] = data['ssh_password']
+            ssh_data['ssh_key_file'] = None
 
         return ssh_data
 
@@ -1726,10 +1739,9 @@ class ServerNode(PGChildNodeView):
         """
         Start the Server if server has been shutdown
 
-            Check the server ssh password is already been stored in the
-            database or not.
-            If Yes, connect the server and return connection.
-            If No, Raise HTTP error and ask for the password.
+        :param gid:
+        :param sid:
+        :return:
         """
         server = Server.query.filter_by(id=sid).first()
         current_app.logger.info(
@@ -1738,8 +1750,10 @@ class ServerNode(PGChildNodeView):
         # get ssh connection info
         ssh_info = self._check_ssh_info(gid, sid)
         if ssh_info['ssh_username'] is None or (
-            ssh_info['ssh_key_file'] is None and
-            ssh_info['ssh_password'] is None):
+                ssh_info['ssh_key_file'] is None and
+                ssh_info['ssh_authentication_type'] == 1) or (
+                ssh_info['ssh_password'] is None and
+                ssh_info['ssh_authentication_type'] == 0):
             errmsg = 'please submit ssh connection information in properties!'
             return make_json_response(
                 success=0,
@@ -1802,14 +1816,14 @@ class ServerNode(PGChildNodeView):
                 errormsg=errmsg
             )
         else:
-            # Release Connection
-            #manager.release(database=server.maintenance_db)
             current_app.logger.info('Server started: \
                 %s - %s' % (server.id, server.name))
             # Update the recovery and wal pause option for the server
             # if connected successfully
             _, _, in_recovery, wal_paused =\
                 recovery_state(conn, manager.version)
+
+            self.connect(gid, sid)
 
             return make_json_response(
                 success=1,
@@ -1852,6 +1866,110 @@ class ServerNode(PGChildNodeView):
                 nodes.extend(module.get_nodes(**kwargs))
 
         return nodes
+
+    def stop_server(self, gid, sid):
+        """
+        Stop the Server if server is running
+
+        :param gid:
+        :param sid:
+        :return:
+        """
+        server = Server.query.filter_by(id=sid).first()
+        current_app.logger.info(
+            'Stop Server Request for server#{0}'.format(sid)
+        )
+        # get ssh connection info
+        ssh_info = self._check_ssh_info(gid, sid)
+        if ssh_info['ssh_username'] is None or (
+            ssh_info['ssh_key_file'] is None and
+            ssh_info['ssh_password'] is None):
+            errmsg = 'please submit ssh connection information in properties!'
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
+        # Connect the Server
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        conn = manager.connection()
+
+        status = True
+        try:
+            # create ssh client obj
+            ssh = paramiko.SSHClient()
+            # allow connect host which not in known_hosts
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            # connect to host
+            if ssh_info['ssh_authentication_type'] == 1:
+                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
+                            , username=ssh_info['ssh_username'],
+                            pkey=ssh_info['private_key'])
+            elif ssh_info['ssh_authentication_type'] == 0:
+                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
+                            , username=ssh_info['ssh_username'],
+                            password=ssh_info['ssh_password'])
+            # execute ssh command
+            stdin, stdout, stderr = ssh.exec_command(
+                'service snowball-server status')
+            # get result of ssh command
+            result = stdout.read()
+            if str(result).find('is stopped') != -1:
+                errmsg = 'snowball server is stopped'
+                status = False
+            else:
+                stdin, stdout, stderr = ssh.exec_command(
+                    'service snowball-server stop')
+                result = stdout.read()
+                if stderr.channel.recv_exit_status() != 0:
+                    status = False
+                    errmsg = stderr.channel.recv_stderr(4096)
+            # close connect
+            ssh.close()
+
+        except OperationalError as e:
+            current_app.logger.exception(e)
+            return internal_server_error(errormsg=str(e))
+        except Exception as e:
+            current_app.logger.exception(e)
+            return internal_server_error(errormsg=str(e))
+
+        if not status:
+            if hasattr(str, 'decode'):
+                errmsg = errmsg.decode('utf-8')
+
+            current_app.logger.error(
+                "Could not start server(#{0}) - '{1}'.\nError: {2}"
+                .format(server.id, server.name, errmsg)
+            )
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
+        else:
+            # Release Connection
+            manager.release(database=server.maintenance_db)
+            current_app.logger.info('Server stopped: \
+                %s - %s' % (server.id, server.name))
+            # Update the recovery and wal pause option for the server
+            # if connected successfully
+            _, _, in_recovery, wal_paused =\
+                recovery_state(conn, manager.version)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Server stopped."),
+                data={
+                    'icon': server_icon_and_background(True, manager, server),
+                    'connected': True,
+                    'server_type': manager.server_type,
+                    'type': manager.server_type,
+                    'version': manager.version,
+                    'db': manager.db,
+                    'user': manager.user_info,
+                    'in_recovery': in_recovery,
+                    'wal_pause': wal_paused
+                }
+            )
 
 
 SchemaDiffRegistry(blueprint.node_type, ServerNode)

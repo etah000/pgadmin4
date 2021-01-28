@@ -101,6 +101,14 @@ class ServerManager(object):
             self.tunnel_authentication = None
             self.tunnel_identity_file = None
             self.tunnel_password = None
+        self.ssh_port = \
+            22 if server.ssh_port is None else server.ssh_port
+        self.ssh_username = server.ssh_username
+        self.ssh_authentication_type = 0 \
+            if server.ssh_authentication_type is None \
+            else server.ssh_authentication_type
+        self.ssh_key_file = server.ssh_key_file
+        self.ssh_password = server.ssh_password
 
         for con in self.connections:
             self.connections[con]._release()
