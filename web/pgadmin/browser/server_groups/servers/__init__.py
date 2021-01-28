@@ -15,7 +15,7 @@ from flask import render_template, request, make_response, jsonify, \
 from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.browser.server_groups.servers.types import ServerType
-from pgadmin.browser.utils import PGChildNodeView
+from pgadmin.browser.utils import PGChildNodeView, PGChildModule
 from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
     make_response as ajax_response, internal_server_error, unauthorized, gone
 from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword

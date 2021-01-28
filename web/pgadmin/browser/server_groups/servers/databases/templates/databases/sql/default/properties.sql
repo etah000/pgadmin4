@@ -23,8 +23,7 @@ SELECT
     '' AS acl,
     engine,
     data_path,
-    metadata_path,
-    uuid
+    metadata_path
 FROM system.databases
     {% if did %} WHERE name = '{{ did }}' {% endif %}
     {% if name %} WHERE name = '{{ name }}' {% endif %}

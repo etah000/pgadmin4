@@ -7,8 +7,7 @@
     name,
     engine,
     data_path,
-    metadata_path,
-    uuid
+    metadata_path
 FROM
     system.databases
 WHERE 1
