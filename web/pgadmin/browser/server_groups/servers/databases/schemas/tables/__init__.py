@@ -24,6 +24,7 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from .utils import BaseTableView
+from .table_utils import shifter
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
@@ -1010,64 +1011,38 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         #         data['coll_inherits'], encoding='utf-8'
         #     )
 
-        # if 'foreign_key' in data:
-        #     for c in data['foreign_key']:
-        #         schema, table = fkey_utils.get_parent(
-        #             self.conn, c['columns'][0]['references'])
-        #         c['remote_schema'] = schema
-        #         c['remote_table'] = table
-
         try:
-            partitions_sql = ''
-            # if self.is_table_partitioned(data):
-            #     data['relkind'] = 'p'
-            #     # create partition scheme
-            #     data['partition_scheme'] = self.get_partition_scheme(data)
-            #     partitions_sql = self.get_partitions_sql(data)
-
             # Update the vacuum table settings.
             # BaseTableView.update_vacuum_settings(self, 'vacuum_table', data)
             # Update the vacuum toast table settings.
             # BaseTableView.update_vacuum_settings(self, 'vacuum_toast', data)
+
+            # create multi tables on cluster
+            if data['cluster'] and data['shifted'] \
+                and data['engine'] in ('MergeTree', 'ReplicatedMergeTree'):
+                return self._create_shifted_tables(gid, sid, did, data)
 
             SQL = render_template(
                 "/".join([self.table_template_path, 'create.sql']),
                 data=data, conn=self.conn, did=did
             )
 
-            # Append SQL for partitions
-            SQL += '\n' + partitions_sql
-
-            # print('========================\n', SQL)
-            # return make_json_response()
-
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
+
+            # print('========================\n', SQL)
+            # return make_json_response()
+
+
             # PostgreSQL truncates the table name to 63 characters.
             # Have to truncate the name like PostgreSQL to get the
             # proper OID
-            CONST_MAX_CHAR_COUNT = 63
+            # CONST_MAX_CHAR_COUNT = 63
+            # if len(data['name']) > CONST_MAX_CHAR_COUNT:
+            #     data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
 
-            if len(data['name']) > CONST_MAX_CHAR_COUNT:
-                data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
-
-            # Get updated schema oid
-            # SQL = render_template(
-            #     "/".join([self.table_template_path, 'get_schema_oid.sql']),
-            #     tname=data['name']
-            # )
-
-            # status, new_scid = self.conn.execute_scalar(SQL)
-            # if not status:
-            #     return internal_server_error(errormsg=new_scid)
-
-            # we need oid to to add object in tree at browser
-            # SQL = render_template(
-            #     "/".join([self.table_template_path, 'get_oid.sql']),
-            #     scid=new_scid, data=data
-            # )
 
             # status, tid = self.conn.execute_scalar(SQL)
             # if not status:
@@ -1085,6 +1060,33 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         except Exception as e:
             traceback.print_exc()
             return internal_server_error(errormsg=str(e))
+
+    def _create_shifted_tables(self, gid, sid, did, data):
+        cluster = data['cluster']
+        local_table = data['name']
+        dist_db = data['shifted_params']['distributed_database']
+        dist_tbl_suffix = data['shifted_params']['distributed_table_suffix']
+        local_tbl_suffix = data['shifted_params']['local_table_suffix']
+        data['cluster'] = None
+
+        data['name'] = "{local_table}"
+        data['engine_params']['zoo_path'] = '/snowball/tables/{rmt_db}/{local_table}/{shard_num}'
+        data['engine_params']['replica_name'] = '{replica_num}'        
+
+        SQL = render_template(
+            "/".join([self.table_template_path, 'create.sql']),
+            data=data, conn=self.conn, did="{database}"
+        )
+
+        rsp = shifter(
+            self.conn, cluster,
+            tbl_ddl_template=SQL, tbl_name=local_table,
+            dist_db=dist_db, 
+            dist_tbl_suffix=dist_tbl_suffix, 
+            local_tbl_suffix=local_tbl_suffix,
+        )
+
+        return make_json_response(data=rsp)
 
     @BaseTableView.check_precondition
     def update(self, gid, sid, did, tid, scid=0):

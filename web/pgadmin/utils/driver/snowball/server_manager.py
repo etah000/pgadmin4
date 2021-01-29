@@ -47,6 +47,7 @@ class ServerManager(object):
         self.tunnel_created = False
 
         self.update(server)
+        self.server = server
 
     def update(self, server):
         assert (server is not None)
@@ -116,6 +117,25 @@ class ServerManager(object):
         self.update_session()
 
         self.connections = dict()
+
+    def copy(self, host, hostaddr):
+        """
+
+        Return a new instance that not managed by Driver.
+        """        
+        new = ServerManager(self.server)
+        new.sid = 1024 + self.sid
+        new.host = host
+        new.hostaddr = hostaddr
+
+        for con in new.connections:
+            new.connections[con]._release()
+
+        # self.update_session()
+
+        new.connections = dict()
+
+        return new
 
     def as_dict(self):
         """

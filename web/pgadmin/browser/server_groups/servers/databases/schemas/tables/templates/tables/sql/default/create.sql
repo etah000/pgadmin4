@@ -20,7 +20,7 @@
 
 
 
-CREATE TABLE {{did}}.{{conn|qtIdent(data.name)}}{% if data.cluster %} ON CLUSTER {{ data.cluster }}{% endif %}
+CREATE TABLE IF NOT EXISTS {{did}}.{{data.name}}{% if data.cluster %} ON CLUSTER {{ data.cluster }}{% endif %}
 
 {% if data.columns|length > 0 %}({% endif %}
 
