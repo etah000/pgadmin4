@@ -104,7 +104,7 @@ class DatabaseView(PGClusterChildNodeView):
         # {'type': 'int', 'id': 'sid'},
     ]
     ids = [
-        {'type': 'int', 'id': 'sid'},
+        # {'type': 'int', 'id': 'sid'},
         {'type': 'string', 'id': 'did'}
     ]
 
