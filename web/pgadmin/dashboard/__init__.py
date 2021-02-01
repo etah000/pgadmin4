@@ -298,21 +298,21 @@ def index(sid=None, did=None):
     # Show the appropriate dashboard based on the identifiers passed to us
     if sid is None and did is None:
         return render_template('/dashboard/welcome_dashboard.html')
-    if did is None:
+    else:
         return render_template(
             '/dashboard/server_dashboard.html',
             sid=sid,
             rates=rates,
             version=g.version
         )
-    else:
-        return render_template(
-            '/dashboard/database_dashboard.html',
-            sid=sid,
-            did=did,
-            rates=rates,
-            version=g.version
-        )
+    # else:
+    #     return render_template(
+    #         '/dashboard/database_dashboard.html',
+    #         sid=sid,
+    #         did=did,
+    #         rates=rates,
+    #         version=g.version
+    #     )
 
 
 def get_data(sid, did, template):
@@ -440,10 +440,10 @@ def config(sid=None):
 
 
 @blueprint.route(
-    '/cancel_query/<int:sid>/<int:pid>', methods=['DELETE']
+    '/cancel_query/<int:sid>/<string:pid>', methods=['DELETE']
 )
 @blueprint.route(
-    '/cancel_query/<int:sid>/<int:did>/<int:pid>', methods=['DELETE']
+    '/cancel_query/<int:sid>/<int:did>/<string:pid>', methods=['DELETE']
 )
 @login_required
 @check_precondition
@@ -455,8 +455,8 @@ def cancel_query(sid=None, did=None, pid=None):
     :param pid: session/process id
     :return: Response
     """
-    sql = "SELECT pg_cancel_backend({0});".format(pid)
-    status, res = g.conn.execute_scalar(sql)
+    sql = "KILL QUERY WHERE query_id='{0}';".format(pid)
+    status, res = g.conn.execute_dict(sql)
     if not status:
         return internal_server_error(errormsg=res)
 
@@ -467,10 +467,10 @@ def cancel_query(sid=None, did=None, pid=None):
 
 
 @blueprint.route(
-    '/terminate_session/<int:sid>/<int:pid>', methods=['DELETE']
+    '/terminate_session/<int:sid>/<string:pid>', methods=['DELETE']
 )
 @blueprint.route(
-    '/terminate_session/<int:sid>/<int:did>/<int:pid>', methods=['DELETE']
+    '/terminate_session/<int:sid>/<int:did>/<string:pid>', methods=['DELETE']
 )
 @login_required
 @check_precondition

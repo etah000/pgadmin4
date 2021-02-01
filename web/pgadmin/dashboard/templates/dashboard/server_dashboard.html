@@ -1,4 +1,5 @@
 <div class="container-fluid dashboard-container negative-space">
+    <!--
     <div id="dashboard-graphs" class="dashboard-hidden">
         <div class="row dashboard-row">
             <div class="col-md-6 col-12">
@@ -55,6 +56,7 @@
             </div>
         </div>
     </div>
+    -->
     <div id="dashboard-activity" class="card dashboard-row dashboard-hidden">
         <div class="card-header">
             <span id="server-activity-header">{{ _('Server activity') }}</span>
@@ -65,15 +67,15 @@
                     <ul class="nav nav-tabs" role="tablist" aria-labelledby="server-activity-header">
                         <li class="nav-item">
                             <a class="nav-link active show" id="tab_panel_server_activity_tab" href="#tab_panel_server_activity" aria-controls="tab_server_activity"
-                                role="tab" data-toggle="tab">{{_('Sessions') }}</a>
+                                role="tab" data-toggle="tab">{{_('Processes') }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="tab_panel_server_locks_tab" href="#tab_panel_server_locks" aria-controls="tab_server_locks"
-                                role="tab" data-toggle="tab">{{ _('Locks') }}</a>
+                                role="tab" data-toggle="tab">{{ _('Replicas Monitor') }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="tab_panel_server_prepared_tab" href="#tab_panel_server_prepared" aria-controls="tab_server_prepared"
-                                role="tab" data-toggle="tab">{{ _('Prepared Transactions') }}</a>
+                                role="tab" data-toggle="tab">{{ _('Slower Query') }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="tab_panel_server_config_tab" href="#tab_panel_server_config" aria-controls="tab_server_config"

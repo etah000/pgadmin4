@@ -499,7 +499,7 @@ class Connection(BaseConnection):
 #     pg_catalog.pg_roles
 # WHERE
 #     rolname = current_user""")
-        status = _execute(cur, """SELECT currentUser();""")
+        status = _execute(cur, """SELECT currentUser(), 1 as is_superuser;""")
 
         if status is None:
             manager.user_info = dict()

@@ -945,12 +945,12 @@ define('pgadmin.dashboard', [
       if (self.preferences.show_activity) {
         var server_activity_columns = [{
           name: 'pid',
-          label: gettext('PID'),
+          label: gettext('Query ID'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'datname',
-          label: gettext('Database'),
+          name: 'query',
+          label: gettext('Query'),
           editable: false,
           cell: 'string',
         }, {
@@ -959,49 +959,49 @@ define('pgadmin.dashboard', [
           editable: false,
           cell: 'string',
         }, {
-          name: 'application_name',
-          label: gettext('Application'),
+          name: 'elapsed',
+          label: gettext('Elapsed'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'client_addr',
-          label: gettext('Client'),
+          name: 'address',
+          label: gettext('Address'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'backend_start',
-          label: gettext('Backend start'),
+          name: 'read_rows',
+          label: gettext('Read Rows'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'state',
-          label: gettext('State'),
+          name: 'read_bytes',
+          label: gettext('Read Bytes'),
           editable: false,
           cell: 'string',
         }];
 
-        if (self.version < 90600) {
-          server_activity_columns = server_activity_columns.concat(
-            [{
-              name: 'waiting',
-              label: gettext('Waiting?'),
-              editable: false,
-              cell: 'string',
-            }]);
-        } else {
-          server_activity_columns = server_activity_columns.concat(
-            [{
-              name: 'wait_event',
-              label: gettext('Wait event'),
-              editable: false,
-              cell: 'string',
-            }, {
-              name: 'blocking_pids',
-              label: gettext('Blocking PIDs'),
-              editable: false,
-              cell: 'string',
-            }]);
-        }
+        // if (self.version < 90600) {
+        //   server_activity_columns = server_activity_columns.concat(
+        //     [{
+        //       name: 'waiting',
+        //       label: gettext('Waiting?'),
+        //       editable: false,
+        //       cell: 'string',
+        //     }]);
+        // } else {
+        //   server_activity_columns = server_activity_columns.concat(
+        //     [{
+        //       name: 'wait_event',
+        //       label: gettext('Wait event'),
+        //       editable: false,
+        //       cell: 'string',
+        //     }, {
+        //       name: 'blocking_pids',
+        //       label: gettext('Blocking PIDs'),
+        //       editable: false,
+        //       cell: 'string',
+        //     }]);
+        // }
 
         var newActiveQueryDetailsModel = new ActiveQueryDetailsModel();
 
@@ -1048,95 +1048,110 @@ define('pgadmin.dashboard', [
         });
 
         var server_locks_columns = [{
-          name: 'pid',
-          label: gettext('PID'),
+          name: 'database',
+          label: gettext('DATABASE'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'datname',
-          label: gettext('Database'),
+          name: 'table',
+          label: gettext('Table'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'locktype',
-          label: gettext('Lock type'),
+          name: 'is_readonly',
+          label: gettext('Is Readonly?'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'relation',
-          label: gettext('Target relation'),
+          name: 'is_leader',
+          label: gettext('Is Leader?'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'page',
-          label: gettext('Page'),
+          name: 'is_session_expired',
+          label: gettext('Is Session Expired?'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'tuple',
-          label: gettext('Tuple'),
+          name: 'total_replicas',
+          label: gettext('Total Replicas'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'virtualxid',
-          label: gettext('vXID (target)'),
+          name: 'active_replicas',
+          label: gettext('Active Replicas'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'transactionid',
-          label: gettext('XID (target)'),
+          name: 'future_parts',
+          label: gettext('Future Parts'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'classid',
-          label: gettext('Class'),
+          name: 'parts_to_check',
+          label: gettext('Parts To Check'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'objid',
-          label: gettext('Object ID'),
+          name: 'queue_size',
+          label: gettext('Queue Size'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'virtualtransaction',
-          label: gettext('vXID (owner)'),
-          editable: false,
-          cell: 'string',
-        }, {
-          name: 'mode',
-          label: gettext('Mode'),
-          editable: false,
-          cell: 'string',
-        }, {
-          name: 'granted',
-          label: gettext('Granted?'),
+          name: 'inserts_in_queue',
+          label: gettext('Inserts In Queue'),
           editable: false,
           cell: 'string',
         }];
 
         var server_prepared_columns = [{
-          name: 'git',
-          label: gettext('Name'),
+          name: 'user',
+          label: gettext('User'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'database',
-          label: gettext('Database'),
+          name: 'host',
+          label: gettext('Client Hostname'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'Owner',
-          label: gettext('Owner'),
+          name: 'query',
+          label: gettext('Query'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'transaction',
-          label: gettext('XID'),
+          name: 'started',
+          label: gettext('Started'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'prepared',
-          label: gettext('Prepared at'),
+          name: 'sec',
+          label: gettext('Query Duration'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'MEM_MB',
+          label: gettext('MEM Usage(MB)'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'result_rows',
+          label: gettext('Result Rows'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'RES_MB',
+          label: gettext('Result Bytes'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'read_rows',
+          label: gettext('Read Rows'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'written_rows',
+          label: gettext('Written Rows'),
           editable: false,
           cell: 'string',
         }];
@@ -1147,23 +1162,18 @@ define('pgadmin.dashboard', [
           editable: false,
           cell: 'string',
         }, {
-          name: 'category',
-          label: gettext('Category'),
+          name: 'value',
+          label: gettext('Value'),
           editable: false,
           cell: 'string',
         }, {
-          name: 'setting',
-          label: gettext('Setting'),
-          editable: false,
-          cell: 'string',
-        }, {
-          name: 'unit',
-          label: gettext('Unit'),
-          editable: false,
-          cell: 'string',
-        }, {
-          name: 'short_desc',
+          name: 'description',
           label: gettext('Description'),
+          editable: false,
+          cell: 'string',
+        }, {
+          name: 'changed',
+          label: gettext('Is Changed?'),
           editable: false,
           cell: 'string',
         }];
@@ -1368,11 +1378,6 @@ define('pgadmin.dashboard', [
         }, {
           name: 'mode',
           label: gettext('Mode'),
-          editable: false,
-          cell: 'string',
-        }, {
-          name: 'granted',
-          label: gettext('Granted?'),
           editable: false,
           cell: 'string',
         }];

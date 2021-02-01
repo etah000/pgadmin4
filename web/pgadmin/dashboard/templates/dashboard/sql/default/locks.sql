@@ -1,24 +1,21 @@
-/*pga4dash*/
-SELECT
-    pid,
-    locktype,
-    datname,
-    relation::regclass,
-    page,
-    tuple,
-    virtualxid
-    transactionid,
-    classid::regclass,
-    objid,
-    objsubid,
-    virtualtransaction,
-    mode,
-    granted,
-    fastpath
-FROM
-    pg_locks l
-    LEFT OUTER JOIN pg_database d ON (l.database = d.oid)
-{% if did %}WHERE
-    datname = (SELECT datname FROM pg_database WHERE oid = {{ did }}){% endif %}
-ORDER BY
-    pid, locktype
+SELECT database,
+       table,
+       is_leader,
+       total_replicas,
+       active_replicas,
+       is_readonly,
+       is_session_expired,
+       future_parts,
+       parts_to_check,
+       queue_size,
+       inserts_in_queue
+  FROM system.replicas
+ WHERE is_readonly
+    OR is_session_expired
+    OR future_parts > 30
+    OR parts_to_check > 20
+    OR queue_size > 30
+    OR inserts_in_queue > 20
+    OR log_max_index - log_pointer > 20
+    OR total_replicas < 2
+    OR active_replicas < total_replicas;
