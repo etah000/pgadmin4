@@ -332,5 +332,32 @@ class ServerGroupView(NodeView):
     def node(self, gid):
         return self.nodes(gid)
 
+    def children(self, *args, **kwargs):
+    # def children(self, gid):
+        """Build a list of treeview nodes from the child nodes."""
+        gid = kwargs.get('gid', None)
+        children = self.get_children_nodes(*args, **kwargs)
+
+        cluster = {
+            "icon": "icon-coll-cluster", 
+            "id": "coll-cluster/5", 
+            "inode": True, 
+            "label": "Virtual Clusters", 
+            "module": "pgadmin.node.cluster", 
+            "nodes": ["cluster"], 
+            "0": "cluster", 
+            "_id": 0,
+            "_pid": gid, 
+            "_type": "coll-cluster", 
+        }
+
+        children.append(cluster)
+
+        # Return sorted nodes based on label
+        return make_json_response(
+            data=sorted(
+                children, key=lambda c: c['label']
+            )
+        )
 
 ServerGroupView.register_node_view(blueprint)

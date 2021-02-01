@@ -206,12 +206,29 @@ class DatabaseView(PGClusterChildNodeView):
                 else:
                     self.conn = self.manager.connection()
 
+                conn = self.conn
+                already_connected = conn.connected()
+                if not already_connected:
+                    status, errmsg = conn.connect()
+                    if not status:
+                        current_app.logger.error(
+                            "Could not connected server(#{0}).\nError: {1}"
+                            .format(
+                                sid, errmsg
+                            )
+                        )
+                        return internal_server_error(errmsg)
+                    else:
+                        current_app.logger.info(
+                            'Connection Established for server Id: \
+                            %s' % (sid)
+                        )                    
+
                 # set template path for sql scripts
                 self.template_path = 'clusters/sql/#{0}#'.format(
                     self.manager.version
                 )
 
-                print('args, kwargs:', args, kwargs)
                 return f(self, *args, **kwargs)
 
             return wrapped
