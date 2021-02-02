@@ -64,7 +64,7 @@ class ExecuteQuery {
       sqlStatement = sqlStatement.replace(';','');
     }
     // Ignore limit option, if user's sql had limit definition
-    if (sqlStatement.indexOf(' limit ') <= 0) {
+    if (sqlStatement.toLowerCase().indexOf(' limit ') < 0 && sqlStatement.toLowerCase().indexOf('select') >= 0) {
       var rowLimit = $('#btn-rows-limit option:selected').val();
       if (rowLimit != -1) {
         sqlStatement = sqlStatement + ' limit ' + rowLimit;
