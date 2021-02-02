@@ -30,7 +30,7 @@ define('pgadmin.node.cluster', [
 
   if (!pgBrowser.Nodes['cluster']) {
     pgBrowser.Nodes['cluster'] = pgBrowser.Node.extend({
-      parent_type: 'server',
+      parent_type: 'server_group',
       type: 'cluster',
       sqlAlterHelp: 'sql-altercluster.html',
       sqlCreateHelp: 'sql-createcluster.html',
@@ -95,8 +95,8 @@ define('pgadmin.node.cluster', [
       can_create_cluster: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];
-
-        return server.connected && server.user.can_create_db;
+          return true;
+        // return server.connected && server.user.can_create_db;
       },
       is_not_connected: function(node) {
         return (node && node.connected != true && node.allowConn == true);
