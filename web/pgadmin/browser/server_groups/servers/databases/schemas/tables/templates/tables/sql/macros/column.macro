@@ -11,7 +11,12 @@
 {# Datetime datatype #}
 {% elif not cdata.attscale and cdata.atttimezone %}
 ('{{cdata.atttimezone}}')
-{% endif %}
+{# Enum datatype #}
+{% elif cdata.enum_values %}
+({% for key,value in cdata.enum_values.items() -%}
+'{{ key }}'={{ value }}{%- if not loop.last %},{% endif %}
+{%- endfor %})
+{%- endif %}
 {%- endmacro %}
 
 
@@ -19,16 +24,24 @@
 {% if cdata.attnull %} NULL{% endif %}
 {%- endmacro %}
 
+{% macro COLUMN_NULL_START(cdata) -%}
+{% if cdata.attnull %} Nullable({% endif %}
+{%- endmacro %}
+
+{% macro COLUMN_NULL_END(cdata) -%}
+{% if cdata.attnull %}){% endif %}
+{%- endmacro %}
+
 
 {% macro COLUMN_DEFAULT(cdata) -%}
-{% if cdata.defval is defined and cdata.defval is not none and cdata.defval != '' %} DEFAULT {{cdata.defval}}{% endif %}
+{% if cdata.defval is defined and cdata.defval is not none and cdata.defval != '' %} DEFAULT {% if cdata.defval|float(-1) == -1 %}'{{cdata.defval}}'{% else %}{{cdata.defval}}{% endif %}{% endif %}
 {%- endmacro %}
 
 
 {% macro COLUMNS(data) -%}
 {% for cdata in data %}
 {% if cdata.name and cdata.cltype %} 
-  {{conn|qtIdent(cdata.name)}} {{ cdata.cltype }}{{ COLUMN_PARAMS(cdata) }}{{ COLUMN_NULL(cdata) }}{{ COLUMN_DEFAULT(cdata) }}{%- if not loop.last %},{% endif %}
+  {{conn|qtIdent(cdata.name)}} {{ COLUMN_NULL_START(cdata) }}{{ cdata.cltype }}{{ COLUMN_PARAMS(cdata) }}{{ COLUMN_NULL_END(cdata) }}{{ COLUMN_DEFAULT(cdata) }}{%- if not loop.last %},{% endif %}
 {% endif %} 
 {% endfor %}
 {%- endmacro %}

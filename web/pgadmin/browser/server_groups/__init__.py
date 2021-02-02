@@ -333,7 +333,6 @@ class ServerGroupView(NodeView):
         return self.nodes(gid)
 
     def children(self, *args, **kwargs):
-    # def children(self, gid):
         """Build a list of treeview nodes from the child nodes."""
         gid = kwargs.get('gid', None)
         children = self.get_children_nodes(*args, **kwargs)

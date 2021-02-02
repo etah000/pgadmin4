@@ -24,7 +24,7 @@ from pgadmin.browser.server_groups.servers.databases.utils import \
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
 from .utils import BaseTableView
-from .table_utils import shifter
+from pgadmin.tools.scripts import shifter
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
@@ -1012,54 +1012,40 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         #     )
 
         try:
-            # Update the vacuum table settings.
-            # BaseTableView.update_vacuum_settings(self, 'vacuum_table', data)
-            # Update the vacuum toast table settings.
-            # BaseTableView.update_vacuum_settings(self, 'vacuum_toast', data)
-
             # create multi tables on cluster
             if data['cluster'] and data['shifted'] \
                 and data['engine'] in ('MergeTree', 'ReplicatedMergeTree'):
                 return self._create_shifted_tables(gid, sid, did, data)
+            # create single table locally
+            else:
+                return self._create_single_table(gid, sid, did, tid, data)
 
-            SQL = render_template(
-                "/".join([self.table_template_path, 'create.sql']),
-                data=data, conn=self.conn, did=did
-            )
-
-            status, res = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-
-            # print('========================\n', SQL)
-            # return make_json_response()
-
-
-            # PostgreSQL truncates the table name to 63 characters.
-            # Have to truncate the name like PostgreSQL to get the
-            # proper OID
-            # CONST_MAX_CHAR_COUNT = 63
-            # if len(data['name']) > CONST_MAX_CHAR_COUNT:
-            #     data['name'] = data['name'][0:CONST_MAX_CHAR_COUNT]
-
-
-            # status, tid = self.conn.execute_scalar(SQL)
-            # if not status:
-            #     return internal_server_error(errormsg=tid)
-
-            return jsonify(
-                node=self.blueprint.generate_browser_node(
-                    tid,
-                    'public',
-                    data['name'],
-                    icon=self.get_icon_css_class(data),
-                    is_partitioned=self.is_table_partitioned(data)
-                )
-            )
         except Exception as e:
             traceback.print_exc()
             return internal_server_error(errormsg=str(e))
+
+    def _create_single_table(self, gid, sid, did, tid, data):
+        SQL = render_template(
+            "/".join([self.table_template_path, 'create.sql']),
+            data=data, conn=self.conn, did=did
+        )
+
+        # print('========================\n', SQL)
+        # return make_json_response()
+
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return jsonify(
+            node=self.blueprint.generate_browser_node(
+                tid,
+                'public',
+                data['name'],
+                icon=self.get_icon_css_class(data),
+                is_partitioned=self.is_table_partitioned(data)
+            )
+        )
 
     def _create_shifted_tables(self, gid, sid, did, data):
         cluster = data['cluster']
@@ -1077,6 +1063,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             "/".join([self.table_template_path, 'create.sql']),
             data=data, conn=self.conn, did="{database}"
         )
+
+        # print('========================\n', SQL)
+        # return make_json_response()
 
         rsp = shifter(
             self.conn, cluster,
