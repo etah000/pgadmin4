@@ -205,7 +205,7 @@ class SQLAutoComplete(object):
             'table ': 3,
             'tables ': 3,
             'temporary ': 3,
-            'test ': 3,
+            # 'test ': 3,
             'then ': 3,
             'totals ': 3,
             'to ': 3,

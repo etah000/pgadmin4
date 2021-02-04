@@ -320,11 +320,11 @@ define('pgadmin.dashboard', [
           if ('database' in treeHierarchy) {
             self.sid = treeHierarchy.server._id;
             self.did = treeHierarchy.database._id;
-            is_server_dashboard = false;
-            is_database_dashboard = true;
-            url += self.sid + '/' + self.did;
-            cancel_query_url += self.sid + '/' + self.did + '/';
-            terminate_session_url += self.sid + '/' + self.did + '/';
+            is_server_dashboard = true;
+            is_database_dashboard = false;
+            url += self.sid;
+            cancel_query_url += self.sid + '/';
+            terminate_session_url += self.sid + '/';
           } else if ('server' in treeHierarchy) {
             self.sid = treeHierarchy.server._id;
             self.did = -1;
