@@ -10,11 +10,6 @@
 import _ from 'underscore';
 
 function generate_url(baseUrl, treeInfo, actionType, nodeType, pickFunction, itemDataID) {
-  console.log(baseUrl);
-  console.log(treeInfo);
-  console.log(actionType);
-  console.log(nodeType);
-
   let ref = '';
   _.each(
     _.sortBy(

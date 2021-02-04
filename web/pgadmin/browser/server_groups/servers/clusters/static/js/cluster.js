@@ -345,16 +345,18 @@ define('pgadmin.node.cluster', [
         },{
           id: 'comments', label: gettext('Comment'),
           editable: false, type: 'multiline',
-        },{
-          id: 'encoding', label: gettext('Encoding'),
-          editable: false, type: 'text', group: gettext('Definition'),
-          readonly: function(m) { return !m.isNew(); }, url: 'get_encodings',
-          control: 'node-ajax-options', cache_level: 'server',
-        },{
+        }
+        // ,{
+        //   id: 'encoding', label: gettext('Encoding'),
+        //   editable: false, type: 'text', group: gettext('Definition'),
+        //   readonly: function(m) { return !m.isNew(); }, url: 'get_encodings',
+        //   control: 'node-ajax-options', cache_level: 'server_group',
+        // }
+        ,{
           id: 'template', label: gettext('Template'),
           editable: false, type: 'text', group: gettext('Definition'),
           readonly: function(m) { return !m.isNew(); },
-          control: 'node-list-by-name', url: 'get_databases', cache_level: 'server',
+          control: 'node-list-by-name', url: 'get_databases', cache_level: 'server_group',
           select2: { allowClear: false }, mode: ['create'],
           transform: function(data, cell) {
             var res = [],
@@ -374,26 +376,30 @@ define('pgadmin.node.cluster', [
             }
             return res;
           },
-        },{
-          id: 'spcname', label: gettext('Tablespace'),
-          editable: false, type: 'text', group: gettext('Definition'),
-          control: 'node-list-by-name', node: 'tablespace',
-          select2: { allowClear: false },
-          filter: function(m) {
-            if (m.label == 'pg_global') return false;
-            else return true;
-          },
-        },{
-          id: 'datcollate', label: gettext('Collation'),
-          editable: false, type: 'text', group: gettext('Definition'),
-          readonly: function(m) { return !m.isNew(); }, url: 'get_ctypes',
-          control: 'node-ajax-options', cache_level: 'server',
-        },{
-          id: 'datctype', label: gettext('Character type'),
-          editable: false, type: 'text', group: gettext('Definition'),
-          readonly: function(m) { return !m.isNew(); }, url: 'get_ctypes',
-          control: 'node-ajax-options', cache_level: 'server',
-        },{
+        },
+        // {
+        //   id: 'spcname', label: gettext('Tablespace'),
+        //   editable: false, type: 'text', group: gettext('Definition'),
+        //   control: 'node-list-by-name', node: 'tablespace',
+        //   select2: { allowClear: false },
+        //   filter: function(m) {
+        //     if (m.label == 'pg_global') return false;
+        //     else return true;
+        //   },
+        // },
+        // {
+        //   id: 'datcollate', label: gettext('Collation'),
+        //   editable: false, type: 'text', group: gettext('Definition'),
+        //   readonly: function(m) { return !m.isNew(); }, url: 'get_ctypes',
+        //   control: 'node-ajax-options', cache_level: 'server_group',
+        // },
+        // {
+        //   id: 'datctype', label: gettext('Character type'),
+        //   editable: false, type: 'text', group: gettext('Definition'),
+        //   readonly: function(m) { return !m.isNew(); }, url: 'get_ctypes',
+        //   control: 'node-ajax-options', cache_level: 'server_group',
+        // },
+        {
           id: 'datconnlimit', label: gettext('Connection limit'),
           editable: false, type: 'int', group: gettext('Definition'), min: -1,
         },{
