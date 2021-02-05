@@ -68,6 +68,11 @@ class BatchProcess(object):
             self.stdout = self.stderr = self.stime = self.etime = \
             self.ecode = None
         self.env = dict()
+        # import data need seed file content by pipeline
+        if 'catprocess' in kwargs:
+            self.stdin = kwargs['catprocess']
+        else:
+            self.stdin = False
 
         if 'id' in kwargs:
             self._retrieve_process(kwargs['id'])
@@ -341,10 +346,20 @@ class BatchProcess(object):
             # if in debug mode, wait for process to complete and
             # get the stdout and stderr of popen.
             if config.CONSOLE_LOG_LEVEL <= logging.DEBUG:
-                p = Popen(
-                    cmd, close_fds=True, stdout=PIPE, stderr=PIPE, stdin=None,
-                    preexec_fn=preexec_function, env=env
-                )
+                # if using pipeline, get stdin by first command
+                if self.stdin:
+                    p = Popen(
+                        cmd, close_fds=True, stdout=PIPE, stderr=PIPE,
+                        stdin=self.stdin,
+                        env=env,
+                        preexec_fn=preexec_function
+                    )
+                else:
+                    p = Popen(
+                        cmd, close_fds=True, stdout=PIPE, stderr=PIPE,
+                        env=env, preexec_fn=preexec_function
+                    )
+
 
                 output, errors = p.communicate()
                 output = output.decode() \
@@ -356,10 +371,19 @@ class BatchProcess(object):
                 current_app.logger.debug(
                     'Process Watcher Err:{0}'.format(errors))
             else:
-                p = Popen(
-                    cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
-                    preexec_fn=preexec_function, env=env
-                )
+                if self.stdin:
+                    p = Popen(
+                        cmd, close_fds=True, stdout=None, stderr=None,
+                        stdin=self.stdin,
+                        env=env,
+                        preexec_fn=preexec_function
+                    )
+                else:
+                    p = Popen(
+                        cmd, close_fds=True, stdout=None, stderr=None,
+                        env=env, preexec_fn=preexec_function
+                    )
+                output, errors = p.communicate()
 
         self.ecode = p.poll()
 

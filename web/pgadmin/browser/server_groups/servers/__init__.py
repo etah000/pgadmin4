@@ -33,6 +33,7 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from psycopg2 import Error as psycopg2_Error, OperationalError
 import os
 from pgadmin.utils import get_storage_directory
+from web.pgadmin.browser.utils import PGChildModule
 
 def has_any(data, keys):
     """

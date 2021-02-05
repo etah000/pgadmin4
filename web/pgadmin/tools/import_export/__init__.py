@@ -23,6 +23,10 @@ from pgadmin.utils.ajax import make_json_response, bad_request
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 
+from web.pgadmin.utils.crypto import decrypt
+from web.pgadmin.utils.master_password import get_crypt_key
+from subprocess import Popen, PIPE
+
 MODULE_NAME = 'import_export'
 
 
@@ -71,9 +75,9 @@ class IEMessage(IProcessDesc):
     Defines the message shown for the import/export operation.
     """
 
-    def __init__(self, _sid, _schema, _tbl, _database, _storage, *_args):
+    def __init__(self, _sid, _tbl, _database, _storage, *_args):
         self.sid = _sid
-        self.schema = _schema
+        self.schema = ''
         self.table = _tbl
         self.database = _database
         self._cmd = ''
@@ -92,8 +96,9 @@ class IEMessage(IProcessDesc):
 
         replace_next = False
         for arg in _args:
+            arg = str(arg)
             if arg and len(arg) >= 2 and arg[:2] == '--':
-                if arg == '--command':
+                if arg == '--query':
                     replace_next = True
                 self._cmd += ' ' + arg
             elif replace_next:
@@ -134,7 +139,7 @@ class IEMessage(IProcessDesc):
 
         res = '<div>'
         res += _(
-            "Copying table data '{0}.{1}' on database '{2}' "
+            "Copying table data '{1}' on database '{2}' "
             "for the server '{3}'"
         ).format(
             html.safe_str(self.schema),
@@ -173,7 +178,7 @@ def script():
     )
 
 
-def filename_with_file_manager_path(_file, _present=False):
+def filename_with_file_manager_path(_file):
     """
     Args:
         file: File name returned from client file manager
@@ -189,13 +194,13 @@ def filename_with_file_manager_path(_file, _present=False):
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 
-    if not _present:
-        # Touch the file to get the short path of the file on windows.
-        with open(_file, 'a'):
-            pass
-    else:
-        if not os.path.isfile(_file):
-            return None
+    # if not _present:
+        #Touch the file to get the short path of the file on windows.
+        # with open(_file, 'a'):
+        #     pass
+    # else:
+    #     if not os.path.isfile(_file):
+    #         return None
 
     return fs_short_path(_file)
 
@@ -248,8 +253,7 @@ def create_import_export_job(sid):
 
     if 'filename' in data:
         try:
-            _file = filename_with_file_manager_path(
-                data['filename'], data['is_import'])
+            _file = filename_with_file_manager_path(data['filename'])
         except Exception as e:
             return bad_request(errormsg=str(e))
 
@@ -263,18 +267,7 @@ def create_import_export_job(sid):
     else:
         return bad_request(errormsg=_('Please specify a valid file'))
 
-    cols = None
-    icols = None
-
-    if data['icolumns']:
-        ignore_cols = data['icolumns']
-
-        # format the ignore column list required as per copy command
-        # requirement
-        if ignore_cols and len(ignore_cols) > 0:
-            icols = ", ".join([
-                driver.qtIdent(conn, col)
-                for col in ignore_cols])
+    cols = ''
 
     # format the column import/export list required as per copy command
     # requirement
@@ -284,10 +277,7 @@ def create_import_export_job(sid):
             for col in columns:
                 if cols:
                     cols += ', '
-                else:
-                    cols = '('
                 cols += driver.qtIdent(conn, col)
-            cols += ')'
 
     # Create the COPY FROM/TO  from template
     query = render_template(
@@ -295,16 +285,66 @@ def create_import_export_job(sid):
         conn=conn,
         data=data,
         columns=cols,
-        ignore_column_list=icols
     )
 
-    args = ['--command', query]
+    def crypt_password(pw):
+        if pw:
+            crypt_key_present, crypt_key = get_crypt_key()
+            if not crypt_key_present:
+                return False, crypt_key
+
+            password = decrypt(pw, crypt_key).decode()
+            return password
+
+    password = crypt_password(server.password)
+
+    args = [
+        '--host',
+        server.host,
+        '--port',
+        str(server.port),
+        '--user',
+        server.username,
+        '--query',
+        query,
+        '--password',
+        password if server.password is not None else '',
+    ]
+
+    if 'delimiter' in data and data['delimiter'] is not None \
+            and data['format'].startswith('CSV'):
+        args.append('--format_csv_delimiter')
+        args.append(data['delimiter'])
+
+    if data['is_import']:
+        if 'errorsnum' in data and data['errorsnum'] is not None \
+                and int(data['errorsnum']) > 0:
+            args.append('--input_format_allow_errors_num')
+            args.append(data['errorsnum'])
+        if 'errorsratio' in data and 0 < float(data['errorsratio']) < 1:
+            args.append('--input_format_allow_errors_ratio')
+            args.append(data['errorsratio'])
 
     try:
-        p = BatchProcess(
+        if data['is_import']:
+            # for pipeline usage,generate a subprocess to cat file before import
+            filecontent = Popen(["cat", data['filename']], stdout=PIPE)
+            p = BatchProcess(
+                desc=IEMessage(
+                    sid,
+                    # data['schema'],
+                    data['table'],
+                    data['database'],
+                    storage_dir,
+                    utility,
+                    *args
+                ),
+                cmd=utility, args=args, catprocess=filecontent.stdout,
+            )
+        else:
+            p = BatchProcess(
             desc=IEMessage(
                 sid,
-                data['schema'],
                 data['table'],
                 data['database'],
                 storage_dir,
@@ -312,14 +352,6 @@ def create_import_export_job(sid):
             ),
             cmd=utility, args=args
         )
-        manager.export_password_env(p.id)
-
-        env = dict()
-        env['PGHOST'] = server.host
-        env['PGPORT'] = str(server.port)
-        env['PGUSER'] = server.username
-        env['PGDATABASE'] = data['database']
-        p.set_env_variables(server, env=env)
         p.start()
         jid = p.id
     except Exception as e:

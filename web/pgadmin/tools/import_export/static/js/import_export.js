@@ -32,13 +32,15 @@ define([
       is_import: false,
       /* false for Export */
       filename: undefined,
-      format: 'csv',
-      encoding: undefined,
-      oid: undefined,
-      header: undefined,
-      delimiter: '',
+      format: 'CSV',
+      // encoding: undefined,
+      // oid: undefined,
+      // header: undefined,
+      delimiter: ',',
       quote: '\"',
       escape: '\'',
+      errorsnum: 0,
+      errorsratio: 0,
       null_string: undefined,
       columns: null,
       icolumns: [],
@@ -70,7 +72,7 @@ define([
         control: Backform.FileControl,
         group: gettext('File Info'),
         dialog_type: 'select_file',
-        supp_types: ['csv', 'txt', '*'],
+        supp_types: ['csv', 'txt', 'json', 'avro', 'pq', '*'],
         visible: 'importing',
       }, { /* create file control for export */
         id: 'filename',
@@ -80,7 +82,7 @@ define([
         control: Backform.FileControl,
         group: gettext('File Info'),
         dialog_type: 'create_file',
-        supp_types: ['csv', 'txt', '*'],
+        supp_types: ['csv', 'txt', 'json', 'avro', 'pq', '*'],
         visible: 'exporting',
       }, {
         id: 'format',
@@ -89,33 +91,51 @@ define([
         control: 'select2',
         group: gettext('File Info'),
         options: [{
-          'label': 'binary',
-          'value': 'binary',
+          'label': 'Avro',
+          'value': 'Avro',
         }, {
-          'label': 'csv',
-          'value': 'csv',
+          'label': 'CSV',
+          'value': 'CSV',
         }, {
-          'label': 'text',
-          'value': 'text',
+          'label': 'CSVWithNames',
+          'value': 'CSVWithNames',
+        }, {
+          'label': 'JSONEachRow',
+          'value': 'JSONEachRow',
+        }, {
+          'label': 'JSONStringEachRow',
+          'value': 'JSONStringEachRow',
+        }, {
+          'label': 'Parquet',
+          'value': 'Parquet',
+        }, {
+          'label': 'TSV',
+          'value': 'TSV',
+        }, {
+          'label': 'TSVWithNames',
+          'value': 'TSVWithNames',
         } ],
         disabled: 'isDisabled',
         select2: {
           allowClear: false,
           width: '100%',
         },
-      }, {
-        id: 'encoding',
-        label: gettext('Encoding'),
-        cell: 'string',
-        control: 'node-ajax-options',
-        node: 'database',
-        url: 'get_encodings',
-        first_empty: true,
-        group: gettext('File Info'),
-      }],
+      },
+        // {
+        // id: 'encoding',
+        // label: gettext('Encoding'),
+        // cell: 'string',
+        // control: 'node-ajax-options',
+        // node: 'database',
+        // url: 'get_encodings',
+        // first_empty: true,
+        // group: gettext('File Info'),
+      // }
+      ],
+      /*
     }, {
-      id: 'columns',
-      label: gettext('Columns to import'),
+      id: 'icolumns',
+      label: gettext('not null Columns'),
       cell: 'string',
       deps: ['is_import'],
       type: 'array',
@@ -186,6 +206,7 @@ define([
       },
       visible: 'importing',
       helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
+       */
     }, {
       id: 'columns',
       label: gettext('Columns to export'),
@@ -229,18 +250,18 @@ define([
         return res;
       },
       helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
+    // }, {
+    //   id: 'null_string',
+    //   label: gettext('NULL Strings'),
+    //   cell: 'string',
+    //   type: 'text',
+    //   group: gettext('Columns'),
+    //   disabled: 'isDisabled',
+    //   deps: ['format'],
+    //   helpMessage: gettext('Specifies the string that represents a null value. The default is \\N (backslash-N) in text format, and an unquoted empty string in CSV format. You might prefer an empty string even in text format for cases where you don\'t want to distinguish nulls from empty strings. This option is not allowed when using binary format.'),
     }, {
-      id: 'null_string',
-      label: gettext('NULL Strings'),
-      cell: 'string',
-      type: 'text',
-      group: gettext('Columns'),
-      disabled: 'isDisabled',
-      deps: ['format'],
-      helpMessage: gettext('Specifies the string that represents a null value. The default is \\N (backslash-N) in text format, and an unquoted empty string in CSV format. You might prefer an empty string even in text format for cases where you don\'t want to distinguish nulls from empty strings. This option is not allowed when using binary format.'),
-    }, {
-      id: 'icolumns',
-      label: gettext('Not null columns'),
+      id: 'columns',
+      label: gettext('Columns to import'),
       cell: 'string',
       control: 'node-list-by-name',
       node: 'column',
@@ -255,27 +276,28 @@ define([
         first_empty: false,
         placeholder: gettext('Not null columns...'),
       },
-      helpMessage: gettext('Do not match the specified column values against the null string. In the default case where the null string is empty, this means that empty values will be read as zero-length strings rather than nulls, even when they are not quoted. This option is allowed only in import, and only when using CSV format.'),
+      visible: 'importing',
+      helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
     }, {
       type: 'nested',
       control: 'fieldset',
       label: gettext('Miscellaneous'),
       group: gettext('Options'),
       schema: [{
-        id: 'oid',
-        label: gettext('OID'),
-        cell: 'string',
-        type: 'switch',
-        group: gettext('Miscellaneous'),
-      }, {
-        id: 'header',
-        label: gettext('Header'),
-        cell: 'string',
-        type: 'switch',
-        group: gettext('Miscellaneous'),
-        deps: ['format'],
-        disabled: 'isDisabled',
-      }, {
+        // id: 'oid',
+        // label: gettext('OID'),
+        // cell: 'string',
+        // type: 'switch',
+        // group: gettext('Miscellaneous'),
+      // }, {
+      //   id: 'header',
+      //   label: gettext('Header'),
+      //   cell: 'string',
+      //   type: 'switch',
+      //   group: gettext('Miscellaneous'),
+      //   deps: ['format'],
+      //   disabled: 'isDisabled',
+      // }, {
         id: 'delimiter',
         label: gettext('Delimiter'),
         cell: 'string',
@@ -310,6 +332,21 @@ define([
         },
         helpMessage: gettext('Specifies the character that separates columns within each row (line) of the file. The default is a tab character in text format, a comma in CSV format. This must be a single one-byte character. This option is not allowed when using binary format.'),
       },
+      {
+        id: 'errorsnum', label: gettext('Allow errors number'), type: 'text',
+        group: gettext('Miscellaneous'),
+        deps: ['format', 'is_import'],
+        disabled: 'isDisabled',
+        helpMessage: gettext('input_format_allow_errors_num: Sets the maximum number of acceptable errors when reading from text formats (CSV, TSV, etc.).'),
+      },
+      {
+        id: 'errorsratio', label: gettext('Allow errors ratio'), type: 'text',
+        group: gettext('Miscellaneous'),
+        deps: ['format', 'is_import'],
+        disabled: 'isDisabled',
+        helpMessage: gettext('input_format_allow_errors_ratio: Sets the maximum percentage of errors allowed when reading from text formats (CSV, TSV, etc.). The percentage of errors is set as a floating-point number between 0 and 1.'),
+      },
+        /*
       {
         id: 'quote',
         label: gettext('Quote'),
@@ -364,6 +401,7 @@ define([
         },
         helpMessage: gettext('Specifies the character that should appear before a data character that matches the QUOTE value. The default is the same as the QUOTE value (so that the quoting character is doubled if it appears in the data). This must be a single one-byte character. This option is allowed only when using CSV format.'),
       },
+         */
       ],
     } ],
 
@@ -373,12 +411,16 @@ define([
       case 'quote':
       case 'escape':
       case 'header':
-        return (m.get('format') != 'csv');
+        return (m.get('format') !== 'CSV');
       case 'icolumns':
-        return (m.get('format') != 'csv' || !m.get('is_import'));
+        return (m.get('format') !== 'CSV' || !m.get('is_import'));
       case 'null_string':
       case 'delimiter':
-        return (m.get('format') == 'binary');
+        return (!m.get('format').startsWith('CSV'));
+      case 'errorsnum':
+        return (!m.get('is_import'));
+      case 'errorsratio':
+        return (!m.get('is_import'));
       default:
         return false;
       }
@@ -443,8 +485,8 @@ define([
       }
 
       var module = 'paths',
-        preference_name = 'pg_bin_dir',
-        msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
+        preference_name = 'snowball_bin_dir',
+        msg = gettext('Please configure the Snowball Binary Path in the Preferences dialog.');
 
       if ((server_data.type && server_data.type == 'ppas') ||
         server_data.server_type == 'ppas') {
@@ -453,7 +495,6 @@ define([
       }
 
       var preference = pgBrowser.get_preference(module, preference_name);
-
       if (preference) {
         if (!preference.value) {
           Alertify.alert(gettext('Configuration required'), msg);
@@ -527,7 +568,7 @@ define([
 
                 this.view.model.set({
                   'database': treeInfo.database._label,
-                  'schema': treeInfo.schema._label,
+                  // 'schema': treeInfo.schema._label,
                   'table': treeInfo.table._label,
                 });
                 var self = this;
