@@ -15,12 +15,12 @@ result.
 
 
 from collections import OrderedDict
-import psycopg2
-from psycopg2.extensions import cursor as _cursor, encodings
+#import psycopg2
+#from psycopg2.extensions import cursor as _cursor, encodings
 from snowball_driver.dbapi.cursor import Cursor as _cursor
-from .encoding import configureDriverEncodings
+#from .encoding import configureDriverEncodings
 
-configureDriverEncodings(encodings)
+#configureDriverEncodings(encodings)
 
 
 class _WrapperColumn(object):

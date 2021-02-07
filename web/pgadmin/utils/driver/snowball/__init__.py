@@ -17,7 +17,7 @@ import datetime
 from flask import session
 from flask_login import current_user
 # import psycopg2
-from psycopg2.extensions import adapt
+# from psycopg2.extensions import adapt
 from threading import Lock
 
 import config

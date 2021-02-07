@@ -12,14 +12,14 @@ Typecast various data types so that they can be compatible with Javascript
 data types.
 """
 
-from psycopg2 import STRING as _STRING
-import psycopg2
-from psycopg2.extensions import encodings
-from psycopg2.extras import Json as psycopg2_json
+#from psycopg2 import STRING as _STRING
+#import psycopg2
+#from psycopg2.extensions import encodings
+#from psycopg2.extras import Json as psycopg2_json
 
 from .encoding import configureDriverEncodings, getEncoding
 
-configureDriverEncodings(encodings)
+#configureDriverEncodings(encodings)
 
 
 # OIDs of data types which need to typecast as string to avoid JavaScript

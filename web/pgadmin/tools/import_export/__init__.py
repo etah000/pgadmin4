@@ -23,8 +23,8 @@ from pgadmin.utils.ajax import make_json_response, bad_request
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 
-from web.pgadmin.utils.crypto import decrypt
-from web.pgadmin.utils.master_password import get_crypt_key
+from pgadmin.utils.crypto import decrypt
+from pgadmin.utils.master_password import get_crypt_key
 from subprocess import Popen, PIPE
 
 MODULE_NAME = 'import_export'
@@ -117,7 +117,7 @@ class IEMessage(IProcessDesc):
         ).first()
 
         return _(
-            "Copying table data '{0}.{1}' on database '{2}' "
+            "Copying table data '{1}' on database '{2}' "
             "and server ({3}:{4})"
         ).format(
             html.safe_str(self.schema),
