@@ -25,7 +25,7 @@ define('pgadmin.node.tablespace', [
         columns: ['name', 'location', 'type'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size')],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }

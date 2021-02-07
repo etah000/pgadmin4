@@ -22,7 +22,7 @@ define('pgadmin.node.function', [
         label: gettext('Functions'),
         type: 'coll-function',
         columns: ['name', 'alias_to', 'is_aggregate', 'case_insensitive'],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }

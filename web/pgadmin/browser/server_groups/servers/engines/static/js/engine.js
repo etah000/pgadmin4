@@ -25,7 +25,7 @@ define('pgadmin.node.engine', [
           'rolsuper', 'rolcreaterole', 'rolcreatedb', 'rolcatupdate',
           'rolinherit', 'rolreplication',
         ],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }

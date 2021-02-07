@@ -23,7 +23,7 @@ define('pgadmin.node.format', [
         label: gettext('Formats'),
         type: 'coll-format',
         columns: ['name', 'is_input', 'is_output'],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }

@@ -321,7 +321,7 @@ define([
         },
         {
           'label': '[tab]',
-          'value': '[tab]',
+          'value': '\t',
         },
         ],
         select2: {

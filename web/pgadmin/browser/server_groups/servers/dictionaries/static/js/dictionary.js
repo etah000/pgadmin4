@@ -24,7 +24,7 @@ define('pgadmin.node.dictionary', [
         columns: ['name', 'source', 'origin', 'type', 'key', 'status', 'attribute_names', 'attribute_types', 'element_count'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size')],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }
