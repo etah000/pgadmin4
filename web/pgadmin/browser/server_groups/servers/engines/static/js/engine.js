@@ -302,7 +302,7 @@ define('pgadmin.node.engine', [
       sqlCreateHelp: 'sql-createengine.html',
       dialogHelp: url_for('help.static', {'filename': 'engine_dialog.html'}),
       label: gettext('Engines'),
-      hasSQL: true,
+      hasSQL: false,
       width: '550px',
       canDrop: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
