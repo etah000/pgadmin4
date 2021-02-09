@@ -49,25 +49,26 @@ define('pgadmin.node.dictionary', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
-          name: 'create_dictionary_on_server', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Dictionary...'),
-          icon: 'wcTabIcon icon-dictionary', data: {action: 'create'},
-          enable: 'can_create_dictionary',
-        },{
-          name: 'create_dictionary_on_coll', node: 'coll-dictionary', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Dictionary...'),
-          icon: 'wcTabIcon icon-dictionary', data: {action: 'create'},
-          enable: 'can_create_dictionary',
-        },{
-          name: 'create_dictionary', node: 'dictionary', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Dictionary...'),
-          icon: 'wcTabIcon icon-dictionary', data: {action: 'create'},
-          enable: 'can_create_dictionary',
-        },{
+        /*
+      pgBrowser.add_menus([{
+        name: 'create_dictionary_on_server', node: 'server', module: this,
+        applies: ['object', 'context'], callback: 'show_obj_properties',
+        category: 'create', priority: 4, label: gettext('Dictionary...'),
+        icon: 'wcTabIcon icon-dictionary', data: {action: 'create'},
+        enable: 'can_create_dictionary',
+      },{
+        name: 'create_dictionary_on_coll', node: 'coll-dictionary', module: this,
+        applies: ['object', 'context'], callback: 'show_obj_properties',
+        category: 'create', priority: 4, label: gettext('Dictionary...'),
+        icon: 'wcTabIcon icon-dictionary', data: {action: 'create'},
+        enable: 'can_create_dictionary',
+      },{
+        name: 'create_dictionary', node: 'dictionary', module: this,
+        applies: ['object', 'context'], callback: 'show_obj_properties',
+        category: 'create', priority: 4, label: gettext('Dictionary...'),
+        icon: 'wcTabIcon icon-dictionary', data: {action: 'create'},
+        enable: 'can_create_dictionary',
+      },{
           name: 'move_dictionary', node: 'dictionary', module: this,
           applies: ['object', 'context'], callback: 'move_objects',
           category: 'move_dictionary', priority: 5,
@@ -76,6 +77,7 @@ define('pgadmin.node.dictionary', [
           enable: 'can_move_objects',
         },
         ]);
+         */
       },
       can_create_dictionary: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),

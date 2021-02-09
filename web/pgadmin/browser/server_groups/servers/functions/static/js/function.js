@@ -45,6 +45,7 @@ define('pgadmin.node.function', [
 
         this.initialized = true;
 
+        /*
         pgBrowser.add_menus([{
           name: 'create_function_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -72,6 +73,7 @@ define('pgadmin.node.function', [
           enable: 'can_move_objects',
         },
         ]);
+         */
       },
       can_create_function: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),

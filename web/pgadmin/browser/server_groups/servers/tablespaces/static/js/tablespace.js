@@ -50,6 +50,7 @@ define('pgadmin.node.tablespace', [
 
         this.initialized = true;
 
+        /*
         pgBrowser.add_menus([{
           name: 'create_tablespace_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -77,6 +78,7 @@ define('pgadmin.node.tablespace', [
           enable: 'can_move_objects',
         },
         ]);
+         */
       },
       can_create_tablespace: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
