@@ -39,6 +39,7 @@ define('pgadmin.node.format', [
       hasSQL:  true,
       canDrop: false,
       hasDepends: false,
+      hasScriptTypes: [],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

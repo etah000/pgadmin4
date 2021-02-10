@@ -43,6 +43,7 @@ define('pgadmin.node.tablespace', [
       hasDepends: false,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size')],
+      hasScriptTypes: [],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)

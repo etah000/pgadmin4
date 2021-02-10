@@ -94,24 +94,24 @@ define('pgadmin.node.rule', [
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
           enable: 'canCreate',
         },{
-          name: 'create_rule_onView', node: 'view', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 5, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
+          // name: 'create_rule_onView', node: 'view', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 5, label: gettext('Rule...'),
+          // icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
           name: 'create_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Rule...'),
           icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
           enable: 'canCreate',
         },{
-          name: 'create_rule', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
+          // name: 'create_rule', node: 'table', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Rule...'),
+          // icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
           name: 'create_rule', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),

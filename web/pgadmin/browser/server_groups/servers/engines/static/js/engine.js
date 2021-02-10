@@ -304,6 +304,7 @@ define('pgadmin.node.engine', [
       label: gettext('Engines'),
       hasSQL: false,
       width: '550px',
+      hasScriptTypes: [],
       canDrop: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];

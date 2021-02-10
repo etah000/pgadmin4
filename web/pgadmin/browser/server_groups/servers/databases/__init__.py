@@ -1091,7 +1091,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
         if did != 'system':
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),
-                datname=result['name'], conn=conn
+                did=result['name'], conn=conn
             )
 
         SQL = self.get_new_sql(gid, sid, result, did)

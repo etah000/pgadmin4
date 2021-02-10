@@ -63,12 +63,12 @@ define('pgadmin.node.trigger', [
           icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
           enable: 'canCreate',
         },{
-          name: 'create_trigger_onTable', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Trigger...'),
-          icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
+          // name: 'create_trigger_onTable', node: 'table', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Trigger...'),
+          // icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
           name: 'create_trigger_onPartition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Trigger...'),
@@ -84,12 +84,12 @@ define('pgadmin.node.trigger', [
           applies: ['object', 'context'], callback: 'disable_trigger',
           category: 'drop', priority: 3, label: gettext('Disable trigger'),
           icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
-        },{
-          name: 'create_trigger_onView', node: 'view', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Trigger...'),
-          icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
-          enable: 'canCreate',
+        // },{
+          // name: 'create_trigger_onView', node: 'view', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Trigger...'),
+          // icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
+          // enable: 'canCreate',
         },
         ]);
       },

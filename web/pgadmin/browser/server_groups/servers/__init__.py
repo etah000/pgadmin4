@@ -315,8 +315,8 @@ class ServerNode(PGChildNodeView):
                         import os
                         file_extn = '.key' if field.endswith('key') else '.crt'
                         dummy_ssl_file = os.path.join(
-                            '<STORAGE_DIR>', '.postgresql',
-                            'postgresql' + file_extn
+                            '<STORAGE_DIR>', '.snowball',
+                            'snowball' + file_extn
                         )
                         data[field] = dummy_ssl_file
                     # For Desktop mode, we will allow to default

@@ -101,11 +101,11 @@ define('pgadmin.node.table', [
           icon: 'fa fa-eraser', enable : 'canCreate',
         },{
           // To enable/disable all triggers for the table
-          name: 'enable_all_triggers', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'enable_triggers_on_table',
-          category: gettext('Trigger(s)'), priority: 4, label: gettext('Enable All'),
-          icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
-        },{
+          // name: 'enable_all_triggers', node: 'table', module: this,
+          // applies: ['object', 'context'], callback: 'enable_triggers_on_table',
+          // category: gettext('Trigger(s)'), priority: 4, label: gettext('Enable All'),
+          // icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
+        // },{
           name: 'disable_all_triggers', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'disable_triggers_on_table',
           category: gettext('Trigger(s)'), priority: 4, label: gettext('Disable All'),
@@ -324,7 +324,7 @@ define('pgadmin.node.table', [
                 args.node_info.server._id
               ].user,
               schemaInfo = args.node_info.schema;
-            
+
             // this.set({
             //   'relowner': userInfo.name, 'schema': schemaInfo._label,
             // }, {silent: true});

@@ -63,12 +63,12 @@ define('pgadmin.node.compound_trigger', [
           icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true},
           enable: 'canCreate',
         },{
-          name: 'create_compound_trigger_onTable', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Compound Trigger...'),
-          icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
+          // name: 'create_compound_trigger_onTable', node: 'table', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Compound Trigger...'),
+          // icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
           name: 'create_compound_trigger_onPartition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Compound Trigger...'),
@@ -84,12 +84,12 @@ define('pgadmin.node.compound_trigger', [
           applies: ['object', 'context'], callback: 'disable_compound_trigger',
           category: 'drop', priority: 3, label: gettext('Disable compound trigger'),
           icon: 'fa fa-times', enable : 'canCreate_with_compound_trigger_disable',
-        },{
-          name: 'create_compound_trigger_onView', node: 'view', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Compound Trigger...'),
-          icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true},
-          enable: 'canCreate',
+        // },{
+        //   name: 'create_compound_trigger_onView', node: 'view', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Compound Trigger...'),
+        //   icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
         },
         ]);
       },

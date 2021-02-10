@@ -149,19 +149,20 @@ define('pgadmin.node.column', [
           category: 'create', priority: 4, label: gettext('Column...'),
           icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
           enable: 'canCreate',
-        },{
-          name: 'create_column_onTable', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Column...'),
-          icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_column_onView', node: 'view', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Column...'),
-          icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
-          enable: 'canCreate',
         },
+          // {
+          // name: 'create_column_onTable', node: 'table', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Column...'),
+          // icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
+        //   name: 'create_column_onView', node: 'view', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Column...'),
+        //   icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // },
         ]);
       },
       model: pgBrowser.Node.Model.extend({
