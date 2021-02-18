@@ -324,6 +324,8 @@ class DatabaseView(PGClusterChildNodeView):
 
     @check_precondition(action="nodes")
     def nodes(self, gid, sid):
+        return  make_json_response(data=[])
+
         res = self.get_nodes(gid, sid)
 
         return make_json_response(
