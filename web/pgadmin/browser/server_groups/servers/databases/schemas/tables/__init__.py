@@ -602,12 +602,16 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         status, res = self._fetch_properties(did, tid, scid)
         if not status:
             return res
-        if not res['rows']:
+        if not res['rows'][0]:
             return gone(gettext("The specified table could not be found."))
 
-        return super(TableView, self).properties(
-            gid, sid, did, scid, tid, res
+        return ajax_response(
+            response=res['rows'][0],
+            status=200
         )
+        # return super(TableView, self).properties(
+        #     gid, sid, did, scid, tid, res
+        # )
     def _fetch_ddl(self, did, tid, scid=0):
         """
         This function is used to fetch the create table query of the specified object
