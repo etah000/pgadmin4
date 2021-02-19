@@ -184,8 +184,7 @@ define('pgadmin.node.table', [
                   type:'PUT',
                   data: params,
                   dataType: 'json',
-                })
-                  .done(function(res) {
+                }).done(function(res) {
                     if (res.success == 1) {
                       Alertify.success(res.info);
                       t.removeIcon(i);
