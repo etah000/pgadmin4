@@ -356,7 +356,7 @@ define('pgadmin.node.tablespace', [
           id: 'is_sys_obj', label: gettext('System tablespace?'),
           cell:'boolean', type: 'switch', mode: ['properties'],
         },{
-          id: 'type', label: gettext('type'), cell: 'string',
+          id: 'type', label: gettext('Type'), cell: 'string',
           type: 'text',
         },{
           id: 'spcoptions', label: '', type: 'collection',

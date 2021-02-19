@@ -407,7 +407,7 @@ def locks(sid=None, did=None):
     :param sid: server id
     :return:
     """
-    return get_data(sid, did, 'locks.sql')
+    return get_data(sid, did, 'replicas.sql')
 
 
 @blueprint.route('/prepared/', endpoint='prepared')
@@ -423,7 +423,7 @@ def prepared(sid=None, did=None):
     :param sid: server id
     :return:
     """
-    return get_data(sid, did, 'prepared.sql')
+    return get_data(sid, did, 'slow_query.sql')
 
 
 @blueprint.route('/config/', endpoint='config')

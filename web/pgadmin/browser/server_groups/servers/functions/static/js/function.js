@@ -343,13 +343,13 @@ define('pgadmin.node.function', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',
         },{
-          id: 'alias_to', label: gettext('alias_to'), cell: 'string',
+          id: 'alias_to', label: gettext('Alias To'), cell: 'string',
           type: 'text', mode: ['properties'],
         },{
-          id: 'is_aggregate', label: gettext('is_aggregate'), cell: 'string',
+          id: 'is_aggregate', label: gettext('Is Aggregate?'), cell: 'string',
           type: 'text',
         },{
-          id: 'case_insensitive', label: gettext('case_insensitive'), cell: 'string',
+          id: 'case_insensitive', label: gettext('Case Insensitive?'), cell: 'string',
           type: 'text', mode: ['properties'],
         },
         ],

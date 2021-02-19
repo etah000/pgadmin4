@@ -342,10 +342,10 @@ define('pgadmin.node.format', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',
         },{
-          id: 'is_input', label: gettext('is_input'), cell: 'string',
+          id: 'is_input', label: gettext('Is Input?'), cell: 'string',
           type: 'text',
         },{
-          id: 'is_output', label: gettext('is_output'), cell: 'string',
+          id: 'is_output', label: gettext('Is Output?'), cell: 'string',
           type: 'text',
         },{
           id: 'is_sys_obj', label: gettext('System format?'),

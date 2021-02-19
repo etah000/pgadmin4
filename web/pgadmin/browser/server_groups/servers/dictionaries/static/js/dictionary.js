@@ -352,28 +352,28 @@ define('pgadmin.node.dictionary', [
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text',
         },{
-          id: 'source', label: gettext('source'), cell: 'string',
+          id: 'source', label: gettext('Source'), cell: 'string',
           type: 'text', mode: ['properties'],
         },{
-          id: 'origin', label: gettext('origin'), cell: 'string',
+          id: 'origin', label: gettext('Origin'), cell: 'string',
           type: 'text',
         },{
-          id: 'type', label: gettext('type'), cell: 'string',
+          id: 'type', label: gettext('Type'), cell: 'string',
           type: 'text', mode: ['properties'],
         },{
-          id: 'key', label: gettext('key'), cell: 'string',
+          id: 'key', label: gettext('Key'), cell: 'string',
           type: 'text',
         },{
-          id: 'status', label: gettext('status'), cell: 'string',
+          id: 'status', label: gettext('Status'), cell: 'string',
           type: 'text',
         },{
-          id: 'attribute_names', label: gettext('attribute.names'), cell: 'string',
+          id: 'attribute_names', label: gettext('Attribute Names'), cell: 'string',
           type: 'text',
         },{
-          id: 'attribute_types', label: gettext('attribute.types'), cell: 'string',
+          id: 'attribute_types', label: gettext('Attribute Types'), cell: 'string',
           type: 'text',
         },{
-          id: 'element_count', label: gettext('element_count'), cell: 'string',
+          id: 'element_count', label: gettext('Element Count'), cell: 'string',
           type: 'text',
         },
         ],

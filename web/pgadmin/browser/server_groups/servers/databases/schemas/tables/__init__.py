@@ -1520,7 +1520,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             columns = ", ".join(columns)
             values = ", ".join(values)
             sql = u"INSERT INTO {0}(\n\t{1})\n\tVALUES ({2});".format(
-                self.qtIdent(self.conn, data['schema'], data['name']),
+                self.qtIdent(self.conn, did, data['name']),
                 columns, values
             )
         else:
@@ -1573,7 +1573,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             columns += "=?"
 
             sql = u"ALTER TABLE {0}\n\tUPDATE {1}\n\tWHERE <condition>;".format(
-                self.qtIdent(self.conn, data['schema'], data['name']),
+                self.qtIdent(self.conn, did, data['name']),
                 columns
             )
         else:
@@ -1611,7 +1611,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         data = res['rows'][0]
 
         sql = u"ALTER TABLE {0}\n\tDELETE WHERE <condition>;".format(
-            self.qtIdent(self.conn, data['schema'], data['name'])
+            self.qtIdent(self.conn, did, data['name'])
         )
 
         if not json_resp:
