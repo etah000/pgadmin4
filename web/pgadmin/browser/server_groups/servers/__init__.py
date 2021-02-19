@@ -30,9 +30,10 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from psycopg2 import Error as psycopg2_Error, OperationalError
+#from psycopg2 import Error as psycopg2_Error, OperationalError
 import os
 from pgadmin.utils import get_storage_directory
+from pgadmin.browser.utils import PGChildModule
 
 def has_any(data, keys):
     """
@@ -138,7 +139,7 @@ class ServerModule(sg.ServerGroupPluginModule):
             except CryptKeyMissing:
                 # show the nodes at least even if not able to connect.
                 pass
-            except psycopg2_Error as e:
+            except Exception as e:
                 current_app.logger.exception(e)
                 errmsg = str(e)
 
@@ -314,8 +315,8 @@ class ServerNode(PGChildNodeView):
                         import os
                         file_extn = '.key' if field.endswith('key') else '.crt'
                         dummy_ssl_file = os.path.join(
-                            '<STORAGE_DIR>', '.postgresql',
-                            'postgresql' + file_extn
+                            '<STORAGE_DIR>', '.snowball',
+                            'snowball' + file_extn
                         )
                         data[field] = dummy_ssl_file
                     # For Desktop mode, we will allow to default
@@ -1122,8 +1123,6 @@ class ServerNode(PGChildNodeView):
                 tunnel_password=tunnel_password,
                 server_types=ServerType.types()
             )
-        except OperationalError as e:
-            return internal_server_error(errormsg=str(e))
         except Exception as e:
             current_app.logger.exception(e)
             return self.get_response_for_password(
@@ -1796,9 +1795,6 @@ class ServerNode(PGChildNodeView):
             # close connect
             ssh.close()
 
-        except OperationalError as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
         except Exception as e:
             current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
@@ -1926,9 +1922,6 @@ class ServerNode(PGChildNodeView):
             # close connect
             ssh.close()
 
-        except OperationalError as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
         except Exception as e:
             current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))

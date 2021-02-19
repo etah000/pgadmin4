@@ -25,7 +25,7 @@ define('pgadmin.node.role', [
           'rolsuper', 'rolcreaterole', 'rolcreatedb', 'rolcatupdate',
           'rolinherit', 'rolreplication',
         ],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }
@@ -304,6 +304,7 @@ define('pgadmin.node.role', [
       label: gettext('Login/Group Role'),
       hasSQL: true,
       width: '550px',
+      hasScriptTypes: [],
       canDrop: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];

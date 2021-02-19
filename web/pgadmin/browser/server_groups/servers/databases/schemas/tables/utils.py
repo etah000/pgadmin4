@@ -142,7 +142,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         return wrap
 
-    def _formatter(self, did, scid, tid, data):
+    def _formatter(self, did, tid, data, scid=0):
         """
         Args:
             data: dict of query result
@@ -171,18 +171,18 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         # We will set get privileges from acl sql so we don't need
         # it from properties sql
-        for row in acl['rows']:
-            priv = parse_priv_from_db(row)
-            if row['deftype'] in data:
-                data[row['deftype']].append(priv)
-            else:
-                data[row['deftype']] = [priv]
+        # for row in acl['rows']:
+        #     priv = parse_priv_from_db(row)
+        #     if row['deftype'] in data:
+        #         data[row['deftype']].append(priv)
+        #     else:
+        #         data[row['deftype']] = [priv]
 
         # We will add Auto vacuum defaults with out result for grid
-        data['vacuum_table'] = copy.deepcopy(
-            self.parse_vacuum_data(self.conn, data, 'table'))
-        data['vacuum_toast'] = copy.deepcopy(
-            self.parse_vacuum_data(self.conn, data, 'toast'))
+        # data['vacuum_table'] = copy.deepcopy(
+        #     self.parse_vacuum_data(self.conn, data, 'table'))
+        # data['vacuum_toast'] = copy.deepcopy(
+        #     self.parse_vacuum_data(self.conn, data, 'toast'))
 
         # Fetch columns for the table logic
         #
@@ -195,18 +195,19 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
         other_columns = []
         table_or_type = ''
         # Get of_type table columns and add it into columns dict
-        if data['typoid']:
-            SQL = render_template("/".join([self.table_template_path,
-                                            'get_columns_for_table.sql']),
-                                  tid=data['typoid'])
+        # if data['typoid']:
+        SQL = render_template("/".join([self.table_template_path,
+                                        'get_columns_for_table.sql']),
+                              tid=tid, did=did)
 
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-            other_columns = res['rows']
-            table_or_type = 'type'
+        status, res = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        other_columns = res['rows']
+        table_or_type = 'type'
         # Get inherited table(s) columns and add it into columns dict
-        elif data['coll_inherits'] and len(data['coll_inherits']) > 0:
+        if 'coll_inherits' in data and data['coll_inherits'] \
+                and len(data['coll_inherits']) > 0:
             # Return all tables which can be inherited & do not show
             # system columns
             SQL = render_template("/".join([self.table_template_path,
@@ -235,41 +236,42 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
 
         # We will fetch all the columns for the table using
         # columns properties.sql, so we need to set template path
-        data = column_utils.get_formatted_columns(self.conn, tid,
-                                                  data, other_columns,
-                                                  table_or_type)
+        # data = column_utils.get_formatted_columns(self.conn, tid,
+        #                                           data, other_columns,
+        #                                           table_or_type)
 
+        data = other_columns
         # Here we will add constraint in our output
-        index_constraints = {
-            'p': 'primary_key', 'u': 'unique_constraint'
-        }
-        for ctype in index_constraints.keys():
-            data[index_constraints[ctype]] = []
-            status, constraints = \
-                idxcons_utils.get_index_constraints(self.conn, did, tid, ctype)
-            if status:
-                for cons in constraints:
-                    data.setdefault(
-                        index_constraints[ctype], []).append(cons)
+        # index_constraints = {
+        #     'p': 'primary_key', 'u': 'unique_constraint'
+        # }
+        # for ctype in index_constraints.keys():
+        #     data[index_constraints[ctype]] = []
+        #     status, constraints = \
+        #         idxcons_utils.get_index_constraints(self.conn, did, tid, ctype)
+        #     if status:
+        #         for cons in constraints:
+        #             data.setdefault(
+        #                 index_constraints[ctype], []).append(cons)
 
         # Add Foreign Keys
-        status, foreign_keys = fkey_utils.get_foreign_keys(self.conn, tid)
-        if status:
-            for fk in foreign_keys:
-                data.setdefault('foreign_key', []).append(fk)
-
+        # status, foreign_keys = fkey_utils.get_foreign_keys(self.conn, tid)
+        # if status:
+        #     for fk in foreign_keys:
+        #         data.setdefault('foreign_key', []).append(fk)
+        #
         # Add Check Constraints
-        status, check_constraints = \
-            check_utils.get_check_constraints(self.conn, tid)
-        if status:
-            data['check_constraint'] = check_constraints
+        # status, check_constraints = \
+        #     check_utils.get_check_constraints(self.conn, tid)
+        # if status:
+        #     data['check_constraint'] = check_constraints
 
         # Add Exclusion Constraint
-        status, exclusion_constraints = \
-            exclusion_utils.get_exclusion_constraints(self.conn, did, tid)
-        if status:
-            for ex in exclusion_constraints:
-                data.setdefault('exclude_constraint', []).append(ex)
+        # status, exclusion_constraints = \
+        #     exclusion_utils.get_exclusion_constraints(self.conn, did, tid)
+        # if status:
+        #     for ex in exclusion_constraints:
+        #         data.setdefault('exclude_constraint', []).append(ex)
 
         return data
 

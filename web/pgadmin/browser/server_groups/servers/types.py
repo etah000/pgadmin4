@@ -27,10 +27,10 @@ class ServerType(object):
     identification based on the version.
     """
     registry = dict()
-    UTILITY_PATH_LABEL = _("PostgreSQL Binary Path")
+    UTILITY_PATH_LABEL = _("Snowball Binary Path")
     UTILITY_PATH_HELP = _(
-        "Path to the directory containing the PostgreSQL utility programs"
-        " (pg_dump, pg_restore etc)."
+        "Path to the directory containing the Snowball utility programs"
+        " (snowball-client etc)."
     )
 
     def __init__(self, server_type, description, priority):
@@ -112,7 +112,7 @@ class ServerType(object):
         elif operation == 'restore':
             res = 'pg_restore'
         elif operation == 'sql':
-            res = 'psql'
+            res = 'snowball-client'
         else:
             raise Exception(
                 _("Could not find the utility for the operation '%s'").format(

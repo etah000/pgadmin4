@@ -257,24 +257,24 @@ define('pgadmin.node.index', [
           category: 'create', priority: 4, label: gettext('Index...'),
           icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
           enable: 'canCreate',
-        },{
-          name: 'create_index_onTable', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_index_onPartition', node: 'partition', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_index_onMatView', node: 'mview', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 5, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
+        // },{
+        //   name: 'create_index_onTable', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Index...'),
+        //   icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // },{
+        //   name: 'create_index_onPartition', node: 'partition', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Index...'),
+        //   icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // },{
+        //   name: 'create_index_onMatView', node: 'mview', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 5, label: gettext('Index...'),
+        //   icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
         },
         ]);
       },

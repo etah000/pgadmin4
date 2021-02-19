@@ -23,7 +23,7 @@ define('pgadmin.node.format', [
         label: gettext('Formats'),
         type: 'coll-format',
         columns: ['name', 'is_input', 'is_output'],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }
@@ -39,6 +39,7 @@ define('pgadmin.node.format', [
       hasSQL:  true,
       canDrop: false,
       hasDepends: false,
+      hasScriptTypes: [],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -46,6 +47,7 @@ define('pgadmin.node.format', [
 
         this.initialized = true;
 
+        /*
         pgBrowser.add_menus([{
           name: 'create_format_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -73,6 +75,7 @@ define('pgadmin.node.format', [
           enable: 'can_move_objects',
         },
         ]);
+         */
       },
       can_create_format: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),

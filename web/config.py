@@ -30,7 +30,7 @@ from pgadmin.utils import env, IS_WIN, fs_short_path
 ##########################################################################
 
 # Name of the application to display in the UI
-APP_NAME = 'pgAdmin 4'
+APP_NAME = 'SnowAdmin 1'
 APP_ICON = 'pg-icon'
 
 ##########################################################################
@@ -46,8 +46,8 @@ APP_ICON = 'pg-icon'
 #
 
 # Application version number components
-APP_RELEASE = 4
-APP_REVISION = 22
+APP_RELEASE = 1
+APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -67,7 +67,7 @@ else:
 
 # Copyright string for display in the app
 # Any changes made here must also be made in runtime/pgAdmin4.pro
-APP_COPYRIGHT = 'Copyright (C) 2013 - 2020, The pgAdmin Development Team'
+APP_COPYRIGHT = 'Copyright (C) 2019 - 2021, The SnowAdmin Development Team'
 
 ##########################################################################
 # Misc stuff

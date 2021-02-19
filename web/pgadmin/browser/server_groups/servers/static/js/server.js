@@ -104,30 +104,30 @@ define('pgadmin.node.server', [
           category: 'drop', priority: 5, label: gettext('Disconnect Server'),
           icon: 'fa fa-chain-broken', enable : 'is_connected',
         },{
-          name: 'reload_configuration', node: 'server', module: this,
-          applies: ['tools', 'context'], callback: 'reload_configuration',
-          category: 'reload', priority: 6, label: gettext('Reload Configuration'),
-          icon: 'fa fa-repeat', enable : 'enable_reload_config',
-        },{
-          name: 'restore_point', node: 'server', module: this,
-          applies: ['tools', 'context'], callback: 'restore_point',
-          category: 'restore', priority: 9, label: gettext('Add Named Restore Point...'),
-          icon: 'fa fa-anchor', enable : 'is_applicable',
-        },{
+          // name: 'reload_configuration', node: 'server', module: this,
+          // applies: ['tools', 'context'], callback: 'reload_configuration',
+          // category: 'reload', priority: 6, label: gettext('Reload Configuration'),
+          // icon: 'fa fa-repeat', enable : 'enable_reload_config',
+        // },{
+        //   name: 'restore_point', node: 'server', module: this,
+        //   applies: ['tools', 'context'], callback: 'restore_point',
+        //   category: 'restore', priority: 9, label: gettext('Add Named Restore Point...'),
+        //   icon: 'fa fa-anchor', enable : 'is_applicable',
+        // },{
           name: 'change_password', node: 'server', module: this,
           applies: ['object'], callback: 'change_password',
           label: gettext('Change Password...'), priority: 10,
           icon: 'fa fa-lock', enable : 'is_connected',
         },{
-          name: 'wal_replay_pause', node: 'server', module: this,
-          applies: ['tools', 'context'], callback: 'pause_wal_replay',
-          category: 'wal_replay_pause', priority: 7, label: gettext('Pause Replay of WAL'),
-          icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled',
-        },{
-          name: 'wal_replay_resume', node: 'server', module: this,
-          applies: ['tools', 'context'], callback: 'resume_wal_replay',
-          category: 'wal_replay_resume', priority: 8, label: gettext('Resume Replay of WAL'),
-          icon: 'fa fa-play-circle', enable : 'wal_resume_enabled',
+          // name: 'wal_replay_pause', node: 'server', module: this,
+          // applies: ['tools', 'context'], callback: 'pause_wal_replay',
+          // category: 'wal_replay_pause', priority: 7, label: gettext('Pause Replay of WAL'),
+          // icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled',
+        // },{
+        //   name: 'wal_replay_resume', node: 'server', module: this,
+        //   applies: ['tools', 'context'], callback: 'resume_wal_replay',
+        //   category: 'wal_replay_resume', priority: 8, label: gettext('Resume Replay of WAL'),
+        //   icon: 'fa fa-play-circle', enable : 'wal_resume_enabled',
         },{
           name: 'clear_saved_password', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'clear_saved_password',
@@ -140,19 +140,21 @@ define('pgadmin.node.server', [
             }
             return false;
           },
-        },{
-          name: 'clear_sshtunnel_password', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'clear_sshtunnel_password',
-          label: gettext('Clear SSH Tunnel Password'), icon: 'fa fa-eraser',
-          priority: 12,
-          enable: function(node) {
-            if (node && node._type === 'server' &&
-              node.is_tunnel_password_saved) {
-              return true;
-            }
-            return false;
-          },
-        }]);
+        },
+          // {
+          // name: 'clear_sshtunnel_password', node: 'server', module: this,
+          // applies: ['object', 'context'], callback: 'clear_sshtunnel_password',
+          // label: gettext('Clear SSH Tunnel Password'), icon: 'fa fa-eraser',
+          // priority: 12,
+          // enable: function(node) {
+          //   if (node && node._type === 'server' &&
+          //     node.is_tunnel_password_saved) {
+          //     return true;
+          //   }
+          //   return false;
+          // },
+        // }
+        ]);
 
         _.bindAll(this, 'connection_lost');
         pgBrowser.Events.on(

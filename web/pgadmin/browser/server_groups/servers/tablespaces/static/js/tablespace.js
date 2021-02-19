@@ -25,7 +25,7 @@ define('pgadmin.node.tablespace', [
         columns: ['name', 'location', 'type'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size')],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }
@@ -43,6 +43,7 @@ define('pgadmin.node.tablespace', [
       hasDepends: false,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size')],
+      hasScriptTypes: [],
       Init: function() {
         /* Avoid mulitple registration of menus */
         if (this.initialized)
@@ -50,6 +51,7 @@ define('pgadmin.node.tablespace', [
 
         this.initialized = true;
 
+        /*
         pgBrowser.add_menus([{
           name: 'create_tablespace_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -77,6 +79,7 @@ define('pgadmin.node.tablespace', [
           enable: 'can_move_objects',
         },
         ]);
+         */
       },
       can_create_tablespace: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),

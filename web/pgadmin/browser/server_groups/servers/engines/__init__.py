@@ -67,7 +67,7 @@ class RoleModule(CollectionNodeModule):
                 "browser/css/collection.css",
                 node_type=self.node_type
             ),
-            render_template("roles/css/role.css")]
+            render_template("engines/css/engine.css")]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -479,7 +479,7 @@ rolmembership:{
                     if self.manager.db_info is not None and \
                     self.manager.did in self.manager.db_info else 0
 
-                self.sql_path = 'roles/sql/#{0}#'.format(self.manager.version)
+                self.sql_path = 'engines/sql/#{0}#'.format(self.manager.version)
 
                 self.alterKeys = [
                     u'rolcanlogin', u'rolsuper', u'rolcreatedb',

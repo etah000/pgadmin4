@@ -901,27 +901,27 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
         acls = []
         SQL_acl = ''
 
-        try:
-            acls = render_template(
-                "/".join([self.template_path, 'allowed_privs.json'])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
+        # try:
+        #     acls = render_template(
+        #         "/".join([self.template_path, 'allowed_privs.json'])
+        #     )
+        #     acls = json.loads(acls, encoding='utf-8')
+        # except Exception as e:
+        #     current_app.logger.exception(e)
 
-        # Privileges
-        for aclcol in acls:
-            if aclcol in data:
-                allowedacl = acls[aclcol]
-                data[aclcol] = parse_priv_to_db(
-                    data[aclcol], allowedacl['acl']
-                )
+        # # Privileges
+        # for aclcol in acls:
+        #     if aclcol in data:
+        #         allowedacl = acls[aclcol]
+        #         data[aclcol] = parse_priv_to_db(
+        #             data[aclcol], allowedacl['acl']
+        #         )
 
-        SQL_acl = render_template(
-            "/".join([self.template_path, 'grant.sql']),
-            data=data,
-            conn=self.conn
-        )
+        # SQL_acl = render_template(
+        #     "/".join([self.template_path, 'grant.sql']),
+        #     data=data,
+        #     conn=self.conn
+        # )
 
         SQL = render_template(
             "/".join([self.template_path, 'create.sql']),
@@ -1034,6 +1034,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
             "/".join([self.template_path, 'properties.sql']),
             did=did, conn=conn, last_system_oid=0
         )
+
         status, res = conn.execute_dict(SQL)
 
         if not status:
@@ -1044,53 +1045,57 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
                 _("Could not find the database on the server.")
             )
 
-        SQL = render_template(
-            "/".join([self.template_path, 'acl.sql']),
-            did=did, conn=self.conn
-        )
-        status, dataclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=dataclres)
-        res = self.formatdbacl(res, dataclres['rows'])
+        # SQL = render_template(
+        #     "/".join([self.template_path, 'acl.sql']),
+        #     did=did, conn=self.conn
+        # )
+        # status, dataclres = self.conn.execute_dict(SQL)
+        # if not status:
+        #     return internal_server_error(errormsg=dataclres)
+        # res = self.formatdbacl(res, dataclres['rows'])
 
-        SQL = render_template(
-            "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
-        )
-        status, defaclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=defaclres)
+        # SQL = render_template(
+        #     "/".join([self.template_path, 'defacl.sql']),
+        #     did=did, conn=self.conn
+        # )
+        # status, defaclres = self.conn.execute_dict(SQL)
+        # if not status:
+        #     return internal_server_error(errormsg=defaclres)
 
-        res = self.formatdbacl(res, defaclres['rows'])
+        # res = self.formatdbacl(res, defaclres['rows'])
 
-        result = res['rows'][0]
+        # result = res['rows'][0]
 
-        SQL = render_template(
-            "/".join([self.template_path, 'get_variables.sql']),
-            did=did, conn=self.conn
-        )
-        status, res1 = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res1)
+        # SQL = render_template(
+        #     "/".join([self.template_path, 'get_variables.sql']),
+        #     did=did, conn=self.conn
+        # )
+        # status, res1 = self.conn.execute_dict(SQL)
+        # if not status:
+        #     return internal_server_error(errormsg=res1)
 
         # Get Formatted Security Labels
-        if 'seclabels' in result:
-            # Security Labels is not available for PostgreSQL <= 9.1
-            frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
-            result.update(frmtd_sec_labels)
+        # if 'seclabels' in result:
+        #     # Security Labels is not available for PostgreSQL <= 9.1
+        #     frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
+        #     result.update(frmtd_sec_labels)
 
-        # Get Formatted Variables
-        frmtd_variables = parse_variables_from_db(res1['rows'])
-        result.update(frmtd_variables)
+        # # Get Formatted Variables
+        # frmtd_variables = parse_variables_from_db(res1['rows'])
+        # result.update(frmtd_variables)
 
-        sql_header = u"-- Database: {0}\n\n-- ".format(result['name'])
+        SQL = ''
+        sql_header = u"-- Database: {0}\n\n-- ".format(did)
+        result = {'name': did}
 
-        sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
-            datname=result['name'], conn=conn
-        )
+        if did != 'system':
+            sql_header += render_template(
+                "/".join([self.template_path, 'delete.sql']),
+                did=result['name'], conn=conn
+            )
 
         SQL = self.get_new_sql(gid, sid, result, did)
+
         SQL = re.sub('\n{2,}', '\n\n', SQL)
         SQL = sql_header + '\n' + SQL
         SQL = SQL.strip('\n')

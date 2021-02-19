@@ -25,7 +25,7 @@ define('pgadmin.node.engine', [
           'rolsuper', 'rolcreaterole', 'rolcreatedb', 'rolcatupdate',
           'rolinherit', 'rolreplication',
         ],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }
@@ -302,8 +302,9 @@ define('pgadmin.node.engine', [
       sqlCreateHelp: 'sql-createengine.html',
       dialogHelp: url_for('help.static', {'filename': 'engine_dialog.html'}),
       label: gettext('Engines'),
-      hasSQL: true,
+      hasSQL: false,
       width: '550px',
+      hasScriptTypes: [],
       canDrop: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];

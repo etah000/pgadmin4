@@ -23,7 +23,7 @@ define('pgadmin.node.datatype', [
         label: gettext('Datatypes'),
         type: 'coll-datatype',
         columns: ['name', 'case_insensitive', 'alias_to'],
-        canDrop: true,
+        canDrop: false,
         canDropCascade: false,
       });
   }

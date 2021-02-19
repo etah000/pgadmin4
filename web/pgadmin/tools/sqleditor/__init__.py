@@ -1298,7 +1298,10 @@ def start_query_download_tool(trans_id):
         data = request.values if request.values else None
         try:
             if data and 'query' in data:
-                sql = data['query']
+                sql = str(data['query']).replace(';', '')
+                if sql.lower().find('select') >= 0 \
+                        and sql.lower().find('limit') < 0:
+                    sql = sql + ' limit 5000 '
 
                 # This returns generator of records.
                 status, gen = sync_conn.execute_on_server_as_csv(

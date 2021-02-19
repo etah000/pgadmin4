@@ -25,7 +25,7 @@ from flask import g, current_app
 from flask_babelex import gettext
 from flask_security import current_user
 from pgadmin.utils.crypto import decrypt
-from psycopg2.extensions import encodings
+#from psycopg2.extensions import encodings
 
 import config
 from pgadmin.model import User
@@ -33,9 +33,9 @@ from pgadmin.utils.exception import ConnectionLost, CryptKeyMissing
 from pgadmin.utils import get_complete_file_path
 from ..abstract import BaseConnection
 from .cursor import DictCursor
-from .typecast import register_global_typecasters, \
-    register_string_typecasters, register_binary_typecasters, \
-    register_array_to_string_typecasters, ALL_JSON_TYPES
+# from .typecast import register_global_typecasters, \
+#     register_string_typecasters, register_binary_typecasters, \
+#     register_array_to_string_typecasters, ALL_JSON_TYPES
 from .encoding import getEncoding, configureDriverEncodings
 from pgadmin.utils import csv
 from pgadmin.utils.master_password import get_crypt_key
@@ -47,8 +47,8 @@ from . import psycopg as psycopg2
 _ = gettext
 
 # Register global type caster which will be applicable to all connections.
-register_global_typecasters()
-configureDriverEncodings(encodings)
+#register_global_typecasters()
+#configureDriverEncodings(encodings)
 
 
 class Connection(BaseConnection):
@@ -393,7 +393,7 @@ class Connection(BaseConnection):
             else:
                 self.conn.autocommit = True
 
-        register_string_typecasters(self.conn)
+        #register_string_typecasters(self.conn)
 
         # if self.array_to_string:
         #     register_array_to_string_typecasters(self.conn)

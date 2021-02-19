@@ -139,7 +139,7 @@ blueprint = TableModule(__name__)
 
 
 class TableView(BaseTableView, DataTypeReader, VacuumSettings,
-                SchemaDiffTableCompare, 
+                SchemaDiffTableCompare,
                 ClusterReader, EngineReader, TimezoneReader):
     """
     This class is responsible for generating routes for Table node
@@ -602,12 +602,16 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         status, res = self._fetch_properties(did, tid, scid)
         if not status:
             return res
-        if not res['rows']:
+        if not res['rows'][0]:
             return gone(gettext("The specified table could not be found."))
 
-        return super(TableView, self).properties(
-            gid, sid, did, scid, tid, res
+        return ajax_response(
+            response=res['rows'][0],
+            status=200
         )
+        # return super(TableView, self).properties(
+        #     gid, sid, did, scid, tid, res
+        # )
     def _fetch_ddl(self, did, tid, scid=0):
         """
         This function is used to fetch the create table query of the specified object
@@ -1057,7 +1061,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         data['name'] = "{local_table}"
         data['engine_params']['zoo_path'] = '/snowball/tables/{rmt_db}/{local_table}/{shard_num}'
-        data['engine_params']['replica_name'] = '{replica_num}'        
+        data['engine_params']['replica_name'] = '{replica_num}'
 
         SQL = render_template(
             "/".join([self.table_template_path, 'create.sql']),
@@ -1070,8 +1074,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         rsp = shifter(
             self.conn, cluster,
             tbl_ddl_template=SQL, tbl_name=local_table,
-            dist_db=dist_db, 
-            dist_tbl_suffix=dist_tbl_suffix, 
+            dist_db=dist_db,
+            dist_tbl_suffix=dist_tbl_suffix,
             local_tbl_suffix=local_tbl_suffix,
         )
 
@@ -1501,7 +1505,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
-        data = self._formatter(did, scid, tid, data)
+        data['columns'] = self._formatter(did, scid, tid, data)
 
         columns = []
         values = []
@@ -1552,7 +1556,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
-        data = self._formatter(did, scid, tid, data)
+        data['columns'] = self._formatter(did, scid, tid, data)
 
         columns = []
 
@@ -1568,7 +1572,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 columns = "=?, ".join(columns)
             columns += "=?"
 
-            sql = u"UPDATE {0}\n\tSET {1}\n\tWHERE <condition>;".format(
+            sql = u"ALTER TABLE {0}\n\tUPDATE {1}\n\tWHERE <condition>;".format(
                 self.qtIdent(self.conn, data['schema'], data['name']),
                 columns
             )
@@ -1578,7 +1582,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return ajax_response(response=sql)
 
     @BaseTableView.check_precondition
-    def delete_sql(self, gid, sid, did, tid, scid, json_resp=True):
+    def delete_sql(self, gid, sid, did, tid, scid=0, json_resp=True):
         """
         DELETE script sql for the object
 
@@ -1606,7 +1610,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         data = res['rows'][0]
 
-        sql = u"DELETE FROM {0}\n\tWHERE <condition>;".format(
+        sql = u"ALTER TABLE {0}\n\tDELETE WHERE <condition>;".format(
             self.qtIdent(self.conn, data['schema'], data['name'])
         )
 
@@ -1753,7 +1757,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
     def clusters(self, gid, sid, did=None, tid=None):
         """
         Returns:
-            This function will return list of cluster available 
+            This function will return list of cluster available
             for node-ajax-control
         """
 
@@ -1771,7 +1775,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
     def engines(self, gid, sid, did=None, tid=None):
         """
         Returns:
-            This function will return list of cluster available 
+            This function will return list of cluster available
             for node-ajax-control
         """
 
@@ -1789,7 +1793,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
     def timezones(self, gid, sid, did=None, tid=None):
         """
         Returns:
-            This function will return list of timezone available 
+            This function will return list of timezone available
             for node-ajax-control
         """
 
