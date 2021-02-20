@@ -515,7 +515,7 @@ rolmembership:{
                         "The current user does not have permission to create "
                         "the role."
                     )
-                elif action == 'msql' and 'rid' in kwargs:
+                elif action in ('sql', 'msql') and 'rid' in kwargs:
                     fetch_name = True
 
                 if check_permission:
@@ -530,32 +530,32 @@ rolmembership:{
 
                 if fetch_name:
                     status, res = self.conn.execute_dict(
-                        render_template(
-                            self.sql_path + 'permission.sql',
-                            rid=kwargs['rid'],
-                            conn=self.conn
-                        )
+                        u"SELECT name, 1 AS rolcanlogin FROM system.users WHERE name = '{}'".format(kwargs['rid'])
+                        +
+                        u" UNION ALL "
+                        +
+                        u"SELECT name, 0 AS rolcanlogin FROM system.roles WHERE name = '{}'".format(kwargs['rid'])
                     )
 
                     if not status:
                         return internal_server_error(
                             _(
-                                "Error retrieving the role information.\n{0}"
+                                "Error retrieving the user/role information.\n{0}"
                             ).format(res)
                         )
 
                     if len(res['rows']) == 0:
                         return gone(
-                            _("Could not find the role on the database "
+                            _("Could not find the user/role on the database "
                               "server.")
                         )
 
                     row = res['rows'][0]
 
-                    self.role = row['rolname']
+                    self.role = kwargs['rid']
                     self.rolCanLogin = row['rolcanlogin']
-                    self.rolCatUpdate = row['rolcatupdate']
-                    self.rolSuper = row['rolsuper']
+                    self.rolCatUpdate = row['rolcanlogin']
+                    self.rolSuper = True if kwargs['rid'] == 'default' else False
 
                 return f(self, **kwargs)
 
@@ -712,11 +712,20 @@ rolmembership:{
 
         for rid in data['ids']:
             status, res = self.conn.execute_dict(
-                render_template(
-                    self.sql_path + 'permission.sql',
-                    rid=rid,
-                    conn=self.conn
+                u"SELECT * FROM system.users WHERE name = '{0}';".format(rid)
+            )
+
+            if not status:
+                return internal_server_error(
+                    _(
+                        "Error retrieving the user information.\n{0}"
+                    ).format(res)
                 )
+
+            is_user = res['rows']
+
+            status, res = self.conn.execute_dict(
+                u"SELECT * FROM system.roles WHERE name = '{0}';".format(rid)
             )
 
             if not status:
@@ -726,31 +735,36 @@ rolmembership:{
                     ).format(res)
                 )
 
-            if len(res['rows']) == 0:
+            is_role = res['rows']
+
+            if is_user:
+                status, res = self.conn.execute_2darray(
+                    u"DROP USER {0};".format(rid)
+                )
+            elif is_role:
+                status, res = self.conn.execute_2darray(
+                    u"DROP ROLE {0};".format(rid)
+                )
+            else:
                 return gone(
-                    _("Could not find the role on the database "
+                    _("Could not find the user/role on the database "
                       "server.")
                 )
 
-            row = res['rows'][0]
-
-            status, res = self.conn.execute_2darray(
-                u"DROP ROLE {0};".format(self.qtIdent(self.conn,
-                                                      row['rolname']))
-            )
             if not status:
                 return internal_server_error(
-                    _("Could not drop the role.\n{0}").format(res)
+                    _("Could not drop the user/role.\n{0}").format(res)
                 )
 
         return success_return()
 
-    @check_precondition()
+    @check_precondition(action='sql')
     def sql(self, gid, sid, rid):
         show_password = self.conn.manager.user_info['is_superuser']
         status, res = self.conn.execute_scalar(
             render_template(
-                self.sql_path + 'sql.sql', show_password=show_password
+                self.sql_path + 'sql.sql', show_password=show_password, 
+                rid=rid, is_user=self.rolCanLogin,
             ),
             dict({'rid': rid})
         )
@@ -768,7 +782,13 @@ rolmembership:{
                 _("Could not generate reversed engineered query for the role.")
             )
 
-        return ajax_response(response=res.strip('\n'))
+        rsp = "-- {0}: {1}\n".format('User' if self.rolCanLogin else 'Role', rid)
+        if rid != 'default':
+            rsp += "-- DROP {0} {1};\n".format('USER' if self.rolCanLogin else 'ROLE', rid)
+        rsp += "\n"
+        rsp += res
+
+        return ajax_response(response=rsp.strip('\n'))
 
     @check_precondition(action='create')
     @validate_request
