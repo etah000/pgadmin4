@@ -287,7 +287,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
 
         for row in rset['rows']:
             dbname = row['name']
-            if self.manager.db == dbname:
+            if self.manager.db == dbname or dbname in ('system', ):
                 connected = True
                 canDrop = canDisConn = False
             else:
