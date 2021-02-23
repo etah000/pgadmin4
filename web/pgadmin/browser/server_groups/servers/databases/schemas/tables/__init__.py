@@ -1457,7 +1457,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
-        data = self._formatter(did, scid, tid, data)
+        # data = self._formatter(did, scid, tid, data)
 
         columns = []
 

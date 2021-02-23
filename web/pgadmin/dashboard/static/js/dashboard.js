@@ -41,17 +41,18 @@ define('pgadmin.dashboard', [
       // if cancel query button then
       if (cell_action === 'cancel') {
         this.$el.html(
-          '<i class=\'fa fa-stop\' data-toggle=\'tooltip\' ' +
+          '<i class=\'fa fa-times-circle text-danger\' data-toggle=\'tooltip\' ' +
           'title=\'' + gettext('Cancel the active query') +
           '\' aria-label=\''+ gettext('Cancel the active query') +'\'></i>'
         );
-      } else {
-        this.$el.html(
-          '<i class=\'fa fa-times-circle text-danger\' data-toggle=\'tooltip\' ' +
-          'title=\'' + gettext('Terminate the session') +
-          '\' aria-label=\''+ gettext('Terminate the session') +'\'></i>'
-        );
       }
+      // else {
+      //   this.$el.html(
+      //     '<i class=\'fa fa-times-circle text-danger\' data-toggle=\'tooltip\' ' +
+      //     'title=\'' + gettext('Terminate the session') +
+      //     '\' aria-label=\''+ gettext('Terminate the session') +'\'></i>'
+      //   );
+      // }
       this.$el.attr('tabindex', 0);
       this.$el.on('keydown', function(e) {
         // terminating session or cancel the active query.
@@ -173,15 +174,15 @@ define('pgadmin.dashboard', [
         return this.version >= 100000;
       },
     }, {
-      id: 'query_start',
-      label: gettext('Query started at'),
+      id: 'pid',
+      label: gettext('Query ID'),
       type: 'text',
       editable: false,
       readonly: true,
       group: gettext('Details'),
     }, {
-      id: 'state_change',
-      label: gettext('Last state changed at'),
+      id: 'elapsed',
+      label: gettext('Elapsed'),
       type: 'text',
       editable: true,
       readonly: true,
