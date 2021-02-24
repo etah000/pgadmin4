@@ -929,7 +929,8 @@ table.table-empty-rows{
 }
 
 .login_page {
-  background-color: $color-primary;
+  // background-color: $color-primary;
+  background:url("/static/img/login.png")  no-repeat center center;
   height: 100%;
   position:relative;
   z-index:1;
