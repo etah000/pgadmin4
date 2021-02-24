@@ -35,7 +35,7 @@ define('pgadmin.node.cluster', [
       sqlAlterHelp: 'sql-altercluster.html',
       sqlCreateHelp: 'sql-createcluster.html',
       dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
-      hasSQL: true,
+      hasSQL: false,
       canEdit:false,
       hasDepends: true,
       hasStatistics: true,
