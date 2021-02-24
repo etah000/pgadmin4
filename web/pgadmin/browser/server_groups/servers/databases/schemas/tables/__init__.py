@@ -1060,6 +1060,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         data['cluster'] = None
 
         data['name'] = "{local_table}"
+        data['engine_params'] = dict()
         data['engine_params']['zoo_path'] = '/snowball/tables/{rmt_db}/{local_table}/{shard_num}'
         data['engine_params']['replica_name'] = '{replica_num}'
 

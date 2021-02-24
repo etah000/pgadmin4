@@ -134,7 +134,8 @@ def shifter(conn, cluster, tbl_ddl_template=None, tbl_name=None,
     rmt_db = ch.get_rmt_database(cluster)
     default_dbs = ch.get_default_databases(cluster)
 
-    if dist_db in default_dbs and dist_tbl_suffix == local_tbl_suffix:
+    if dist_db is None \
+        or dist_db in default_dbs and dist_tbl_suffix == local_tbl_suffix:
         dist_tbl_suffix = None
         local_tbl_suffix = 'local'
 

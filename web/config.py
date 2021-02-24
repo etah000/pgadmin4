@@ -78,8 +78,8 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 
 # Languages we support in the UI
 LANGUAGES = {
+    'zh': '简体中文',
     'en': 'English',
-    'zh': 'Chinese (Simplified)',
     'cs': 'Czech',
     'fr': 'French',
     'de': 'German',

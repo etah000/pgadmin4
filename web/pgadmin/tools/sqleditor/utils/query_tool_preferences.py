@@ -38,99 +38,99 @@ def RegisterQueryToolPreferences(self):
                          'will be opened in a new browser tab.')
     )
 
-    self.explain_verbose = self.preference.register(
-        'Explain', 'explain_verbose',
-        gettext("Verbose output?"), 'boolean', False,
-        category_label=gettext('Explain')
-    )
+    # self.explain_verbose = self.preference.register(
+    #     'Explain', 'explain_verbose',
+    #     gettext("Verbose output?"), 'boolean', False,
+    #     category_label=gettext('Explain')
+    # )
+    #
+    # self.explain_costs = self.preference.register(
+    #     'Explain', 'explain_costs',
+    #     gettext("Show costs?"), 'boolean', False,
+    #     category_label=gettext('Explain')
+    # )
+    #
+    # self.explain_buffers = self.preference.register(
+    #     'Explain', 'explain_buffers',
+    #     gettext("Show buffers?"), 'boolean', False,
+    #     category_label=gettext('Explain')
+    # )
+    #
+    # self.explain_timing = self.preference.register(
+    #     'Explain', 'explain_timing',
+    #     gettext("Show timing?"), 'boolean', False,
+    #     category_label=gettext('Explain')
+    # )
+    #
+    # self.explain_summary = self.preference.register(
+    #     'Explain', 'explain_summary',
+    #     gettext("Show summary?"), 'boolean', False,
+    #     category_label=gettext('Explain')
+    # )
+    #
+    # self.explain_settings = self.preference.register(
+    #     'Explain', 'explain_settings',
+    #     gettext("Show settings?"), 'boolean', False,
+    #     category_label=gettext('Explain')
+    # )
 
-    self.explain_costs = self.preference.register(
-        'Explain', 'explain_costs',
-        gettext("Show costs?"), 'boolean', False,
-        category_label=gettext('Explain')
-    )
+    # self.auto_commit = self.preference.register(
+    #     'Options', 'auto_commit',
+    #     gettext("Auto commit?"), 'boolean', True,
+    #     category_label=gettext('Options'),
+    #     help_str=gettext('Set auto commit on or off by default in new Query '
+    #                      'Tool tabs.')
+    # )
+    #
+    # self.auto_rollback = self.preference.register(
+    #     'Options', 'auto_rollback',
+    #     gettext("Auto rollback?"), 'boolean', False,
+    #     category_label=gettext('Options'),
+    #     help_str=gettext('Set auto rollback on or off by default in new Query '
+    #                      'Tool tabs.')
+    # )
 
-    self.explain_buffers = self.preference.register(
-        'Explain', 'explain_buffers',
-        gettext("Show buffers?"), 'boolean', False,
-        category_label=gettext('Explain')
-    )
+    # self.show_prompt_save_query_changes = self.preference.register(
+    #     'Options', 'prompt_save_query_changes',
+    #     gettext("Prompt to save unsaved query changes?"), 'boolean', True,
+    #     category_label=gettext('Options'),
+    #     help_str=gettext(
+    #         'Specifies whether or not to prompt user to save unsaved '
+    #         'query on query tool exit.'
+    #     )
+    # )
+    #
+    # self.table_view_data_by_pk = self.preference.register(
+    #     'Options', 'table_view_data_by_pk',
+    #     gettext("Sort View Data results by primary key columns?"),
+    #     'boolean', True,
+    #     category_label=gettext('Options'),
+    #     help_str=gettext("If set to True, data returned when using the "
+    #                      "View/Edit Data - All Rows option will be sorted by "
+    #                      "the Primary Key columns by default. When using the "
+    #                      "First/Last 100 Rows options, data is always sorted.")
+    # )
+    #
+    # self.show_prompt_save_data_changes = self.preference.register(
+    #     'Options', 'prompt_save_data_changes',
+    #     gettext("Prompt to save unsaved data changes?"), 'boolean', True,
+    #     category_label=gettext('Options'),
+    #     help_str=gettext(
+    #         'Specifies whether or not to prompt user to save unsaved '
+    #         'data on data grid exit.'
+    #     )
+    # )
 
-    self.explain_timing = self.preference.register(
-        'Explain', 'explain_timing',
-        gettext("Show timing?"), 'boolean', False,
-        category_label=gettext('Explain')
-    )
-
-    self.explain_summary = self.preference.register(
-        'Explain', 'explain_summary',
-        gettext("Show summary?"), 'boolean', False,
-        category_label=gettext('Explain')
-    )
-
-    self.explain_settings = self.preference.register(
-        'Explain', 'explain_settings',
-        gettext("Show settings?"), 'boolean', False,
-        category_label=gettext('Explain')
-    )
-
-    self.auto_commit = self.preference.register(
-        'Options', 'auto_commit',
-        gettext("Auto commit?"), 'boolean', True,
-        category_label=gettext('Options'),
-        help_str=gettext('Set auto commit on or off by default in new Query '
-                         'Tool tabs.')
-    )
-
-    self.auto_rollback = self.preference.register(
-        'Options', 'auto_rollback',
-        gettext("Auto rollback?"), 'boolean', False,
-        category_label=gettext('Options'),
-        help_str=gettext('Set auto rollback on or off by default in new Query '
-                         'Tool tabs.')
-    )
-
-    self.show_prompt_save_query_changes = self.preference.register(
-        'Options', 'prompt_save_query_changes',
-        gettext("Prompt to save unsaved query changes?"), 'boolean', True,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to prompt user to save unsaved '
-            'query on query tool exit.'
-        )
-    )
-
-    self.table_view_data_by_pk = self.preference.register(
-        'Options', 'table_view_data_by_pk',
-        gettext("Sort View Data results by primary key columns?"),
-        'boolean', True,
-        category_label=gettext('Options'),
-        help_str=gettext("If set to True, data returned when using the "
-                         "View/Edit Data - All Rows option will be sorted by "
-                         "the Primary Key columns by default. When using the "
-                         "First/Last 100 Rows options, data is always sorted.")
-    )
-
-    self.show_prompt_save_data_changes = self.preference.register(
-        'Options', 'prompt_save_data_changes',
-        gettext("Prompt to save unsaved data changes?"), 'boolean', True,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to prompt user to save unsaved '
-            'data on data grid exit.'
-        )
-    )
-
-    self.show_prompt_commit_transaction = self.preference.register(
-        'Options', 'prompt_commit_transaction',
-        gettext("Prompt to commit/rollback active transactions?"), 'boolean',
-        True,
-        category_label=gettext('Options'),
-        help_str=gettext(
-            'Specifies whether or not to prompt user to commit or rollback '
-            'an active transaction on Query Tool exit.'
-        )
-    )
+    # self.show_prompt_commit_transaction = self.preference.register(
+    #     'Options', 'prompt_commit_transaction',
+    #     gettext("Prompt to commit/rollback active transactions?"), 'boolean',
+    #     True,
+    #     category_label=gettext('Options'),
+    #     help_str=gettext(
+    #         'Specifies whether or not to prompt user to commit or rollback '
+    #         'an active transaction on Query Tool exit.'
+    #     )
+    # )
 
     self.sql_font_size = self.preference.register(
         'Editor', 'plain_editor_mode',

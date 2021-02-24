@@ -14,5 +14,6 @@ SELECT
     query
 FROM system.query_log
 WHERE type = 2
-ORDER BY query_duration_ms DESC
+AND query_start_time > subtractDays(now(),7)
+ORDER BY query_duration_ms DESC, query_start_time DESC
 LIMIT 50
