@@ -56,24 +56,21 @@ class HelpModule(PgAdminModule):
 
         self.pg_help_path = self.help_preference.register(
             'help', 'pg_help_path',
-            gettext("PostgreSQL Help Path"), 'text',
-            'https://www.postgresql.org/docs/$VERSION$/',
+            gettext("Snowball Help Path"), 'text',
+            '',
             category_label=gettext('Help'),
             help_str=gettext(
-                'Path to the PostgreSQL documentation. $VERSION$ will be '
-                'replaced with the major.minor version number.'
+                ''
             )
         )
 
         self.edbas_help_path = self.help_preference.register(
             'help', 'edbas_help_path',
-            gettext("EDB Advanced Server Help Path"), 'text',
-            'https://www.enterprisedb.com/edb-docs/d/postgresql/reference/'
-            'manual/$VERSION$/',
+            gettext("SnowAdmin Help Path"), 'text',
+            '',
             category_label=gettext('Help'),
             help_str=gettext(
-                'Path to the EDB Advanced Server documentation. $VERSION$ '
-                'will be replaced with the major.minor version number.'
+                ''
             )
         )
 

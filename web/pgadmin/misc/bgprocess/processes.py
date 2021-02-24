@@ -134,11 +134,11 @@ class BatchProcess(object):
 
         created = False
         size = 0
-        id = ctime
+        uid = ctime
         while not created:
             try:
-                id += random_number(size)
-                log_dir = os.path.join(log_dir, id)
+                uid += random_number(size)
+                log_dir = os.path.join(log_dir, uid)
                 size += 1
                 if not os.path.exists(log_dir):
                     os.makedirs(log_dir, int('700', 8))
@@ -183,7 +183,7 @@ class BatchProcess(object):
         tmp_desc = dumps(self.desc)
 
         j = Process(
-            pid=int(id),
+            pid=int(uid),
             command=_cmd,
             arguments=args_val,
             logdir=log_dir,
@@ -410,60 +410,89 @@ class BatchProcess(object):
             p.process_state = PROCESS_STARTED
             db.session.commit()
 
-    def status(self, out=0, err=0):
-        import re
+    def get_process_output(self, cmd, env):
+        """
+        :param cmd:
+        :param env:
+        :return:
+        """
+        p = Popen(
+            cmd, close_fds=True, stdout=PIPE, stderr=PIPE, stdin=None,
+            preexec_fn=self.preexec_function, env=env
+        )
 
-        ctime = get_current_time(format='%Y%m%d%H%M%S%f')
+        output, errors = p.communicate()
+        output = output.decode() \
+            if hasattr(output, 'decode') else output
+        errors = errors.decode() \
+            if hasattr(errors, 'decode') else errors
+        current_app.logger.debug(
+            'Process Watcher Out:{0}'.format(output))
+        current_app.logger.debug(
+            'Process Watcher Err:{0}'.format(errors))
+
+        return p
+
+    def preexec_function(self):
+        import signal
+        # Detaching from the parent process group
+        os.setpgrp()
+        # Explicitly ignoring signals in the child process
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+    def read_log(self, logfile, log, pos, ctime, ecode=None, enc='utf-8'):
+        import re
+        completed = True
+        idx = 0
+        c = re.compile(r"(\d+),(.*$)")
+
+        if not os.path.isfile(logfile):
+            return 0, False
+
+        with open(logfile, 'rb') as f:
+            eofs = os.fstat(f.fileno()).st_size
+            f.seek(pos, 0)
+            if pos == eofs and ecode is None:
+                completed = False
+
+            while pos < eofs:
+                idx += 1
+                line = f.readline()
+                line = line.decode(enc, 'replace')
+                r = c.split(line)
+                if len(r) < 3:
+                    # ignore this line
+                    pos = f.tell()
+                    continue
+                if r[1] > ctime:
+                    completed = False
+                    break
+                log.append([r[1], r[2]])
+                pos = f.tell()
+                if idx >= 1024:
+                    completed = False
+                    break
+                if pos == eofs:
+                    if ecode is None:
+                        completed = False
+                    break
+
+        return pos, completed
+
+    def status(self, out=0, err=0):
+        ctime = get_current_time(format='%y%m%d%H%M%S%f')
 
         stdout = []
         stderr = []
         out_completed = err_completed = False
         process_output = (out != -1 and err != -1)
-        enc = sys.getdefaultencoding()
-        if enc is None or enc == 'ascii':
-            enc = 'utf-8'
-
-        def read_log(logfile, log, pos, ctime, ecode=None):
-            completed = True
-            idx = 0
-            c = re.compile(r"(\d+),(.*$)")
-
-            if not os.path.isfile(logfile):
-                return 0, False
-
-            with open(logfile, 'rb') as f:
-                eofs = os.fstat(f.fileno()).st_size
-                f.seek(pos, 0)
-                if pos == eofs and ecode is None:
-                    completed = False
-
-                while pos < eofs:
-                    idx += 1
-                    line = f.readline()
-                    line = line.decode(enc, 'replace')
-                    r = c.split(line)
-                    if len(r) < 3:
-                        # ignore this line
-                        pos = f.tell()
-                        continue
-                    if r[1] > ctime:
-                        completed = False
-                        break
-                    log.append([r[1], r[2]])
-                    pos = f.tell()
-                    if idx >= 1024:
-                        completed = False
-                        break
-                    if pos == eofs:
-                        if ecode is None:
-                            completed = False
-                        break
-
-            return pos, completed
 
         j = Process.query.filter_by(
             pid=self.id, user_id=current_user.id
         ).first()
+        enc = sys.getdefaultencoding()
+        if enc == 'ascii':
+            enc = 'utf-8'
 
         execution_time = None
 
@@ -482,11 +511,11 @@ class BatchProcess(object):
                 execution_time = BatchProcess.total_seconds(etime - stime)
 
             if process_output:
-                out, out_completed = read_log(
-                    self.stdout, stdout, out, ctime, self.ecode
+                out, out_completed = self.read_log(
+                    self.stdout, stdout, out, ctime, self.ecode, enc
                 )
-                err, err_completed = read_log(
-                    self.stderr, stderr, err, ctime, self.ecode
+                err, err_completed = self.read_log(
+                    self.stderr, stderr, err, ctime, self.ecode, enc
                 )
         else:
             out_completed = err_completed = False
@@ -557,6 +586,39 @@ class BatchProcess(object):
         return True, False
 
     @staticmethod
+    def _check_process_desc(p):
+        """
+        Check process desc instance and return data according to process.
+        :param p: process
+        :return: return value for details, type_desc and desc related
+        to process
+        """
+        desc = loads(p.desc)
+        details = desc
+        type_desc = ''
+        current_storage_dir = None
+
+        if isinstance(desc, IProcessDesc):
+
+            from pgadmin.tools.backup import BackupMessage
+            from pgadmin.tools.import_export import IEMessage
+            args = []
+            args_csv = StringIO(
+                p.arguments.encode('utf-8')
+                if hasattr(p.arguments, 'decode') else p.arguments
+            )
+            args_reader = csv.reader(args_csv, delimiter=str(','))
+            for arg in args_reader:
+                args = args + arg
+            details = desc.details(p.command, args)
+            type_desc = desc.type_desc
+            # if isinstance(desc, (BackupMessage, IEMessage)):
+            #     current_storage_dir = desc.current_storage_dir
+            desc = desc.message
+
+        return desc, details, type_desc, current_storage_dir
+
+    @staticmethod
     def list():
         processes = Process.query.filter_by(user_id=current_user.id)
         changed = False
@@ -581,21 +643,9 @@ class BatchProcess(object):
             etime = parser.parse(p.end_time or get_current_time())
 
             execution_time = BatchProcess.total_seconds(etime - stime)
-            desc = loads(p.desc)
-            details = desc
 
-            if isinstance(desc, IProcessDesc):
-                args = []
-                args_csv = StringIO(
-                    p.arguments.encode('utf-8')
-                    if hasattr(p.arguments, 'decode') else p.arguments
-                )
-                args_reader = csv.reader(args_csv, delimiter=str(','))
-                for arg in args_reader:
-                    args = args + arg
-                details = desc.details(p.command, args)
-                type_desc = desc.type_desc
-                desc = desc.message
+            desc, details, type_desc, current_storage_dir = BatchProcess.\
+                _check_process_desc(p)
 
             res.append({
                 'id': p.pid,
