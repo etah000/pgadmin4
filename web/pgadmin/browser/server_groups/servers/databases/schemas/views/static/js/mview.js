@@ -83,27 +83,26 @@ define('pgadmin.node.mview', [
           category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
           data: {action: 'create', check: true}, enable: 'canCreate',
           label: gettext('Materialized View...'),
-        },
-        {
-          name: 'create_mview_on_database', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 9, icon: 'wcTabIcon icon-mview',
-          data: {action: 'create', check: true}, enable: false,
-          label: gettext('Materialized View...'),
-        },
-        {
-          name: 'create_mview', node: 'mview', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
-          data: {action: 'create', check: true}, enable: 'canCreate',
-          label: gettext('Materialized View...'),
-        },{
-          name: 'create_mview', node: 'schema', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
-          data: {action: 'create', check: false}, enable: 'canCreate',
-          label: gettext('Materialized View...'),
-        },{
+        // },{
+        //   name: 'create_mview_on_database', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 9, icon: 'wcTabIcon icon-mview',
+        //   data: {action: 'create', check: true}, enable: false,
+        //   label: gettext('Materialized View...'),
+        // },
+        // {
+        //   name: 'create_mview', node: 'mview', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
+        //   data: {action: 'create', check: true}, enable: 'canCreate',
+        //   label: gettext('Materialized View...'),
+        // },{
+        //   name: 'create_mview', node: 'schema', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
+        //   data: {action: 'create', check: false}, enable: 'canCreate',
+        //   label: gettext('Materialized View...'),
+        // },{
           name: 'refresh_mview_data', node: 'mview', module: this,
           priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
           applies: ['object', 'context'], label: gettext('With data'),

@@ -645,7 +645,7 @@ define([
         });
       }
       // console.log(menus);
-      pgBrowser.add_menus(menus);
+      // pgBrowser.add_menus(menus);
       return this;
     },
     start_backup_global: function(action, item) {

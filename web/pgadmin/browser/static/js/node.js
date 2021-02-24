@@ -197,12 +197,12 @@ define('pgadmin.browser.node', [
         }]);
 
         // show search objects same as query tool
-        pgAdmin.Browser.add_menus([{
-          name: 'search_objects', node: self.type, module: pgAdmin.SearchObjects,
-          applies: ['context'], callback: 'show_search_objects',
-          priority: 997, label: gettext('Search Objects...'),
-          icon: 'fa fa-search', enable: enable,
-        }]);
+        // pgAdmin.Browser.add_menus([{
+        //   name: 'search_objects', node: self.type, module: pgAdmin.SearchObjects,
+        //   applies: ['context'], callback: 'show_search_objects',
+        //   priority: 997, label: gettext('Search Objects...'),
+        //   icon: 'fa fa-search', enable: enable,
+        // }]);
       }
 
       // This will add options of scripts eg:'CREATE Script'
@@ -288,7 +288,7 @@ define('pgadmin.browser.node', [
       if (this.model) {
         // This will be the URL, used for object manipulation.
         // i.e. Create, Update in these cases
-        
+
         var urlBase = this.generate_url(item, type, node, false, null, that.url_jump_after_node);
         // console.log(urlBase);
 
@@ -318,7 +318,7 @@ define('pgadmin.browser.node', [
           fields = Backform.generateViewSchema(
             info, newModel, type, this, node
           );
-        
+
         if (type == 'create' || type == 'edit') {
 
           if (callback && ctx) {
@@ -978,7 +978,7 @@ define('pgadmin.browser.node', [
             console.log(b.panels['properties'].panel);
             console.log(item);
             console.log(d);
-            this.showProperties(item, d, b.panels['properties'].panel); 
+            this.showProperties(item, d, b.panels['properties'].panel);
           }
         }
 

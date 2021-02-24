@@ -38,6 +38,7 @@ define('pgadmin.node.dictionary', [
       dialogHelp: url_for('help.static', {'filename': 'dictionary_dialog.html'}),
       label: gettext('Dictionary'),
       hasSQL:  true,
+      canEdit: false,
       canDrop: false,
       hasDepends: false,
       hasStatistics: true,

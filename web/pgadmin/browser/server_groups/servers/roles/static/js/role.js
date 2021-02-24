@@ -303,6 +303,8 @@ define('pgadmin.node.role', [
       dialogHelp: url_for('help.static', {'filename': 'role_dialog.html'}),
       label: gettext('Login/Group Role'),
       hasSQL: true,
+      canEdit: false,
+      canDrop: false,
       width: '550px',
       hasScriptTypes: [],
       canDrop: function(node, item) {
