@@ -21,7 +21,7 @@ define('pgadmin.node.cluster', [
         label: gettext('Clusters'),
         type: 'coll-cluster',
         columns: ['name', 'datowner', 'comments'],
-        hasStatistics: true,
+        hasStatistics: false,
         canDrop: true,
         canDropCascade: false,
         statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
@@ -38,7 +38,7 @@ define('pgadmin.node.cluster', [
       hasSQL: false,
       canEdit:false,
       hasDepends: true,
-      hasStatistics: true,
+      hasStatistics: false,
       statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       canDrop: function(node) {
         return false;
@@ -95,7 +95,7 @@ define('pgadmin.node.cluster', [
       can_create_cluster: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];
-          return true;
+          return false;
         // return server.connected && server.user.can_create_db;
       },
       is_not_connected: function(node) {
