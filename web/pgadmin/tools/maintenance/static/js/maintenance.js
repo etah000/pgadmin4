@@ -186,7 +186,7 @@ define([
           ),
         });
       }
-      pgBrowser.add_menus(menus);
+      // pgBrowser.add_menus(menus);
     },
 
     /*

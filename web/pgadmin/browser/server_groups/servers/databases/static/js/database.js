@@ -38,6 +38,7 @@ define('pgadmin.node.database', [
       sqlCreateHelp: 'sql-createdatabase.html',
       dialogHelp: url_for('help.static', {'filename': 'database_dialog.html'}),
       hasSQL: true,
+      canEdit: false,
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],

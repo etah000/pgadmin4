@@ -41,7 +41,7 @@ define('pgadmin.schemadiff', [
         enable: true,
       }];
 
-      pgBrowser.add_menus(menus);
+      //pgBrowser.add_menus(menus);
 
       // Creating a new pgBrowser frame to show the data.
       var schemaDiffFrameType = new pgBrowser.Frame({

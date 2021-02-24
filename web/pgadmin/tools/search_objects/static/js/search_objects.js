@@ -28,51 +28,53 @@ define([
       csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
 
       // Define the nodes on which the menus to be appear
-      var menus = [{
-        name: 'search_objects',
-        module: this,
-        applies: ['tools'],
-        callback: 'show_search_objects',
-        enable: this.search_objects_enabled,
-        priority: 1,
-        label: gettext('Search objects'),
-      }, {
-        name: 'search_objects',
-        module: this,
-        applies: ['context'],
-        callback: 'show_search_objects',
-        enable: this.search_objects_enabled,
-        priority: 1,
-        label: gettext('Search objects'),
-      }];
+      // var menus = [{
+      //   name: 'search_objects',
+      //   module: this,
+      //   applies: ['tools'],
+      //   callback: 'show_search_objects',
+      //   enable: this.search_objects_enabled,
+      //   priority: 1,
+      //   label: gettext('Search objects'),
+      // }
+      // , {
+      //   name: 'search_objects',
+      //   module: this,
+      //   applies: ['context'],
+      //   callback: 'show_search_objects',
+      //   enable: this.search_objects_enabled,
+      //   priority: 1,
+      //   label: gettext('Search objects'),
+      // }
+      // ];
 
-      pgBrowser.add_menus(menus);
-      return this;
+      // pgBrowser.add_menus(menus);
+      // return this;
     },
 
-    search_objects_enabled: function(obj) {
-      /* Same as query tool */
-      var isEnabled = (() => {
-        if (!_.isUndefined(obj) && !_.isNull(obj)) {
-          if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
-            if (obj._type == 'database' && obj.allowConn) {
-              return true;
-            } else if (obj._type != 'database') {
-              return true;
-            } else {
-              return false;
-            }
-          } else {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      })();
+    // search_objects_enabled: function(obj) {
+    //   /* Same as query tool */
+    //   var isEnabled = (() => {
+    //     if (!_.isUndefined(obj) && !_.isNull(obj)) {
+    //       if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
+    //         if (obj._type == 'database' && obj.allowConn) {
+    //           return true;
+    //         } else if (obj._type != 'database') {
+    //           return true;
+    //         } else {
+    //           return false;
+    //         }
+    //       } else {
+    //         return false;
+    //       }
+    //     } else {
+    //       return false;
+    //     }
+    //   })();
 
-      toolBar.enable(gettext('Search objects'), isEnabled);
-      return isEnabled;
-    },
+      // toolBar.enable(gettext('Search objects'), isEnabled);
+      // return isEnabled;
+    // },
 
     // Callback to show the dialog
     show_search_objects: function(action, item) {

@@ -416,7 +416,7 @@ define('tools.restore', [
         });
       }
 
-      pgBrowser.add_menus(menus);
+      // pgBrowser.add_menus(menus);
       return this;
     },
     // Callback to draw Backup Dialog for objects
