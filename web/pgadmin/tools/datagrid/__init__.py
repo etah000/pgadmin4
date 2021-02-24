@@ -359,8 +359,8 @@ def initialize_query_tool(trans_id, sgid, sid, did=None):
 
     # Set the value of auto commit and auto rollback specified in Preferences
     pref = Preferences.module('sqleditor')
-    command_obj.set_auto_commit(pref.preference('auto_commit').get())
-    command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
+    command_obj.set_auto_commit(True)
+    command_obj.set_auto_rollback(False)
 
     # Use pickle to store the command object which will be used
     # later by the sql grid module.

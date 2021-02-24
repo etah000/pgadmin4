@@ -90,12 +90,12 @@ define('pgadmin.node.server', [
           icon: 'fa fa-link', enable : 'is_not_connected',
         },{
           name: 'start_server', node: 'server', module: this,
-          applies: ['tools', 'context'], callback: 'start_server',
+          applies: ['object', 'context'], callback: 'start_server',
           category: 'start', priority: 4, label: gettext('Start Server'),
           icon: 'fa fa-link',
         },{
           name: 'stop_server', node: 'server', module: this,
-          applies: ['tools', 'context'], callback: 'stop_server',
+          applies: ['object', 'context'], callback: 'stop_server',
           category: 'stop', priority: 4, label: gettext('Stop Server'),
           icon: 'fa fa-link',
         },{

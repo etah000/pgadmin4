@@ -120,3 +120,11 @@ UPGRADE_CHECK_ENABLED = False
 
 if True:
     from modules_active import MODULES_ACTIVE
+
+##########################################################################
+# disable  password notifications
+##########################################################################
+
+SECURITY_SEND_REGISTER_EMAIL = False
+SECURITY_SEND_PASSWORD_CHANGE_EMAIL = False
+SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL = False

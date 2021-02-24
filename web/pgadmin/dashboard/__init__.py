@@ -74,53 +74,53 @@ class DashboardModule(PgAdminModule):
             'dashboards', gettext('Dashboards')
         )
 
-        self.session_stats_refresh = self.dashboard_preference.register(
-            'dashboards', 'session_stats_refresh',
-            gettext("Session statistics refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
-        )
+        # self.session_stats_refresh = self.dashboard_preference.register(
+        #     'dashboards', 'session_stats_refresh',
+        #     gettext("Session statistics refresh rate"), 'integer',
+        #     1, min_val=1, max_val=999999,
+        #     category_label=gettext('Graphs'),
+        #     help_str=gettext('The number of seconds between graph samples.')
+        # )
+        #
+        # self.tps_stats_refresh = self.dashboard_preference.register(
+        #     'dashboards', 'tps_stats_refresh',
+        #     gettext("Transaction throughput refresh rate"), 'integer',
+        #     1, min_val=1, max_val=999999,
+        #     category_label=gettext('Graphs'),
+        #     help_str=gettext('The number of seconds between graph samples.')
+        # )
+        #
+        # self.ti_stats_refresh = self.dashboard_preference.register(
+        #     'dashboards', 'ti_stats_refresh',
+        #     gettext("Tuples in refresh rate"), 'integer',
+        #     1, min_val=1, max_val=999999,
+        #     category_label=gettext('Graphs'),
+        #     help_str=gettext('The number of seconds between graph samples.')
+        # )
+        #
+        # self.to_stats_refresh = self.dashboard_preference.register(
+        #     'dashboards', 'to_stats_refresh',
+        #     gettext("Tuples out refresh rate"), 'integer',
+        #     1, min_val=1, max_val=999999,
+        #     category_label=gettext('Graphs'),
+        #     help_str=gettext('The number of seconds between graph samples.')
+        # )
+        #
+        # self.bio_stats_refresh = self.dashboard_preference.register(
+        #     'dashboards', 'bio_stats_refresh',
+        #     gettext("Block I/O statistics refresh rate"), 'integer',
+        #     1, min_val=1, max_val=999999,
+        #     category_label=gettext('Graphs'),
+        #     help_str=gettext('The number of seconds between graph samples.')
+        # )
 
-        self.tps_stats_refresh = self.dashboard_preference.register(
-            'dashboards', 'tps_stats_refresh',
-            gettext("Transaction throughput refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
-        )
-
-        self.ti_stats_refresh = self.dashboard_preference.register(
-            'dashboards', 'ti_stats_refresh',
-            gettext("Tuples in refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
-        )
-
-        self.to_stats_refresh = self.dashboard_preference.register(
-            'dashboards', 'to_stats_refresh',
-            gettext("Tuples out refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
-        )
-
-        self.bio_stats_refresh = self.dashboard_preference.register(
-            'dashboards', 'bio_stats_refresh',
-            gettext("Block I/O statistics refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
-            help_str=gettext('The number of seconds between graph samples.')
-        )
-
-        self.display_graphs = self.dashboard_preference.register(
-            'display', 'show_graphs',
-            gettext("Show graphs?"), 'boolean', True,
-            category_label=gettext('Display'),
-            help_str=gettext('If set to True, graphs '
-                             'will be displayed on dashboards.')
-        )
+        # self.display_graphs = self.dashboard_preference.register(
+        #     'display', 'show_graphs',
+        #     gettext("Show graphs?"), 'boolean', False,
+        #     category_label=gettext('Display'),
+        #     help_str=gettext('If set to True, graphs '
+        #                      'will be displayed on dashboards.')
+        # )
 
         self.display_server_activity = self.dashboard_preference.register(
             'display', 'show_activity',
@@ -130,13 +130,13 @@ class DashboardModule(PgAdminModule):
                              'will be displayed on dashboards.')
         )
 
-        self.graph_data_points = self.dashboard_preference.register(
-            'display', 'graph_data_points',
-            gettext("Show graph data points?"), 'boolean', False,
-            category_label=gettext('Display'),
-            help_str=gettext('If set to True, data points will be '
-                             'visible on graph lines.')
-        )
+        # self.graph_data_points = self.dashboard_preference.register(
+        #     'display', 'graph_data_points',
+        #     gettext("Show graph data points?"), 'boolean', False,
+        #     category_label=gettext('Display'),
+        #     help_str=gettext('If set to True, data points will be '
+        #                      'visible on graph lines.')
+        # )
 
         self.graph_mouse_track = self.dashboard_preference.register(
             'display', 'graph_mouse_track',

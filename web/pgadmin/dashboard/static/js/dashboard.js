@@ -458,7 +458,7 @@ define('pgadmin.dashboard', [
         }
       });
 
-      self.startChartsPoller(self.chart_store, self.sid, self.did);
+      // self.startChartsPoller(self.chart_store, self.sid, self.did);
     },
 
     getStatsUrl: function(sid=-1, did=-1, chart_names=[]) {
