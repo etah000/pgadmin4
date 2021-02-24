@@ -24,7 +24,6 @@ define('app', [
 
 
   // Initialize modules registered to pgAdmin, pgAdmin.Browser and Tools object.
-  // console.log(pgAdmin);
   initializeModules(pgAdmin);
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);

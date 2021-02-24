@@ -625,8 +625,13 @@ define([
       }];
 
       for (var idx = 0; idx < menuUtils.backupSupportedNodes.length; idx++) {
+        console.log(menuUtils.backupSupportedNodes[idx]);
+        if(menuUtils.backupSupportedNodes[idx]=='database'){
+          continue;
+        }
+        if(menuUtils.backupSupportedNodes[idx])
         menus.push({
-          name: 'backup_' + menuUtils.backupSupportedNodes[idx],
+          name: '' + menuUtils.backupSupportedNodes[idx],
           node: menuUtils.backupSupportedNodes[idx],
           module: this,
           applies: ['context'],

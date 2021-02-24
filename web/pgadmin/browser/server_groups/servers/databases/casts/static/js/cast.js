@@ -45,13 +45,15 @@ define('pgadmin.node.cast', [
         this.initialized = true;
 
         // Add context menus for cast
-        pgBrowser.add_menus([{
-          name: 'create_cast_on_database', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Cast...'),
-          icon: 'wcTabIcon icon-cast', data: {action: 'create'},
-          enable: pgBrowser.Nodes['database'].is_conn_allow,
-        },{
+        pgBrowser.add_menus([
+        //   {
+        //   name: 'create_cast_on_database', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Cast...'),
+        //   icon: 'wcTabIcon icon-cast', data: {action: 'create'},
+        //   enable: pgBrowser.Nodes['database'].is_conn_allow,
+        // },
+        {
           name: 'create_cast_on_coll', node: 'coll-cast', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Cast...'),

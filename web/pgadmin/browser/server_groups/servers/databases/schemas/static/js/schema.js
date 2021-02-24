@@ -342,13 +342,14 @@ define('pgadmin.node.schema', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Schema...'),
           icon: 'wcTabIcon icon-schema', data: {action: 'create'},
-        },{
-          name: 'create_schema', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Schema...'),
-          icon: 'wcTabIcon icon-schema', data: {action: 'create'},
-          enable: 'can_create_schema',
         },
+        // {
+        //   name: 'create_schema', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Schema...'),
+        //   icon: 'wcTabIcon icon-schema', data: {action: 'create'},
+        //   enable: 'can_create_schema',
+        // },
         ]);
       },
       can_create_schema: function(node) {

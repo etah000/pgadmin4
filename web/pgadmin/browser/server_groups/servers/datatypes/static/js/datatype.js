@@ -46,13 +46,15 @@ define('pgadmin.node.datatype', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
-          name: 'create_datatype_on_server', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Datatype...'),
-          icon: 'wcTabIcon icon-datatype', data: {action: 'create'},
-          enable: 'can_create_datatype',
-        },{
+        pgBrowser.add_menus([
+        //   {
+        //   name: 'create_datatype_on_server', node: 'server', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Datatype...'),
+        //   icon: 'wcTabIcon icon-datatype', data: {action: 'create'},
+        //   enable: 'can_create_datatype',
+        // },
+        {
           name: 'create_datatype_on_coll', node: 'coll-datatype', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Datatype...'),

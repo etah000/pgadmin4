@@ -66,7 +66,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
           <div class="row">
             <div class="col-6">
               <div class="input-group pgadmin-controls">
-                  <input type="search" class="form-control" id="txtGridSearch" placeholder="` + gettext('Type at least 3 characters') + `"
+                  <input type="search" class="form-control" id="txtGridSearch" placeholder="` + gettext('Type at least 2 characters') + `"
                     tabindex="0" aria-describedby="labelSearch" aria-labelledby="labelSearch" autocomplete="off">
               </div>
             </div>
@@ -568,7 +568,7 @@ export default class SearchObjectsDialogWrapper extends DialogWrapper {
 
     /* on search box change */
     this.searchBox.addEventListener('input', ()=>{
-      if(this.searchBoxVal().length >= 3) {
+      if(this.searchBoxVal().length >= 2) {
         this.searchBtnEnabled(true);
       } else {
         this.searchBtnEnabled(false);

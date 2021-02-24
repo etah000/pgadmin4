@@ -92,13 +92,14 @@ define('pgadmin.node.foreign_data_wrapper', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Data Wrapper...'),
           icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'},
-        },{
-          name: 'create_foreign_data_wrapper', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Foreign Data Wrapper...'),
-          icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'},
-          enable: pgBrowser.Nodes['database'].is_conn_allow,
         },
+        // {
+        //   name: 'create_foreign_data_wrapper', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Foreign Data Wrapper...'),
+        //   icon: 'wcTabIcon icon-foreign_data_wrapper', data: {action: 'create'},
+        //   enable: pgBrowser.Nodes['database'].is_conn_allow,
+        // },
         ]);
       },
 

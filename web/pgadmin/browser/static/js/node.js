@@ -53,7 +53,6 @@ define('pgadmin.browser.node', [
     child = function() {
       return parent.apply(this, arguments);
     };
-
     // Add static properties to the constructor function, if supplied.
     _.extend(child, parent, _.omit(props, 'callbacks'));
 
@@ -208,7 +207,7 @@ define('pgadmin.browser.node', [
 
       // This will add options of scripts eg:'CREATE Script'
       if (self.hasScriptTypes && _.isArray(self.hasScriptTypes) &&
-        self.hasScriptTypes.length > 0) {
+        self.hasScriptTypes.length > 0 && self.type!='database') {
         // For each script type create menu
         _.each(self.hasScriptTypes, function(stype) {
 

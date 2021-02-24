@@ -88,12 +88,14 @@ define('pgadmin.node.database', [
           applies: ['object', 'context'], callback: 'connect_database',
           category: 'connect', priority: 4, label: gettext('Connect Database...'),
           icon: 'fa fa-link', enable : 'is_not_connected',
-        },{
-          name: 'disconnect_database', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'disconnect_database',
-          category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
-          icon: 'fa fa-chain-broken', enable : 'is_connected',
-        }]);
+        }
+        // ,{
+        //   name: 'disconnect_database', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'disconnect_database',
+        //   category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
+        //   icon: 'fa fa-chain-broken', enable : 'is_connected',
+        // }
+      ]);
 
         _.bindAll(this, 'connection_lost');
         pgBrowser.Events.on(
@@ -331,13 +333,13 @@ define('pgadmin.node.database', [
           editable: false, type: 'text',
         },{
           id: 'engine', label: gettext('Engine'), cell: 'string',
-          editable: false, type: 'text',
+          editable: false, type: 'text',disabled:true,
         },{
           id: 'data_path', label: gettext('Data Path'), cell: 'string',
-          editable: false, type: 'text',
+          editable: false, type: 'text',disabled:true,
         },{
           id: 'metadata_path', label: gettext('Metadata Path'), cell: 'string',
-          editable: false, type: 'text',
+          editable: false, type: 'text',disabled:true,
         },
         ],
         validate: function() {

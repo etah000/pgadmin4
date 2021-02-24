@@ -459,6 +459,7 @@ define('pgadmin.browser', [
         selector: '.aciTreeLine',
         autoHide: false,
         build: function(element) {
+          console.log(obj);
           var item = obj.tree.itemFrom(element),
             d = obj.tree.itemData(item),
             menus = obj.menus['context'][d._type],
