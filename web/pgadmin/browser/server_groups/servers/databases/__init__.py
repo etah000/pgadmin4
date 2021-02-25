@@ -240,10 +240,13 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
         for row in res['rows']:
             if self.manager.db == row['name']:
                 connected = True
-                row['canDrop'] = False
             else:
                 conn = self.manager.connection(row['name'], did=row['did'])
                 connected = conn.connected()
+
+            if row['name'] in ('system', ) or  row['name'].startswith('_'):
+                row['canDrop'] = False
+            else:
                 row['canDrop'] = True
 
         return ajax_response(
