@@ -2520,7 +2520,7 @@ define('tools.querytool', [
           });
       },
 
-    
+
 
       // Executes sql query in the editor in Query Tool mode
       _execute_sql_query: function(explain_prefix, shouldReconnect) {
@@ -2631,6 +2631,9 @@ define('tools.querytool', [
             );
             var msg1 = gettext('Successfully run. Total query runtime: %s.',self.total_time);
             var msg2 = gettext('%s rows affected.',self.rows_affected);
+            if (self.rows_affected ==-1 ) {
+              msg2 = '';
+            }
 
             // Display the notifier if the timeout is set to >= 0
             if (self.info_notifier_timeout >= 0) {
