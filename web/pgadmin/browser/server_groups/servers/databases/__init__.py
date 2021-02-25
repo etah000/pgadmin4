@@ -287,13 +287,18 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
 
         for row in rset['rows']:
             dbname = row['name']
-            if self.manager.db == dbname or dbname in ('system', ):
+            if self.manager.db == dbname:
                 connected = True
-                canDrop = canDisConn = False
+                canDisConn = False
             else:
                 conn = self.manager.connection(dbname, did=row['did'])
                 connected = conn.connected()
-                canDrop = canDisConn = True
+                canDisConn = True
+
+            if dbname in ('system', ) or  dbname.startswith('_'):
+                canDrop = False
+            else:
+                canDrop = True
 
             res.append(
                 self.blueprint.generate_browser_node(
