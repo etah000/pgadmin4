@@ -367,7 +367,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         res = []
         SQL = render_template(
             "/".join([self.table_template_path, 'nodes.sql']),
-            scid=scid, tid=tid
+            did=did, tid=tid
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:

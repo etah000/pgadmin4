@@ -33,6 +33,7 @@ define('pgadmin.node.mview', [
         columns: ['name', 'engine', 'database'],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        hasStatistics: false,
       });
   }
 
@@ -56,6 +57,7 @@ define('pgadmin.node.mview', [
       dialogHelp: url_for('help.static', {'filename': 'materialized_view_dialog.html'}),
       label: gettext('Materialized View'),
       hasSQL: true,
+      canEdit: false,
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
@@ -77,12 +79,13 @@ define('pgadmin.node.mview', [
          */
         pgAdmin.Browser.add_menu_category(
           'refresh_mview', gettext('Refresh View'), 18, '');
-        pgBrowser.add_menus([{
-          name: 'create_mview_on_coll', node: 'coll-mview', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
-          data: {action: 'create', check: true}, enable: 'canCreate',
-          label: gettext('Materialized View...'),
+        pgBrowser.add_menus([
+          // {
+          // name: 'create_mview_on_coll', node: 'coll-mview', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
+          // data: {action: 'create', check: true}, enable: 'canCreate',
+          // label: gettext('Materialized View...'),
         // },{
         //   name: 'create_mview_on_database', node: 'database', module: this,
         //   applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -102,7 +105,8 @@ define('pgadmin.node.mview', [
         //   category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
         //   data: {action: 'create', check: false}, enable: 'canCreate',
         //   label: gettext('Materialized View...'),
-        // },{
+        // },
+       {
           name: 'refresh_mview_data', node: 'mview', module: this,
           priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
           applies: ['object', 'context'], label: gettext('With data'),

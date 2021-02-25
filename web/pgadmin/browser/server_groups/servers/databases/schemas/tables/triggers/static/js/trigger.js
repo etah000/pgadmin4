@@ -51,39 +51,39 @@ define('pgadmin.node.trigger', [
         this.initialized = true;
 
         pgBrowser.add_menus([{
-          name: 'create_trigger_on_coll', node: 'coll-trigger', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Trigger...'),
-          icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_trigger', node: 'trigger', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Trigger...'),
-          icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
+          // name: 'create_trigger_on_coll', node: 'coll-trigger', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Trigger...'),
+          // icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
+        //   name: 'create_trigger', node: 'trigger', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Trigger...'),
+        //   icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // },{
           // name: 'create_trigger_onTable', node: 'table', module: this,
           // applies: ['object', 'context'], callback: 'show_obj_properties',
           // category: 'create', priority: 4, label: gettext('Trigger...'),
           // icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
           // enable: 'canCreate',
         // },{
-          name: 'create_trigger_onPartition', node: 'partition', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Trigger...'),
-          icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'enable_trigger', node: 'trigger', module: this,
-          applies: ['object', 'context'], callback: 'enable_trigger',
-          category: 'connect', priority: 3, label: gettext('Enable trigger'),
-          icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
-        },{
-          name: 'disable_trigger', node: 'trigger', module: this,
-          applies: ['object', 'context'], callback: 'disable_trigger',
-          category: 'drop', priority: 3, label: gettext('Disable trigger'),
-          icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
+        //   name: 'create_trigger_onPartition', node: 'partition', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Trigger...'),
+        //   icon: 'wcTabIcon icon-trigger', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // },{
+        //   name: 'enable_trigger', node: 'trigger', module: this,
+        //   applies: ['object', 'context'], callback: 'enable_trigger',
+        //   category: 'connect', priority: 3, label: gettext('Enable trigger'),
+        //   icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
+        // },{
+        //   name: 'disable_trigger', node: 'trigger', module: this,
+        //   applies: ['object', 'context'], callback: 'disable_trigger',
+        //   category: 'drop', priority: 3, label: gettext('Disable trigger'),
+        //   icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
         // },{
           // name: 'create_trigger_onView', node: 'view', module: this,
           // applies: ['object', 'context'], callback: 'show_obj_properties',
