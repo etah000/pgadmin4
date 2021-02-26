@@ -244,7 +244,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
                 conn = self.manager.connection(row['name'], did=row['did'])
                 connected = conn.connected()
 
-            if row['name'] in ('system', ) or  row['name'].startswith('_'):
+            if row['name'] in ('system', 'default', ) or  row['name'].startswith('_'):
                 row['canDrop'] = False
             else:
                 row['canDrop'] = True
@@ -298,7 +298,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
                 connected = conn.connected()
                 canDisConn = True
 
-            if dbname in ('system', ) or  dbname.startswith('_'):
+            if dbname in ('system', 'default', ) or  dbname.startswith('_'):
                 canDrop = False
             else:
                 canDrop = True
@@ -1096,7 +1096,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
         sql_header = u"-- Database: {0}\n\n-- ".format(did)
         result = {'name': did}
 
-        if did != 'system':
+        if did not in  ('system', 'default', ):
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),
                 did=result['name'], conn=conn
