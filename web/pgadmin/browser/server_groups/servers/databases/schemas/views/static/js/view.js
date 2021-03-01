@@ -54,6 +54,8 @@ define('pgadmin.node.view', [
       label: gettext('View'),
       hasSQL:  true,
       canEdit: false,
+      canDrop: false,
+      canDropCascade: false,
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-view',
@@ -135,12 +137,12 @@ define('pgadmin.node.view', [
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
           node: 'schema', disabled: 'notInSchema', mode: ['create', 'edit'],
           select2: { allowClear: false }, cache_node: 'database',
-        },{
-          id: 'system_view', label: gettext('System view?'), cell: 'string',
-          type: 'switch', mode: ['properties'],
-        },{
-          id: 'acl', label: gettext('Privileges'),
-          mode: ['properties'], type: 'text', group: gettext('Security'),
+        // },{
+        //   id: 'system_view', label: gettext('System view?'), cell: 'string',
+        //   type: 'switch', mode: ['properties'],
+        // },{
+        //   id: 'acl', label: gettext('Privileges'),
+        //   mode: ['properties'], type: 'text', group: gettext('Security'),
         },{
           id: 'definition', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Code'),

@@ -21,9 +21,8 @@ define('pgadmin.node.role', [
         label: gettext('Login/Group Roles'),
         type: 'coll-role',
         columns: [
-          'rolname', 'rolvaliduntil', 'rolconnlimit', 'rolcanlogin',
-          'rolsuper', 'rolcreaterole', 'rolcreatedb', 'rolcatupdate',
-          'rolinherit', 'rolreplication',
+          'rolname', 'login_type', 'auth_type', 'storage', 'host_ip',
+          'default_roles_all', 'default_roles_list', 'default_roles_except',
         ],
         canDrop: false,
         canDropCascade: false,
@@ -307,9 +306,10 @@ define('pgadmin.node.role', [
       canDrop: false,
       width: '550px',
       hasScriptTypes: [],
-      canDrop: function(node, item) {
-        var treeData = this.getTreeNodeHierarchy(item),
-          server = treeData['server'];
+      canDrop: false,
+        // function(node, item) {
+        // var treeData = this.getTreeNodeHierarchy(item),
+        //   server = treeData['server'];
           /*
         To Drop a role:
           1) If Role we are deleting is superuser then User must be superuser
@@ -317,12 +317,12 @@ define('pgadmin.node.role', [
           */
 
         // Role you are trying to drop is Superuser ?
-        if(node.is_superuser) {
-          return server.connected && server.user.is_superuser;
-        }
+        // if(node.is_superuser) {
+        //   return server.connected && server.user.is_superuser;
+        // }
         // For non super users
-        return server.connected && server.user.can_create_role;
-      },
+        // return server.connected && server.user.can_create_role;
+      // },
       hasDepends: true,
       node_label: function(r) {
         return r.label;
@@ -397,6 +397,27 @@ define('pgadmin.node.role', [
           id: 'rolname', label: gettext('Name'), type: 'text',
           readonly: 'readonly',
         },{
+          id: 'login_type', label: gettext('Type'), type: 'text',
+          readonly: 'readonly',
+        },{
+          id: 'auth_type', label: gettext('Auth Type'), type: 'text',
+          readonly: 'readonly',
+        },{
+          id: 'storage', label: gettext('Storage'), type: 'text',
+          readonly: 'readonly',
+        },{
+          id: 'host_ip', label: gettext('Host IP'), type: 'text',
+          readonly: 'readonly',
+        },{
+          id: 'default_roles_all', label: gettext('Default Roles All'), type: 'text',
+          readonly: 'readonly',
+        },{
+          id: 'default_roles_list', label: gettext('Default Roles List'), type: 'text',
+          readonly: 'readonly',
+        },{
+          id: 'default_roles_except', label: gettext('Default Roles Except'), type: 'text',
+          readonly: 'readonly',
+          /*
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
           editable: false, type: 'text', visible: true,
         },{
@@ -531,6 +552,7 @@ define('pgadmin.node.role', [
           group: gettext('Security'), mode: ['edit', 'create'],
           min_version: 90200, readonly: 'readonly', canAdd: true,
           canEdit: false, canDelete: true, control: 'unique-col-collection',
+           */
         }],
         readonly: function(m) {
           if (!m.has('read_only')) {

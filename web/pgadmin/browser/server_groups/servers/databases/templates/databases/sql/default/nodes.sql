@@ -14,5 +14,6 @@ WHERE 1
     {% if db_restrictions %}
     AND db.database IN ({{db_restrictions}})
     {% endif %}
+    AND name <>'_temporary_and_external_tables'
 ORDER BY
     name;
