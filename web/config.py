@@ -80,15 +80,15 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 LANGUAGES = {
     'zh': '简体中文',
     'en': 'English',
-    'cs': 'Czech',
-    'fr': 'French',
-    'de': 'German',
-    'it': 'Italian',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'pl': 'Polish',
-    'ru': 'Russian',
-    'es': 'Spanish',
+    # 'cs': 'Czech',
+    # 'fr': 'French',
+    # 'de': 'German',
+    # 'it': 'Italian',
+    # 'ja': 'Japanese',
+    # 'ko': 'Korean',
+    # 'pl': 'Polish',
+    # 'ru': 'Russian',
+    # 'es': 'Spanish',
 }
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
