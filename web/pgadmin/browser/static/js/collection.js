@@ -61,12 +61,12 @@ define([
             }]);
 
             // show search objects same as query tool
-            pgAdmin.Browser.add_menus([{
-              name: 'search_objects', node: this.type, module: this,
-              applies: ['context'], callback: 'show_search_objects',
-              priority: 997, label: gettext('Search Objects...'),
-              icon: 'fa fa-search',
-            }]);
+            // pgAdmin.Browser.add_menus([{
+            //   name: 'search_objects', node: this.type, module: this,
+            //   applies: ['context'], callback: 'show_search_objects',
+            //   priority: 997, label: gettext('Search Objects...'),
+            //   icon: 'fa fa-search',
+            // }]);
           }
         }
       },

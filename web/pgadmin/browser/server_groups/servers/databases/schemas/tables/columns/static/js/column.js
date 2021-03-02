@@ -105,28 +105,31 @@ define('pgadmin.node.column', [
       type: 'column',
       label: gettext('Column'),
       hasSQL: false,
+      canEdit: false,
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
       dialogHelp: url_for('help.static', {'filename': 'column_dialog.html'}),
-      canDrop: function(itemData, item){
-        let node = pgBrowser.treeMenu.findNodeByDomElement(item);
-
-        if (!node)
-          return false;
-
-        // Only a column of a table can be droped, and only when it is not of
-        // catalog.
-        return node.anyParent(
-          (parentNode) => (
-            parentNode.getData()._type === 'table' &&
-              !parentNode.anyParent(
-                (grandParentNode) => (
-                  grandParentNode.getData()._type === 'catalog'
-                )
-              )
-          )
-        );
-      },
+      hasScriptTypes: [],
+      canDrop: false,
+      // function(itemData, item){
+      //   let node = pgBrowser.treeMenu.findNodeByDomElement(item);
+      //
+      //   if (!node)
+      //     return false;
+      //
+      //   Only a column of a table can be droped, and only when it is not of
+      //   catalog.
+        // return node.anyParent(
+        //   (parentNode) => (
+        //     parentNode.getData()._type === 'table' &&
+        //       !parentNode.anyParent(
+        //         (grandParentNode) => (
+        //           grandParentNode.getData()._type === 'catalog'
+        //         )
+        //       )
+        //   )
+        // );
+      // },
       hasDepends: true,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Data Compressed Bytes'), gettext('Data Uncompressed Bytes'), gettext('Marks Bytes')],
@@ -137,19 +140,20 @@ define('pgadmin.node.column', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
-          name: 'create_column_on_coll', node: 'coll-column', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Column...'),
-          icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_column', node: 'column', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Column...'),
-          icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },
+        pgBrowser.add_menus([
+          // {
+          // name: 'create_column_on_coll', node: 'coll-column', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Column...'),
+          // icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
+        //   name: 'create_column', node: 'column', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Column...'),
+        //   icon: 'wcTabIcon icon-column', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // },
           // {
           // name: 'create_column_onTable', node: 'table', module: this,
           // applies: ['object', 'context'], callback: 'show_obj_properties',

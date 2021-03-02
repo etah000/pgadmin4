@@ -33,6 +33,7 @@ define('pgadmin.node.view', [
         columns: ['name', 'engine', 'database'],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        hasStatistics: false,
       });
   }
 
@@ -52,8 +53,11 @@ define('pgadmin.node.view', [
       dialogHelp: url_for('help.static', {'filename': 'view_dialog.html'}),
       label: gettext('View'),
       hasSQL:  true,
+      canEdit: false,
+      canDrop: false,
+      canDropCascade: false,
       hasDepends: true,
-      hasScriptTypes: ['create', 'select', 'insert'],
+      hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-view',
       Init: function() {
 
@@ -70,19 +74,20 @@ define('pgadmin.node.view', [
           @property {data} - Allow create view option on schema node or
           system view nodes.
           */
-        pgBrowser.add_menus([{
-          name: 'create_view_on_coll', node: 'coll-view', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('View...'),
-          icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_view', node: 'view', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('View...'),
-          icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        }
+        pgBrowser.add_menus([
+          // {
+          // name: 'create_view_on_coll', node: 'coll-view', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 1, label: gettext('View...'),
+          // icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
+        //   name: 'create_view', node: 'view', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 1, label: gettext('View...'),
+        //   icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // }
         // ,
         // {
         //   name: 'create_view_on_database', node: 'database', module: this,
@@ -132,12 +137,12 @@ define('pgadmin.node.view', [
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
           node: 'schema', disabled: 'notInSchema', mode: ['create', 'edit'],
           select2: { allowClear: false }, cache_node: 'database',
-        },{
-          id: 'system_view', label: gettext('System view?'), cell: 'string',
-          type: 'switch', mode: ['properties'],
-        },{
-          id: 'acl', label: gettext('Privileges'),
-          mode: ['properties'], type: 'text', group: gettext('Security'),
+        // },{
+        //   id: 'system_view', label: gettext('System view?'), cell: 'string',
+        //   type: 'switch', mode: ['properties'],
+        // },{
+        //   id: 'acl', label: gettext('Privileges'),
+        //   mode: ['properties'], type: 'text', group: gettext('Security'),
         },{
           id: 'definition', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Code'),

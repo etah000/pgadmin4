@@ -33,6 +33,7 @@ define('pgadmin.node.mview', [
         columns: ['name', 'engine', 'database'],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
+        hasStatistics: false,
       });
   }
 
@@ -56,6 +57,9 @@ define('pgadmin.node.mview', [
       dialogHelp: url_for('help.static', {'filename': 'materialized_view_dialog.html'}),
       label: gettext('Materialized View'),
       hasSQL: true,
+      canEdit: false,
+      canDrop: false,
+      canDropCascade: false,
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
@@ -75,14 +79,15 @@ define('pgadmin.node.mview', [
           @property {data} - Allow create view option on schema node or
           system view nodes.
          */
-        pgAdmin.Browser.add_menu_category(
-          'refresh_mview', gettext('Refresh View'), 18, '');
-        pgBrowser.add_menus([{
-          name: 'create_mview_on_coll', node: 'coll-mview', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
-          data: {action: 'create', check: true}, enable: 'canCreate',
-          label: gettext('Materialized View...'),
+        // pgAdmin.Browser.add_menu_category(
+        //   'refresh_mview', gettext('Refresh View'), 18, '');
+        pgBrowser.add_menus([
+          // {
+          // name: 'create_mview_on_coll', node: 'coll-mview', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
+          // data: {action: 'create', check: true}, enable: 'canCreate',
+          // label: gettext('Materialized View...'),
         // },{
         //   name: 'create_mview_on_database', node: 'database', module: this,
         //   applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -102,32 +107,34 @@ define('pgadmin.node.mview', [
         //   category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
         //   data: {action: 'create', check: false}, enable: 'canCreate',
         //   label: gettext('Materialized View...'),
-        // },{
-          name: 'refresh_mview_data', node: 'mview', module: this,
-          priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
-          applies: ['object', 'context'], label: gettext('With data'),
-          data: {concurrent: false, with_data: true}, icon: 'fa fa-recycle',
-        },{
-          name: 'refresh_mview_nodata', node: 'mview',
-          callback: 'refresh_mview', priority: 2, module: this,
-          category: 'refresh_mview', applies: ['object', 'context'],
-          label: gettext('With no data'), data: {
-            concurrent: false, with_data: false,
-          }, icon: 'fa fa-refresh',
-        },{
-          name: 'refresh_mview_concurrent', node: 'mview', module: this,
-          category: 'refresh_mview', enable: 'is_version_supported',
-          data: {concurrent: true, with_data: true}, priority: 3,
-          applies: ['object', 'context'], callback: 'refresh_mview',
-          label: gettext('With data (concurrently)'), icon: 'fa fa-recycle',
-        },{
-          name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
-          category: 'refresh_mview', enable: 'is_version_supported',
-          data: {concurrent: true, with_data: false}, priority: 4,
-          applies: ['object', 'context'], callback: 'refresh_mview',
-          label: gettext('With no data (concurrently)'),
-          icon: 'fa fa-refresh',
-        }]);
+        // },
+       // {
+       //    name: 'refresh_mview_data', node: 'mview', module: this,
+       //    priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
+       //    applies: ['object', 'context'], label: gettext('With data'),
+       //    data: {concurrent: false, with_data: true}, icon: 'fa fa-recycle',
+       //  },{
+       //    name: 'refresh_mview_nodata', node: 'mview',
+       //    callback: 'refresh_mview', priority: 2, module: this,
+       //    category: 'refresh_mview', applies: ['object', 'context'],
+       //    label: gettext('With no data'), data: {
+       //      concurrent: false, with_data: false,
+       //    }, icon: 'fa fa-refresh',
+       //  },{
+       //    name: 'refresh_mview_concurrent', node: 'mview', module: this,
+       //    category: 'refresh_mview', enable: 'is_version_supported',
+       //    data: {concurrent: true, with_data: true}, priority: 3,
+       //    applies: ['object', 'context'], callback: 'refresh_mview',
+       //    label: gettext('With data (concurrently)'), icon: 'fa fa-recycle',
+       //  },{
+       //    name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
+       //    category: 'refresh_mview', enable: 'is_version_supported',
+       //    data: {concurrent: true, with_data: false}, priority: 4,
+       //    applies: ['object', 'context'], callback: 'refresh_mview',
+       //    label: gettext('With no data (concurrently)'),
+       //    icon: 'fa fa-refresh',
+       //  }
+        ]);
       },
 
       /**
@@ -162,12 +169,12 @@ define('pgadmin.node.mview', [
         },{
           id: 'database', label: gettext('Database'), cell: 'string',
           type: 'text', mode: ['properties'],
-        },{
-          id: 'system_view', label: gettext('System materialized view?'), cell: 'string',
-          type: 'switch', mode: ['properties'],
-        }, pgBrowser.SecurityGroupSchema, {
-          id: 'acl', label: gettext('Privileges'),
-          mode: ['properties'], type: 'text', group: gettext('Security'),
+        // },{
+        //   id: 'system_view', label: gettext('System materialized view?'), cell: 'string',
+        //   type: 'switch', mode: ['properties'],
+        // }, pgBrowser.SecurityGroupSchema, {
+        //   id: 'acl', label: gettext('Privileges'),
+        //   mode: ['properties'], type: 'text', group: gettext('Security'),
         },{
           id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),

@@ -367,7 +367,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         res = []
         SQL = render_template(
             "/".join([self.table_template_path, 'nodes.sql']),
-            scid=scid, tid=tid
+            did=did, tid=tid
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -1017,10 +1017,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         try:
             # create multi tables on cluster
-            if data['cluster'] and data['shifted'] \
+            if ('cluster' in data and data['cluster']) \
+                and ('shifted' in data and data['shifted']) \
                 and data['engine'] in ('MergeTree', 'ReplicatedMergeTree'):
                 return self._create_shifted_tables(gid, sid, did, data)
-            # create single table locally
+            # create single table locally(from local)
             else:
                 return self._create_single_table(gid, sid, did, tid, data)
 
@@ -1506,7 +1507,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
-        data['columns'] = self._formatter(did, scid, tid, data)
+        data['columns'] = self._formatter(did, tid, data, scid)
 
         columns = []
         values = []
@@ -1557,7 +1558,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
-        data['columns'] = self._formatter(did, scid, tid, data)
+        data['columns'] = self._formatter(did, tid, data, scid)
 
         columns = []
 

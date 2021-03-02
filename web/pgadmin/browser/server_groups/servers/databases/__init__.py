@@ -240,10 +240,13 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
         for row in res['rows']:
             if self.manager.db == row['name']:
                 connected = True
-                row['canDrop'] = False
             else:
                 conn = self.manager.connection(row['name'], did=row['did'])
                 connected = conn.connected()
+
+            if row['name'] in ('system', 'default', ) or  row['name'].startswith('_'):
+                row['canDrop'] = False
+            else:
                 row['canDrop'] = True
 
         return ajax_response(
@@ -287,13 +290,18 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
 
         for row in rset['rows']:
             dbname = row['name']
-            if self.manager.db == dbname or dbname in ('system', ):
+            if self.manager.db == dbname:
                 connected = True
-                canDrop = canDisConn = False
+                canDisConn = False
             else:
                 conn = self.manager.connection(dbname, did=row['did'])
                 connected = conn.connected()
-                canDrop = canDisConn = True
+                canDisConn = True
+
+            if dbname in ('system', 'default', ) or  dbname.startswith('_'):
+                canDrop = False
+            else:
+                canDrop = True
 
             res.append(
                 self.blueprint.generate_browser_node(
@@ -1088,7 +1096,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
         sql_header = u"-- Database: {0}\n\n-- ".format(did)
         result = {'name': did}
 
-        if did != 'system':
+        if did not in  ('system', 'default', ):
             sql_header += render_template(
                 "/".join([self.template_path, 'delete.sql']),
                 did=result['name'], conn=conn

@@ -43,9 +43,7 @@
 
 {% macro ENGINE_SETTINGS(engine_name, sdata) -%}
 {% if engine_name in ('MergeTree', 'ReplicatedMergeTree', 'Distributed') and sdata %}
-    SETTINGS {% for set in sdata -%}
-{{ set.label }} = {{ set.value }}{% if not loop.last %}, {% endif %}
-{%- endfor %}
+    SETTINGS {{ sdata }}
 {% endif %}
 {%- endmacro %}
 

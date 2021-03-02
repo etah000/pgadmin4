@@ -31,8 +31,6 @@ SELECT
     primary_key,
     sampling_key,
     storage_policy,
-    total_rows,
-    total_bytes,
     lifetime_rows,
     lifetime_bytes
 FROM system.tables

@@ -40,6 +40,7 @@ define('pgadmin.node.dictionary', [
       hasSQL:  true,
       canEdit: false,
       canDrop: false,
+      canEdit: false,
       hasDepends: false,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size')],
