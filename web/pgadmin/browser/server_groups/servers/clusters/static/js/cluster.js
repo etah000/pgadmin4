@@ -27,14 +27,14 @@ define('pgadmin.node.cluster', [
         statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       });
   }
-
   if (!pgBrowser.Nodes['cluster']) {
     pgBrowser.Nodes['cluster'] = pgBrowser.Node.extend({
       parent_type: 'server_group',
+      // type: 'cluster',
       type: 'cluster',
-      sqlAlterHelp: 'sql-altercluster.html',
-      sqlCreateHelp: 'sql-createcluster.html',
-      dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
+      // sqlAlterHelp: 'sql-altercluster.html',
+      // sqlCreateHelp: 'sql-createcluster.html',
+      // dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
       hasSQL: false,
       canEdit:false,
       hasDepends: true,
@@ -265,7 +265,6 @@ define('pgadmin.node.cluster', [
             connect_to_database(this, data, pgBrowser.tree, item, false);
             return false;
           }
-
           return pgBrowser.Node.callbacks.selected.apply(this, arguments);
         },
 
@@ -324,25 +323,27 @@ define('pgadmin.node.cluster', [
           id: 'datowner', label: gettext('Owner'),
           editable: false, type: 'text', node: 'role',
           control: Backform.NodeListByNameControl, select2: { allowClear: false },
-        },{
-          id: 'acl', label: gettext('Privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'seqacl', label: gettext('Default SEQUENCE privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'funcacl', label: gettext('Default FUNCTION privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'],
-        },{
-          id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
-          group: gettext('Security'), mode: ['properties'], min_version: 90200,
-        },{
-          id: 'is_sys_obj', label: gettext('System database?'),
-          cell:'boolean', type: 'switch', mode: ['properties'],
-        },{
+        },
+        // {
+        //   id: 'acl', label: gettext('Privileges'), type: 'text',
+        //   group: gettext('Security'), mode: ['properties'],
+        // },{
+        //   id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
+        //   group: gettext('Security'), mode: ['properties'],
+        // },{
+        //   id: 'seqacl', label: gettext('Default SEQUENCE privileges'), type: 'text',
+        //   group: gettext('Security'), mode: ['properties'],
+        // },{
+        //   id: 'funcacl', label: gettext('Default FUNCTION privileges'), type: 'text',
+        //   group: gettext('Security'), mode: ['properties'],
+        // },{
+        //   id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
+        //   group: gettext('Security'), mode: ['properties'], min_version: 90200,
+        // },{
+        //   id: 'is_sys_obj', label: gettext('System database?'),
+        //   cell:'boolean', type: 'switch', mode: ['properties'],
+        // },
+        {
           id: 'comments', label: gettext('Comment'),
           editable: false, type: 'multiline',
         }
@@ -399,18 +400,20 @@ define('pgadmin.node.cluster', [
         //   readonly: function(m) { return !m.isNew(); }, url: 'get_ctypes',
         //   control: 'node-ajax-options', cache_level: 'server_group',
         // },
+        // {
+        //   id: 'datconnlimit', label: gettext('Connection limit'),
+        //   editable: false, type: 'int', group: gettext('Definition'), min: -1,
+        // },
+        // {
+        //   id: 'is_template', label: gettext('Template?'),
+        //   editable: false, type: 'switch', group: gettext('Definition'),
+        //   readonly: true,  mode: ['properties', 'edit'],
+        // },{
+        //   id: 'datallowconn', label: gettext('Allow connections?'),
+        //   editable: false, type: 'switch', group: gettext('Definition'),
+        //   mode: ['properties'],
+        // },
         {
-          id: 'datconnlimit', label: gettext('Connection limit'),
-          editable: false, type: 'int', group: gettext('Definition'), min: -1,
-        },{
-          id: 'is_template', label: gettext('Template?'),
-          editable: false, type: 'switch', group: gettext('Definition'),
-          readonly: true,  mode: ['properties', 'edit'],
-        },{
-          id: 'datallowconn', label: gettext('Allow connections?'),
-          editable: false, type: 'switch', group: gettext('Definition'),
-          mode: ['properties'],
-        },{
           id: 'datacl', label: gettext('Privileges'), type: 'collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
             privileges: ['C', 'T', 'c'],

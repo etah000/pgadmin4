@@ -294,6 +294,7 @@ define('pgadmin.node.table', [
           relhassubclass: undefined,
           reltuples: undefined,
           description: undefined,
+          engine:'MergeTree',
           conname: undefined,
           conkey: undefined,
           isrepl: undefined,
@@ -307,6 +308,7 @@ define('pgadmin.node.table', [
           labels: undefined,
           providers: undefined,
           is_sys_table: undefined,
+          shifted:false,
           coll_inherits: [],
           hastoasttable: true,
           toast_autovacuum_enabled: 'x',
@@ -334,38 +336,115 @@ define('pgadmin.node.table', [
         schema: [{
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
-        },{
+        },
+        {
           id: 'engine', label: gettext('Engine'), type: 'text', mode: ['properties','create'],
           options: [
             {label: gettext('MergeTree'), value: 'MergeTree'},
             {label: gettext('ReplicatedMergeTree'), value: 'ReplicatedMergeTree'},
             {label: gettext('Distributed'), value: 'Distributed'}
           ],
-          control: Backform.NodeAjaxOptionsControl.extend({
-            onChange:function(){
-              let engine=document.querySelector('.General>.engine select');
-              let selectedIndex=engine.selectedIndex;
-              let engineValue=engine.options[selectedIndex].value;
-              if(engineValue=='Distributed'){
-                document.querySelector('.Constraints>div>ul>li:nth-child(2)').style.display="none";
-                document.querySelector('.Constraints>div>ul>li:nth-child(3)').style.display="none";
-              }else{
-                document.querySelector('.Constraints>div>ul>li:nth-child(2)').style.display="";
-                document.querySelector('.Constraints>div>ul>li:nth-child(3)').style.display="";
+          control: Backform.SelectControl.extend({
+            onChange: function() {
+              Backform.SelectControl.prototype.onChange.apply(this, arguments);
+              let engineValue=this.model.get('engine');
+              document.querySelector('.zoo_path').style.display='none';
+              document.querySelector('.replica_name').style.display='none';
+              document.querySelector('.settings').style.display='none';
+              document.querySelector('.cluster_name').style.display='none';
+              document.querySelector('.remote_database').style.display='none';
+              document.querySelector('.remote_table').style.display='none';
+              document.querySelector('.policy_name').style.display='none';
+              if(engineValue=='ReplicatedMergeTree'){
+                document.querySelector('.zoo_path').style.display="";
+                document.querySelector('.replica_name').style.display="";
+                document.querySelector('.settings').style.display="";
               }
-            }
-          }), select2: { allowClear: false, width: '100%' },
+              if(engineValue=='Distributed'){
+                document.querySelector('.cluster_name').style.display="";
+                document.querySelector('.remote_database').style.display="";
+                document.querySelector('.remote_table').style.display="";
+                document.querySelector('.policy_name').style.display="";
+                document.querySelector('.settings').style.display="";
+              }
+              
+              console.log(engineValue);
+
+              // this.model.set('rolcatupdate', this.model.get('rolsuper'));
+              // this.model.set('rolcreaterole', this.model.get('rolsuper'));
+              // this.model.set('rolcreatedb', this.model.get('rolsuper'));
+            },
+          }),
+          // control: Backform.NodeAjaxOptionsControl.extend({
+          //   onChange:function(){
+          //     let engine=document.querySelector('.engine select');
+          //     let selectedIndex=engine.selectedIndex;
+          //     let engineValue=engine.options[selectedIndex].value;
+
+          //     // if(engineValue=='Distributed'){
+          //     //   document.querySelector('.Constraints>div>ul>li:nth-child(2)').style.display="none";
+          //     //   document.querySelector('.Constraints>div>ul>li:nth-child(3)').style.display="none";
+          //     // }else{
+          //     //   document.querySelector('.Constraints>div>ul>li:nth-child(2)').style.display="";
+          //     //   document.querySelector('.Constraints>div>ul>li:nth-child(3)').style.display="";
+          //     // }
+          //   }
+          // }), select2: { allowClear: false, width: '100%' },
         },
         {
-          id: 'relowner', label: gettext('Owner'), type: 'text', node: 'role',
-          mode: ['properties', 'edit'], select2: {allowClear: false},
-          disabled: 'inSchema', control: 'node-list-by-name',
+          id: 'connected', label: gettext('shifted?'), type: 'switch',
+          mode: ['create'],'options': {
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+          },
+        },
+        // {
+        //   id: 'shifted', label: gettext('shifted'), type: 'options', mode: ['create'],
+        //   options: [
+        //     {label: gettext('true'), value: 'true'},
+        //     {label: gettext('false'), value: 'false'},
+        //   ],select2: { allowClear: false, width: '100%' },
+        // },
+
+        
+        {
+          id: 'cluster', label: gettext('cluster'), type: 'text', node: 'cluster',
+          mode: ['properties', 'edit','create'], select2: {allowClear: false}, control: 'node-list-by-name',
+        },
+        {
+          id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'zoo_path', label: gettext('zoo_path'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'replica_name', label: gettext('replica_name'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'settings', label: gettext('settings'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'remote_database', label: gettext('remote_database'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'remote_table', label: gettext('remote_table'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'cluster_name', label: gettext('cluster_name'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'distributed_table_suffix', label: gettext('distributed_table_suffix'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'local_table_suffix', label: gettext('local_table_suffix'), type: 'text', mode: ['properties','create'],
         },
         {
           id: 'database', label: gettext('Database'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'ordery_by', label: gettext('OrderyBy'), type: 'text', mode: ['properties','create'],
+          id: 'order_keys', label: gettext('OrderyKeys'), type: 'text', mode: ['properties','create'],
         },
         {
           id: 'partition_by', label: gettext('PartitionBy'), type: 'text', mode: ['properties','create'],
@@ -375,7 +454,7 @@ define('pgadmin.node.table', [
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         },
         {
-          id: 'primarykey', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
+          id: 'primary_keys', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
         },{
           id: 'partition_key', label: gettext('Partition Key'), type: 'text', mode: ['properties'],
         },{
@@ -878,67 +957,69 @@ define('pgadmin.node.table', [
             return false;
           },
           readonly: function(m) {return !m.isNew();},
-        },{
-          id: 'partition_keys', label:gettext('Partition Keys'),
-          model: Backform.PartitionKeyModel,
-          subnode: Backform.PartitionKeyModel,
-          editable: true, type: 'collection',
-          group: 'partition', mode: ['create'],
-          deps: ['is_partitioned', 'partition_type', 'typname'],
-          canEdit: false, canDelete: true,
-          control: 'sub-node-collection',
-          canAdd: function(m) {
-            if (m.isNew() && m.get('is_partitioned'))
-              return true;
-            return false;
-          },
-          canAddRow: function(m) {
-            var columns = m.get('columns'),
-              typename = m.get('typname'),
-              columns_exist= false;
+        },
+        // {
+        //   id: 'partition_keys', label:gettext('Partition Keys'),
+        //   model: Backform.PartitionKeyModel,
+        //   subnode: Backform.PartitionKeyModel,
+        //   editable: true, type: 'collection',
+        //   group: 'partition', mode: ['create'],
+        //   deps: ['is_partitioned', 'partition_type', 'typname'],
+        //   canEdit: false, canDelete: true,
+        //   control: 'sub-node-collection',
+        //   canAdd: function(m) {
+        //     if (m.isNew() && m.get('is_partitioned'))
+        //       return true;
+        //     return false;
+        //   },
+        //   canAddRow: function(m) {
+        //     var columns = m.get('columns'),
+        //       typename = m.get('typname'),
+        //       columns_exist= false;
 
-            var max_row_count = 1000;
-            if (m.get('partition_type') && m.get('partition_type') == 'list')
-              max_row_count = 1;
+        //     var max_row_count = 1000;
+        //     if (m.get('partition_type') && m.get('partition_type') == 'list')
+        //       max_row_count = 1;
 
-            /* If columns are not specified by the user then it may be
-               * possible that he/she selected 'OF TYPE', so we should check
-               * for that as well.
-               */
-            if (columns.length <= 0 && !_.isUndefined(typename)
-              && !_.isNull(typename) && m.of_types_tables.length > 0){
-              _.each(m.of_types_tables, function(data) {
-                if (data.label == typename && data.oftype_columns.length > 0){
-                  columns_exist = true;
-                }
-              });
-            } else if (columns.length > 0) {
-              columns_exist = _.some(columns.pluck('name'));
-            }
+        //     /* If columns are not specified by the user then it may be
+        //        * possible that he/she selected 'OF TYPE', so we should check
+        //        * for that as well.
+        //        */
+        //     if (columns.length <= 0 && !_.isUndefined(typename)
+        //       && !_.isNull(typename) && m.of_types_tables.length > 0){
+        //       _.each(m.of_types_tables, function(data) {
+        //         if (data.label == typename && data.oftype_columns.length > 0){
+        //           columns_exist = true;
+        //         }
+        //       });
+        //     } else if (columns.length > 0) {
+        //       columns_exist = _.some(columns.pluck('name'));
+        //     }
 
-            return (m.get('partition_keys') &&
-              m.get('partition_keys').length < max_row_count && columns_exist
-            );
+        //     return (m.get('partition_keys') &&
+        //       m.get('partition_keys').length < max_row_count && columns_exist
+        //     );
 
-          },
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
+        //   },
+        //   visible: function(m) {
+        //     if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+        //       && !_.isUndefined(m.node_info.server.version) &&
+        //         m.node_info.server.version >= 100000)
+        //       return true;
 
-            return false;
-          },
-          disabled: function(m) {
-            if (m.get('partition_keys') && m.get('partition_keys').models.length > 0) {
-              setTimeout(function () {
-                var coll = m.get('partition_keys');
-                coll.remove(coll.filter(function() { return true; }));
+        //     return false;
+        //   },
+        //   disabled: function(m) {
+        //     if (m.get('partition_keys') && m.get('partition_keys').models.length > 0) {
+        //       setTimeout(function () {
+        //         var coll = m.get('partition_keys');
+        //         coll.remove(coll.filter(function() { return true; }));
 
-              }, 10);
-            }
-          },
-        },{
+        //       }, 10);
+        //     }
+        //   },
+        // },
+        {
           id: 'partition_scheme', label: gettext('Partition Scheme'),
           type: 'note', group: 'partition', mode: ['edit'],
           visible: function(m) {
@@ -979,7 +1060,8 @@ define('pgadmin.node.table', [
 
             return false;
           },
-        }, {
+        },
+         {
           id: 'partitions', label:gettext('Partitions'),
           model: Backform.PartitionsModel,
           subnode: Backform.PartitionsModel,
@@ -1103,6 +1185,7 @@ define('pgadmin.node.table', [
         //   id: 'relacl_str', label: gettext('Privileges'), disabled: 'inSchema',
         //   type: 'text', mode: ['properties'], group: gettext('Security'),
         // }, pgBrowser.SecurityGroupSchema,{
+
           id: 'relacl', label: gettext('Privileges'), type: 'collection',
           group: 'security', control: 'unique-col-collection',
           model: pgBrowser.Node.PrivilegeRoleModel.extend({
@@ -1114,7 +1197,11 @@ define('pgadmin.node.table', [
           model: pgBrowser.SecLabelModel, editable: false, canAdd: true,
           type: 'collection', min_version: 90100, mode: ['edit', 'create'],
           group: 'security', canDelete: true, control: 'unique-col-collection',
-        }],
+        }
+      ],
+        isReplicatedMergeTree: function(model) {
+          return model.get('engine')=='isReplicatedMergeTree';
+        },
         sessChanged: function() {
           /* If only custom autovacuum option is enabled the check if the options table is also changed. */
           if(_.size(this.sessAttrs) == 2 && this.sessAttrs['autovacuum_custom'] && this.sessAttrs['toast_autovacuum']) {

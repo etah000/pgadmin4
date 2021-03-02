@@ -978,7 +978,15 @@ define('pgadmin.browser.node', [
             console.log(b.panels['properties'].panel);
             console.log(item);
             console.log(d);
+            // console.log(this.node.model);
+            console.log(this.columns);
+            // if(d._type=='cluster'){
+            //   d._type=="coll-clusters"
+            //   // pgBrowser.Collection.showPropertiesCluster(item, d, b.panels['properties'].panel,this);
+            // this.showPropertiesCluster(item, d, b.panels['properties'].panel,this);
+            // }else{
             this.showProperties(item, d, b.panels['properties'].panel);
+          // }
           }
         }
 
@@ -1063,7 +1071,6 @@ define('pgadmin.browser.node', [
      * This has also been used for creating a node.
      **/
     showProperties: function(item, data, panel, action) {
-
       var that = this,
         tree = pgAdmin.Browser.tree,
         j = panel.$container.find('.obj_properties').first(),

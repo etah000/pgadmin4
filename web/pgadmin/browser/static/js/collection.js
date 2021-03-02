@@ -428,6 +428,356 @@ define([
           return;
         }.bind(that);
       },
+      showPropertiesCluster: function(item, data, panel,now) {
+        var that = now,
+          j = panel.$container.find('.obj_properties').first(),
+          view = j.data('obj-view'),
+          content = $('<div></div>')
+            .addClass('pg-prop-content col-12 has-pg-prop-btn-group'),
+          node = pgBrowser.Nodes[that.node],
+          $msgContainer = '',
+          // This will be the URL, used for object manipulation.
+          urlBase = that.generate_url(item, "properties", data, false, null, now.url_jump_after_node),
+          // urlBase = that.generate_url(item, 'properties', data),
+          info = that.getTreeNodeHierarchy.apply(that, [item]),
+          gridSchema = Backform.generateGridColumnsFromModel(
+            info, node.model, 'properties', that.columns
+          ),
+          createButtons = function(buttons, location, extraClasses) {
+            // Arguments must be non-zero length array of type
+            // object, which contains following attributes:
+            // label, type, extraClasses, register
+            if (buttons && _.isArray(buttons) && buttons.length > 0) {
+              // All buttons will be created within a single
+              // div area.
+              var btnGroup =
+                $('<div class="pg-prop-btn-group"></div>'),
+                // Template used for creating a button
+                tmpl = _.template([
+                  '<button tabindex="0" type="<%= type %>" ',
+                  'class="btn <%=extraClasses.join(\' \')%>"',
+                  '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>">',
+                  '<span class="<%= icon %>" role="img"></span><% if (label != "") { %>&nbsp;<%-label%><% } %><span class="sr-only"><%-tooltip%></span></button>',
+                ].join(' '));
+              if (location == 'header') {
+                btnGroup.appendTo(that.header);
+              } else {
+                btnGroup.appendTo(that.footer);
+              }
+              if (extraClasses) {
+                btnGroup.addClass(extraClasses);
+              }
+              _.each(buttons, function(btn) {
+                // Create the actual button, and append to
+                // the group div
+
+                // icon may not present for this button
+                if (!btn.icon) {
+                  btn.icon = '';
+                }
+                var b = $(tmpl(btn));
+                btnGroup.append(b);
+                // Register is a callback to set callback
+                // for certain operation for this button.
+                btn.register(b);
+              });
+              return btnGroup;
+            }
+            return null;
+          }.bind(panel);
+        console.log(urlBase);
+        that.collection = new (node.Collection.extend({
+          url: urlBase,
+          model: node.model,
+        }))();
+        // Add the new column for the multi-select menus
+        if((_.isFunction(that.canDrop) ?
+          that.canDrop.apply(that, [data, item]) : that.canDrop) ||
+              (_.isFunction(that.canDropCascade) ?
+                that.canDropCascade.apply(that, [data, item]) : that.canDropCascade)) {
+          gridSchema.columns.unshift({
+            name: 'oid',
+            cell: Backgrid.Extension.SelectRowCell.extend({
+              initialize: function (options) {
+                that.column = options.column;
+                if (!(that.column instanceof Backgrid.Column)) {
+                  that.column = new Backgrid.Column(that.column);
+                }
+
+                var column = that.column, model = that.model, $el = that.$el;
+                that.listenTo(column, 'change:renderable', function (column, renderable) {
+                  $el.toggleClass('renderable', renderable);
+                });
+
+                if (Backgrid.callByNeed(column.renderable(), column, model)) $el.addClass('renderable width_percent_3');
+
+                that.listenTo(model, 'backgrid:select', that.toggleCheckbox);
+              },
+              toggleCheckbox: function(model, selected) {
+                if (that.checkbox().prop('disabled') === false) {
+                  that.checkbox().prop('checked', selected).change();
+                }
+              },
+              render: function() {
+                let model = that.model.toJSON();
+                // canDrop can be set to false for individual row from the server side to disable the checkbox
+                let disabled = ('canDrop' in model && model.canDrop === false);
+                let id = `row-${_.uniqueId(model.oid || model.name)}`;
+
+                that.$el.empty().append(`
+                  <div class="custom-control custom-checkbox custom-checkbox-no-label">
+                    <input tabindex="-1" type="checkbox" class="custom-control-input" id="${id}" ${disabled?'disabled':''}/>
+                    <label class="custom-control-label" for="${id}">
+                      <span class="sr-only">` + gettext('Select') + `<span>
+                    </label>
+                  </div>
+                `);
+                that.delegateEvents();
+                return that;
+              },
+            }),
+            headerCell: Backgrid.Extension.SelectAllHeaderCell,
+          });
+        }
+        // Initialize a new Grid instance
+        that.grid = new Backgrid.Grid({
+          emptyText: gettext('No data found'),
+          columns: gridSchema.columns,
+          collection: that.collection,
+          className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
+        });
+
+        var gridView = {
+          'remove': function() {
+            if (that.grid) {
+              if (that.grid.collection) {
+                that.grid.collection.reset([], {silent: true});
+                delete (that.grid.collection);
+              }
+              delete (that.grid);
+              that.grid = null;
+            }
+          },
+          grid: that.grid,
+        };
+
+        if (view) {
+
+          // Avoid unnecessary reloads
+          if (_.isEqual($(panel).data('node-prop'), urlBase)) {
+            return;
+          }
+
+          // Cache the current IDs for next time
+          $(panel).data('node-prop', urlBase);
+
+          // Reset the data object
+          j.data('obj-view', null);
+        }
+
+        // Make sure the HTML element is empty.
+        j.empty();
+        j.data('obj-view', gridView);
+
+        $msgContainer = '<div role="status" class="pg-panel-message pg-panel-properties-message">' +
+         gettext('Retrieving data from the server...') + '</div>';
+
+        $msgContainer = $($msgContainer).appendTo(j);
+
+        that.header = $('<div></div>').addClass(
+          'pg-prop-header'
+        );
+
+        // Render the buttons
+        var buttons = [];
+
+        buttons.push({
+          label: '',
+          type: 'delete',
+          tooltip: gettext('Delete/Drop'),
+          extraClasses: ['btn-secondary m-1', 'delete_multiple'],
+          icon: 'fa fa-lg fa-trash-o',
+          disabled:  (_.isFunction(that.canDrop)) ? !(that.canDrop.apply(self, [data, item])) : (!that.canDrop),
+          register: function(btn) {
+            btn.on('click',() => {
+              onDrop('drop');
+            });
+          },
+        });
+
+        buttons.push({
+          label: '',
+          type: 'delete',
+          tooltip: gettext('Drop Cascade'),
+          extraClasses: ['btn-secondary m-1', 'delete_multiple_cascade'],
+          icon: 'pg-font-icon icon-drop-cascade',
+          disabled: (_.isFunction(that.canDropCascade)) ? !(that.canDropCascade.apply(self, [data, item])) : (!that.canDropCascade),
+          register: function(btn) {
+            btn.on('click',() => {
+              onDrop('dropCascade');
+            });
+          },
+        });
+
+        createButtons(buttons, 'header', 'pg-prop-btn-group-above');
+
+        // Render subNode grid
+        content.append('<div class="pg-prop-coll-container"></div>');
+        content.find('.pg-prop-coll-container').append(that.grid.render().$el);
+
+        var timer;
+        var getAjaxHook = function() {
+          $.ajax({
+            url: urlBase,
+            type: 'GET',
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
+              // Generate a timer for the request
+              timer = setTimeout(function() {
+                // notify user if request is taking longer than 1 second
+
+                $msgContainer.text(gettext('Retrieving data from the server...'));
+                $msgContainer.removeClass('d-none');
+                if (self.grid) {
+                  self.grid.remove();
+                }
+              }, 1000);
+            },
+          }).done(function(res) {
+            clearTimeout(timer);
+
+            if (_.isUndefined(that.grid) || _.isNull(that.grid)) return;
+
+            that.data = res;
+
+            if (that.data.length > 0) {
+
+              if (!$msgContainer.hasClass('d-none')) {
+                $msgContainer.addClass('d-none');
+              }
+              that.header.appendTo(j);
+              j.append(content);
+
+              // Listen scroll event to load more rows
+              // $('.pg-prop-content').on('scroll', that.__loadMoreRows.bind(that));
+
+              that.collection.reset(that.data.splice(0, 50));
+            } else {
+            // Do not listen the scroll event
+              $('.pg-prop-content').off('scroll', that.__loadMoreRows);
+
+              $msgContainer.text(gettext('No properties are available for the selected object.'));
+
+            }
+          }).fail(function(xhr, error) {
+            pgBrowser.Events.trigger(
+              'pgadmin:node:retrieval:error', 'properties', xhr, error.message, item, that
+            );
+            if (!Alertify.pgHandleItemError(xhr, error.message, {
+              item: item,
+              info: info,
+            })) {
+              Alertify.pgNotifier(
+                error, xhr, gettext('Error retrieving properties - %s', error.message || that.label),
+                function(msg) {
+                  if(msg === 'CRYPTKEY_SET') {
+                    getAjaxHook();
+                  } else {
+                    console.warn(arguments);
+                  }
+                }
+              );
+            }
+            // show failed message.
+            $msgContainer.text(gettext('Failed to retrieve data from the server.'));
+          });
+        };
+        getAjaxHook();
+
+        var onDrop = function(type, confirm=true) {
+          let sel_row_models = this.grid.getSelectedModels(),
+            sel_rows = [],
+            item = pgBrowser.tree.selected(),
+            d = item ? pgBrowser.tree.itemData(item) : null,
+            node = pgBrowser.Nodes[d._type],
+            url = undefined,
+            msg = undefined,
+            title = undefined;
+
+          if (node.type && node.type == 'coll-constraints') {
+            // In order to identify the constraint type, the type should be passed to the server
+            sel_rows = sel_row_models.map(row => ({id: row.get('oid'), _type: row.get('_type')}));
+          }
+          else {
+            sel_rows = sel_row_models.map(row => row.id);
+          }
+
+          if (sel_rows.length === 0) {
+            Alertify.alert(gettext('Drop Multiple'),
+              gettext('Please select at least one object to delete.')
+            );
+            return;
+          }
+
+          if (type === 'dropCascade') {
+            url = node.generate_url(item, 'delete'),
+            msg = gettext('Are you sure you want to drop all the selected objects and all the objects that depend on them?'),
+            title = gettext('DROP CASCADE multiple objects?');
+          } else {
+            url = node.generate_url(item, 'drop');
+            msg = gettext('Are you sure you want to drop all the selected objects?');
+            title = gettext('DROP multiple objects?');
+          }
+
+          let dropAjaxHook = function() {
+            $.ajax({
+              url: url,
+              type: 'DELETE',
+              data: JSON.stringify({'ids': sel_rows}),
+              contentType: 'application/json; charset=utf-8',
+            }).done(function(res) {
+              if (res.success == 0) {
+                pgBrowser.report_error(res.errormsg, res.info);
+              } else {
+                $(pgBrowser.panels['properties'].panel).removeData('node-prop');
+                pgBrowser.Events.trigger(
+                  'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                    success: function() {
+                      node.callbacks.selected.apply(node, [item]);
+                    },
+                  });
+              }
+              return true;
+            }).fail(function(xhr, error) {
+              Alertify.pgNotifier(
+                error, xhr,
+                gettext('Error dropping %s', d._label.toLowerCase()),
+                function(msg) {
+                  if (msg == 'CRYPTKEY_SET') {
+                    onDrop(type, false);
+                  } else {
+                    $(pgBrowser.panels['properties'].panel).removeData('node-prop');
+                    pgBrowser.Events.trigger(
+                      'pgadmin:browser:tree:refresh', item || pgBrowser.tree.selected(), {
+                        success: function() {
+                          node.callbacks.selected.apply(node, [item]);
+                        },
+                      }
+                    );
+                  }
+                }
+              );
+            });
+          };
+
+          if(confirm) {
+            Alertify.confirm(title, msg, dropAjaxHook, null).show();
+          } else {
+            dropAjaxHook();
+          }
+          return;
+        }.bind(that);
+      },
       __loadMoreRows: function(e) {
         let elem = e.currentTarget;
         if ((elem.scrollHeight - 10) < elem.scrollTop + elem.offsetHeight) {
