@@ -294,6 +294,7 @@ define('pgadmin.node.table', [
           relhassubclass: undefined,
           reltuples: undefined,
           description: undefined,
+          engine_params:{},
           engine:'MergeTree',
           conname: undefined,
           conkey: undefined,
@@ -351,20 +352,22 @@ define('pgadmin.node.table', [
               document.querySelector('.zoo_path').style.display='none';
               document.querySelector('.replica_name').style.display='none';
               document.querySelector('.settings').style.display='none';
-              document.querySelector('.cluster_name').style.display='none';
-              document.querySelector('.remote_database').style.display='none';
-              document.querySelector('.remote_table').style.display='none';
-              document.querySelector('.policy_name').style.display='none';
+              document.querySelector('.engine_params\\.cluster_name').style.display='none';
+              document.querySelector('.engine_params\\.remote_database').style.display='none';
+              document.querySelector('.engine_params\\.remote_table').style.display='none';
+              document.querySelector('.engine_params\\.policy_name').style.display='none';
+              document.querySelector('.engine_params\\.sharding_key').style.display='none';
               if(engineValue=='ReplicatedMergeTree'){
                 document.querySelector('.zoo_path').style.display="";
                 document.querySelector('.replica_name').style.display="";
                 document.querySelector('.settings').style.display="";
               }
               if(engineValue=='Distributed'){
-                document.querySelector('.cluster_name').style.display="";
-                document.querySelector('.remote_database').style.display="";
-                document.querySelector('.remote_table').style.display="";
-                document.querySelector('.policy_name').style.display="";
+                document.querySelector('.engine_params\\.cluster_name').style.display="";
+                document.querySelector('.engine_params\\.remote_database').style.display="";
+                document.querySelector('.engine_params\\.remote_table').style.display="";
+                document.querySelector('.engine_params\\.policy_name').style.display="";
+                document.querySelector('.engine_params\\.sharding_key').style.display="";
                 document.querySelector('.settings').style.display="";
               }
               
@@ -423,16 +426,19 @@ define('pgadmin.node.table', [
           id: 'settings', label: gettext('settings'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'remote_database', label: gettext('remote_database'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.remote_database', label: gettext('remote_database'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'remote_table', label: gettext('remote_table'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.remote_table', label: gettext('remote_table'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'cluster_name', label: gettext('cluster_name'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.sharding_key', label: gettext('sharding_key'), type: 'text', mode: ['properties','create'],
+        },
+        {
+          id: 'engine_params.cluster_name', label: gettext('cluster_name'), type: 'text', mode: ['properties','create'],
         },
         {
           id: 'distributed_table_suffix', label: gettext('distributed_table_suffix'), type: 'text', mode: ['properties','create'],
