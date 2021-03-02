@@ -1017,10 +1017,11 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         try:
             # create multi tables on cluster
-            if data['cluster'] and data['shifted'] \
+            if ('cluster' in data and data['cluster']) \
+                and ('shifted' in data and data['shifted']) \
                 and data['engine'] in ('MergeTree', 'ReplicatedMergeTree'):
                 return self._create_shifted_tables(gid, sid, did, data)
-            # create single table locally
+            # create single table locally(from local)
             else:
                 return self._create_single_table(gid, sid, did, tid, data)
 
