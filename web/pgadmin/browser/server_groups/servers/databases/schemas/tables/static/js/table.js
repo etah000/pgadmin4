@@ -350,8 +350,8 @@ define('pgadmin.node.table', [
             onChange: function() {
               Backform.SelectControl.prototype.onChange.apply(this, arguments);
               let engineValue=this.model.get('engine');
-              document.querySelector('.zoo_path').style.display='none';
-              document.querySelector('.replica_name').style.display='none';
+              document.querySelector('.engine_params\\.zoo_path').style.display='none';
+              document.querySelector('.engine_params\\.replica_name').style.display='none';
               document.querySelector('.settings').style.display='none';
               document.querySelector('.engine_params\\.cluster_name').style.display='none';
               document.querySelector('.engine_params\\.remote_database').style.display='none';
@@ -359,8 +359,8 @@ define('pgadmin.node.table', [
               document.querySelector('.engine_params\\.policy_name').style.display='none';
               document.querySelector('.engine_params\\.sharding_key').style.display='none';
               if(engineValue=='ReplicatedMergeTree'){
-                document.querySelector('.zoo_path').style.display="";
-                document.querySelector('.replica_name').style.display="";
+                document.querySelector('.engine_params\\.zoo_path').style.display="";
+                document.querySelector('.engine_params\\.replica_name').style.display="";
                 document.querySelector('.settings').style.display="";
               }
               if(engineValue=='Distributed'){
@@ -418,10 +418,10 @@ define('pgadmin.node.table', [
           id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'zoo_path', label: gettext('zoo_path'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.zoo_path', label: gettext('zoo_path'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'replica_name', label: gettext('replica_name'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.replica_name', label: gettext('replica_name'), type: 'text', mode: ['properties','create'],
         },
         {
           id: 'settings', label: gettext('settings'), type: 'text', mode: ['properties','create'],
