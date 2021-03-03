@@ -62,7 +62,7 @@ define('pgadmin.node.table', [
           return;
 
         this.initialized = true;
-        console.log(Backform.VacuumSettingsSchema);
+        // console.log(Backform.VacuumSettingsSchema);
 
         pgBrowser.add_menus([{
           name: 'create_table_on_coll', node: 'coll-table', module: this,
@@ -332,7 +332,8 @@ define('pgadmin.node.table', [
             //   'relowner': userInfo.name, 'schema': schemaInfo._label,
             // }, {silent: true});
           }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
+
+        pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
 
         },
         schema: [{
@@ -347,33 +348,32 @@ define('pgadmin.node.table', [
             {label: gettext('Distributed'), value: 'Distributed'}
           ],
           control: Backform.SelectControl.extend({
+            
             onChange: function() {
               Backform.SelectControl.prototype.onChange.apply(this, arguments);
               let engineValue=this.model.get('engine');
-              document.querySelector('.engine_params\\.zoo_path').style.display='none';
-              document.querySelector('.engine_params\\.replica_name').style.display='none';
-              document.querySelector('.settings').style.display='none';
-              document.querySelector('.engine_params\\.cluster_name').style.display='none';
-              document.querySelector('.engine_params\\.remote_database').style.display='none';
-              document.querySelector('.engine_params\\.remote_table').style.display='none';
-              document.querySelector('.engine_params\\.policy_name').style.display='none';
-              document.querySelector('.engine_params\\.sharding_key').style.display='none';
+              document.querySelector('.engine_params\\.zoo_path').classList.add("d-none");
+              document.querySelector('.engine_params\\.replica_name').classList.add("d-none");
+              document.querySelector('.settings').classList.add("d-none");
+              document.querySelector('.engine_params\\.cluster_name').classList.add("d-none");
+              document.querySelector('.engine_params\\.remote_database').classList.add("d-none");
+              document.querySelector('.engine_params\\.remote_table').classList.add("d-none");
+              document.querySelector('.engine_params\\.policy_name').classList.add("d-none");
+              document.querySelector('.engine_params\\.sharding_key').classList.add("d-none");
               if(engineValue=='ReplicatedMergeTree'){
-                document.querySelector('.engine_params\\.zoo_path').style.display="";
-                document.querySelector('.engine_params\\.replica_name').style.display="";
-                document.querySelector('.settings').style.display="";
+                document.querySelector('.engine_params\\.zoo_path').classList.remove("d-none");
+                document.querySelector('.engine_params\\.replica_name').classList.remove("d-none");
+                document.querySelector('.settings').classList.remove("d-none");
               }
               if(engineValue=='Distributed'){
-                document.querySelector('.engine_params\\.cluster_name').style.display="";
-                document.querySelector('.engine_params\\.remote_database').style.display="";
-                document.querySelector('.engine_params\\.remote_table').style.display="";
-                document.querySelector('.engine_params\\.policy_name').style.display="";
-                document.querySelector('.engine_params\\.sharding_key').style.display="";
-                document.querySelector('.settings').style.display="";
+                document.querySelector('.engine_params\\.cluster_name').classList.remove("d-none");
+                document.querySelector('.engine_params\\.remote_database').classList.remove("d-none");
+                document.querySelector('.engine_params\\.remote_table').classList.remove("d-none");
+                document.querySelector('.engine_params\\.policy_name').classList.remove("d-none");
+                document.querySelector('.engine_params\\.sharding_key').classList.remove("d-none");
+                document.querySelector('.settings').classList.remove("d-none");
               }
-              
               console.log(engineValue);
-
               // this.model.set('rolcatupdate', this.model.get('rolsuper'));
               // this.model.set('rolcreaterole', this.model.get('rolsuper'));
               // this.model.set('rolcreatedb', this.model.get('rolsuper'));
@@ -395,12 +395,14 @@ define('pgadmin.node.table', [
           //   }
           // }), select2: { allowClear: false, width: '100%' },
         },
-        {
-          id: 'connected', label: gettext('shifted?'), type: 'switch',
-          mode: ['create'],'options': {
-            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
-          },
-        },
+
+        // {
+        //   id: 'shifted', label: gettext('shifted?'), type: 'switch',
+        //   mode: ['create'],'options': {
+        //     'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+        //   },
+        // },
+
         // {
         //   id: 'shifted', label: gettext('shifted'), type: 'options', mode: ['create'],
         //   options: [
@@ -414,39 +416,39 @@ define('pgadmin.node.table', [
           id: 'cluster', label: gettext('cluster'), type: 'text', node: 'cluster',
           mode: ['properties', 'edit','create'], select2: {allowClear: false}, control: 'node-list-by-name',
         },
+        // {
+        //   id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
+        // },
         {
-          id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.zoo_path', label: gettext('zoo_path'), type: 'text', mode: ['properties','create'], visible: false,
         },
         {
-          id: 'engine_params.zoo_path', label: gettext('zoo_path'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.replica_name', label: gettext('replica_name'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.replica_name', label: gettext('replica_name'), type: 'text', mode: ['properties','create'],
+          id: 'settings', label: gettext('settings'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'settings', label: gettext('settings'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.remote_database', label: gettext('remote_database'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.remote_database', label: gettext('remote_database'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.remote_table', label: gettext('remote_table'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.remote_table', label: gettext('remote_table'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.sharding_key', label: gettext('sharding_key'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.sharding_key', label: gettext('sharding_key'), type: 'text', mode: ['properties','create'],
+          id: 'engine_params.cluster_name', label: gettext('cluster_name'), type: 'text', mode: ['properties','create'],visible: false,
         },
-        {
-          id: 'engine_params.cluster_name', label: gettext('cluster_name'), type: 'text', mode: ['properties','create'],
-        },
-        {
-          id: 'distributed_table_suffix', label: gettext('distributed_table_suffix'), type: 'text', mode: ['properties','create'],
-        },
-        {
-          id: 'local_table_suffix', label: gettext('local_table_suffix'), type: 'text', mode: ['properties','create'],
-        },
+        // {
+        //   id: 'distributed_table_suffix', label: gettext('distributed_table_suffix'), type: 'text', mode: ['properties','create'],
+        // },
+        // {
+        //   id: 'local_table_suffix', label: gettext('local_table_suffix'), type: 'text', mode: ['properties','create'],
+        // },
         {
           id: 'database', label: gettext('Database'), type: 'text', mode: ['properties','create'],
         },
@@ -606,7 +608,7 @@ define('pgadmin.node.table', [
           uniqueCol : ['name'],
           columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key'],
           control: Backform.UniqueColCollectionControl.extend({
-            initialize: function() {
+            initialize: function() {  
               Backform.UniqueColCollectionControl.prototype.initialize.apply(this, arguments);
               var self = this,
                 collection = self.model.get(self.field.get('name'));
