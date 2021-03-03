@@ -358,7 +358,9 @@ define('pgadmin.node.table', [
               document.querySelector('.engine_params\\.cluster_name').classList.add("d-none");
               document.querySelector('.engine_params\\.remote_database').classList.add("d-none");
               document.querySelector('.engine_params\\.remote_table').classList.add("d-none");
-              document.querySelector('.engine_params\\.policy_name').classList.add("d-none");
+              document.querySelector('.order_keys').classList.remove("d-none");
+              document.querySelector('.partition_by').classList.remove("d-none");
+              // document.querySelector('.engine_params\\.policy_name').classList.add("d-none");
               document.querySelector('.engine_params\\.sharding_key').classList.add("d-none");
               if(engineValue=='ReplicatedMergeTree'){
                 document.querySelector('.engine_params\\.zoo_path').classList.remove("d-none");
@@ -369,9 +371,11 @@ define('pgadmin.node.table', [
                 document.querySelector('.engine_params\\.cluster_name').classList.remove("d-none");
                 document.querySelector('.engine_params\\.remote_database').classList.remove("d-none");
                 document.querySelector('.engine_params\\.remote_table').classList.remove("d-none");
-                document.querySelector('.engine_params\\.policy_name').classList.remove("d-none");
+                // document.querySelector('.engine_params\\.policy_name').classList.remove("d-none");
                 document.querySelector('.engine_params\\.sharding_key').classList.remove("d-none");
                 document.querySelector('.settings').classList.remove("d-none");
+                document.querySelector('.order_keys').classList.add("d-none");
+                document.querySelector('.partition_by').classList.add("d-none");
               }
               console.log(engineValue);
               // this.model.set('rolcatupdate', this.model.get('rolsuper'));
@@ -413,35 +417,35 @@ define('pgadmin.node.table', [
 
         
         {
-          id: 'cluster', label: gettext('cluster'), type: 'text', node: 'cluster',
+          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
           mode: ['properties', 'edit','create'], select2: {allowClear: false}, control: 'node-list-by-name',
         },
         // {
         //   id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
         // },
         {
-          id: 'engine_params.zoo_path', label: gettext('zoo_path'), type: 'text', mode: ['properties','create'], visible: false,
+          id: 'engine_params.zoo_path', label: gettext('ZooKeeper Path'), type: 'text', mode: ['properties','create'], visible: false,
         },
         {
-          id: 'engine_params.replica_name', label: gettext('replica_name'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.replica_name', label: gettext('Replica Name'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
           id: 'settings', label: gettext('settings'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.remote_database', label: gettext('remote_database'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.remote_database', label: gettext('Remote Database'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.remote_table', label: gettext('remote_table'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.remote_table', label: gettext('Remote Table'), type: 'text', mode: ['properties','create'],visible: false,
+        },
+        // {
+        //   id: 'engine_params.policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],visible: false,
+        // },
+        {
+          id: 'engine_params.sharding_key', label: gettext('Sharding Key'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],visible: false,
-        },
-        {
-          id: 'engine_params.sharding_key', label: gettext('sharding_key'), type: 'text', mode: ['properties','create'],visible: false,
-        },
-        {
-          id: 'engine_params.cluster_name', label: gettext('cluster_name'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.cluster_name', label: gettext('Cluster Name'), type: 'text', mode: ['properties','create'],visible: false,
         },
         // {
         //   id: 'distributed_table_suffix', label: gettext('distributed_table_suffix'), type: 'text', mode: ['properties','create'],
@@ -453,15 +457,15 @@ define('pgadmin.node.table', [
           id: 'database', label: gettext('Database'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'order_keys', label: gettext('OrderyKeys'), type: 'text', mode: ['properties','create'],
+          id: 'order_keys', label: gettext('Order By'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'partition_by', label: gettext('PartitionBy'), type: 'text', mode: ['properties','create'],
+          id: 'partition_by', label: gettext('Partition By'), type: 'text', mode: ['properties','create'],
         },
-        {
-          id: 'description', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
-        },
+        // {
+        //   id: 'description', label: gettext('Comment'), type: 'multiline',
+        //   mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
+        // },
         {
           id: 'primary_keys', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
         },{
