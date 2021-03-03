@@ -1246,7 +1246,13 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         create_table_query = data['create_table_query']
         sql_header = ''
-
+        reg = re.compile('CREATE VIEW (\w+\.\w+) (.*) AS SELECT (.*)')
+        matches = re.search(reg, create_table_query)
+        if matches:
+            data['format'] = True
+            data['view_str'] = matches.group(1)  # match group1
+            data['column_str'] = matches.group(2)[1:-1].split(',')  # match group2
+            data['table_str'] = matches.group(3)  # match group3
         if json_resp:
             sql_header = u"-- View: {0}.{1}\n\n-- ".format(
                 data['database'], data['name'])
@@ -1802,7 +1808,14 @@ class MViewNode(ViewNode, VacuumSettings):
 
         create_table_query = data['create_table_query']
         sql_header = ''
-
+        reg = re.compile('CREATE MATERIALIZED VIEW (\w+\.\w+) (.*) ENGINE(.*) AS SELECT (.*)')
+        matches = re.search(reg, create_table_query)
+        if matches:
+            data['format'] = True
+            data['mv_str'] = matches.group(1)  # match group1
+            data['column_str'] = matches.group(2)[1:-1].split(',')  # match group2
+            data['engine_str'] = matches.group(3)  # match group3
+            data['table_str'] = matches.group(4)  # match group4
         if json_resp:
             sql_header = u"-- View: {0}.{1}\n\n-- ".format(
                 data['database'], data['name'])
@@ -1856,7 +1869,6 @@ class MViewNode(ViewNode, VacuumSettings):
             return gone(gettext("The specified table could not be found."))
 
         data = res['rows'][0]
-
         return self.get_create_view_sql(
             did, vid, main_sql, data)
 
