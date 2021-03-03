@@ -1003,6 +1003,9 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
+        if 'database' in data and data['database']:
+            did = data['database']
+
         # Parse & format columns
         data = column_utils.parse_format_columns(data)
         data = TableView.check_and_convert_name_to_string(data)
