@@ -971,173 +971,173 @@ define('pgadmin.node.server', [
           id: 'service', label: gettext('Service'), type: 'text',
           mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
           group: gettext('Connection'),
-        },{
-          id: 'sslmode', label: gettext('SSL mode'), control: 'select2', group: gettext('SSL'),
-          select2: {
-            allowClear: false,
-            minimumResultsForSearch: Infinity,
-          },
-          mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
-          'options': [
-            {label: gettext('Allow'), value: 'allow'},
-            {label: gettext('Prefer'), value: 'prefer'},
-            {label: gettext('Require'), value: 'require'},
-            {label: gettext('Disable'), value: 'disable'},
-            {label: gettext('Verify-CA'), value: 'verify-ca'},
-            {label: gettext('Verify-Full'), value: 'verify-full'},
-          ],
-        },{
-          id: 'sslcert', label: gettext('Client certificate'), type: 'text',
-          group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
-          dialog_type: 'select_file', supp_types: ['*'],
-          deps: ['sslmode'],
-        },{
-          id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
-          group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
-          dialog_type: 'select_file', supp_types: ['*'],
-          deps: ['sslmode'],
-        },{
-          id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
-          group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
-          dialog_type: 'select_file', supp_types: ['*'],
-          deps: ['sslmode'],
-        },{
-          id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
-          group: gettext('SSL'), mode: ['edit', 'create'],
-          disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
-          dialog_type: 'select_file', supp_types: ['*'],
-          deps: ['sslmode'],
-        },{
-          id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
-          mode: ['edit', 'create'], group: gettext('SSL'),
-          'options': {'size': 'mini'},
-          deps: ['sslmode'], disabled: 'isSSL', readonly: 'isConnected',
-        },{
-          id: 'sslcert', label: gettext('Client certificate'), type: 'text',
-          group: gettext('SSL'), mode: ['properties'],
-          deps: ['sslmode'],
-          visible: function(model) {
-            var sslcert = model.get('sslcert');
-            return !_.isUndefined(sslcert) && !_.isNull(sslcert);
-          },
-        },{
-          id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
-          group: gettext('SSL'), mode: ['properties'],
-          deps: ['sslmode'],
-          visible: function(model) {
-            var sslkey = model.get('sslkey');
-            return !_.isUndefined(sslkey) && !_.isNull(sslkey);
-          },
-        },{
-          id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
-          group: gettext('SSL'), mode: ['properties'],
-          deps: ['sslmode'],
-          visible: function(model) {
-            var sslrootcert = model.get('sslrootcert');
-            return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
-          },
-        },{
-          id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
-          group: gettext('SSL'), mode: ['properties'],
-          deps: ['sslmode'],
-          visible: function(model) {
-            var sslcrl = model.get('sslcrl');
-            return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
-          },
-        },{
-          id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
-          mode: ['properties'], group: gettext('SSL'),
-          'options': {'size': 'mini'},
-          deps: ['sslmode'], visible: function(model) {
-            var sslmode = model.get('sslmode');
-            return _.indexOf(SSL_MODES, sslmode) != -1;
-          },
-        },{
-          id: 'use_ssh_tunnel', label: gettext('Use SSH tunneling'), type: 'switch',
-          mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
-          'options': {'size': 'mini'},
-          disabled: function(model) {
-            if (!pgAdmin.Browser.utils.support_ssh_tunnel) {
-              setTimeout(function() {
-                model.set('use_ssh_tunnel', 0);
-              }, 10);
-
-              return true;
-            }
-
-            return false;
-          },
-          readonly: 'isConnected',
-        },{
-          id: 'tunnel_host', label: gettext('Tunnel host'), type: 'text', group: gettext('SSH Tunnel'),
-          mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
-          disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
-          },
-          readonly: 'isConnected',
-        },{
-          id: 'tunnel_port', label: gettext('Tunnel port'), type: 'int', group: gettext('SSH Tunnel'),
-          mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'], max: 65535,
-          disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
-          },
-          readonly: 'isConnected',
-        },{
-          id: 'tunnel_username', label: gettext('Username'), type: 'text', group: gettext('SSH Tunnel'),
-          mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
-          disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
-          },
-          readonly: 'isConnected',
-        },{
-          id: 'tunnel_authentication', label: gettext('Authentication'), type: 'switch',
-          mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
-          'options': {'onText':  gettext('Identity file'),
-            'offText':  gettext('Password'), 'size': 'mini', width: '90'},
-          deps: ['use_ssh_tunnel'],
-          disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
-          },
-          readonly: 'isConnected',
-        }, {
-          id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
-          group: gettext('SSH Tunnel'), mode: ['properties', 'edit', 'create'],
-          control: Backform.FileControl, dialog_type: 'select_file', supp_types: ['*'],
-          deps: ['tunnel_authentication', 'use_ssh_tunnel'],
-          disabled: function(model) {
-            let file = model.get('tunnel_identity_file');
-            if (!model.get('tunnel_authentication') && file) {
-              setTimeout(function() {
-                model.set('tunnel_identity_file', null);
-              }, 10);
-            }
-            return !model.get('tunnel_authentication') || !model.get('use_ssh_tunnel');
-          },
-        },{
-          id: 'tunnel_password', label: gettext('Password'), type: 'password',
-          group: gettext('SSH Tunnel'), control: 'input', mode: ['create'],
-          deps: ['use_ssh_tunnel'],
-          disabled: function(model) {
-            return !model.get('use_ssh_tunnel');
-          },
-          readonly: 'isConnected',
-        }, {
-          id: 'save_tunnel_password', controlLabel: gettext('Save password?'),
-          type: 'checkbox', group: gettext('SSH Tunnel'), mode: ['create'],
-          deps: ['connect_now', 'use_ssh_tunnel'], visible: function(model) {
-            return model.get('connect_now') && model.isNew();
-          },
-          disabled: function(model) {
-            if (!current_user.allow_save_tunnel_password ||
-              !model.get('use_ssh_tunnel'))
-              return true;
-
-            return false;
-          },
-        }, {
+        // },{
+        //   id: 'sslmode', label: gettext('SSL mode'), control: 'select2', group: gettext('SSL'),
+        //   select2: {
+        //     allowClear: false,
+        //     minimumResultsForSearch: Infinity,
+        //   },
+        //   mode: ['properties', 'edit', 'create'], disabled: 'isConnected',
+        //   'options': [
+        //     {label: gettext('Allow'), value: 'allow'},
+        //     {label: gettext('Prefer'), value: 'prefer'},
+        //     {label: gettext('Require'), value: 'require'},
+        //     {label: gettext('Disable'), value: 'disable'},
+        //     {label: gettext('Verify-CA'), value: 'verify-ca'},
+        //     {label: gettext('Verify-Full'), value: 'verify-full'},
+        //   ],
+        // },{
+        //   id: 'sslcert', label: gettext('Client certificate'), type: 'text',
+        //   group: gettext('SSL'), mode: ['edit', 'create'],
+        //   disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
+        //   dialog_type: 'select_file', supp_types: ['*'],
+        //   deps: ['sslmode'],
+        // },{
+        //   id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
+        //   group: gettext('SSL'), mode: ['edit', 'create'],
+        //   disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
+        //   dialog_type: 'select_file', supp_types: ['*'],
+        //   deps: ['sslmode'],
+        // },{
+        //   id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
+        //   group: gettext('SSL'), mode: ['edit', 'create'],
+        //   disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
+        //   dialog_type: 'select_file', supp_types: ['*'],
+        //   deps: ['sslmode'],
+        // },{
+        //   id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
+        //   group: gettext('SSL'), mode: ['edit', 'create'],
+        //   disabled: 'isSSL', readonly: 'isConnected', control: Backform.FileControl,
+        //   dialog_type: 'select_file', supp_types: ['*'],
+        //   deps: ['sslmode'],
+        // },{
+        //   id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
+        //   mode: ['edit', 'create'], group: gettext('SSL'),
+        //   'options': {'size': 'mini'},
+        //   deps: ['sslmode'], disabled: 'isSSL', readonly: 'isConnected',
+        // },{
+        //   id: 'sslcert', label: gettext('Client certificate'), type: 'text',
+        //   group: gettext('SSL'), mode: ['properties'],
+        //   deps: ['sslmode'],
+        //   visible: function(model) {
+        //     var sslcert = model.get('sslcert');
+        //     return !_.isUndefined(sslcert) && !_.isNull(sslcert);
+        //   },
+        // },{
+        //   id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
+        //   group: gettext('SSL'), mode: ['properties'],
+        //   deps: ['sslmode'],
+        //   visible: function(model) {
+        //     var sslkey = model.get('sslkey');
+        //     return !_.isUndefined(sslkey) && !_.isNull(sslkey);
+        //   },
+        // },{
+        //   id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
+        //   group: gettext('SSL'), mode: ['properties'],
+        //   deps: ['sslmode'],
+        //   visible: function(model) {
+        //     var sslrootcert = model.get('sslrootcert');
+        //     return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
+        //   },
+        // },{
+        //   id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
+        //   group: gettext('SSL'), mode: ['properties'],
+        //   deps: ['sslmode'],
+        //   visible: function(model) {
+        //     var sslcrl = model.get('sslcrl');
+        //     return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
+        //   },
+        // },{
+        //   id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
+        //   mode: ['properties'], group: gettext('SSL'),
+        //   'options': {'size': 'mini'},
+        //   deps: ['sslmode'], visible: function(model) {
+        //     var sslmode = model.get('sslmode');
+        //     return _.indexOf(SSL_MODES, sslmode) != -1;
+        //   },
+        // },{
+        //   id: 'use_ssh_tunnel', label: gettext('Use SSH tunneling'), type: 'switch',
+        //   mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
+        //   'options': {'size': 'mini'},
+        //   disabled: function(model) {
+        //     if (!pgAdmin.Browser.utils.support_ssh_tunnel) {
+        //       setTimeout(function() {
+        //         model.set('use_ssh_tunnel', 0);
+        //       }, 10);
+        //
+        //       return true;
+        //     }
+        //
+        //     return false;
+        //   },
+        //   readonly: 'isConnected',
+        // },{
+        //   id: 'tunnel_host', label: gettext('Tunnel host'), type: 'text', group: gettext('SSH Tunnel'),
+        //   mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
+        //   disabled: function(model) {
+        //     return !model.get('use_ssh_tunnel');
+        //   },
+        //   readonly: 'isConnected',
+        // },{
+        //   id: 'tunnel_port', label: gettext('Tunnel port'), type: 'int', group: gettext('SSH Tunnel'),
+        //   mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'], max: 65535,
+        //   disabled: function(model) {
+        //     return !model.get('use_ssh_tunnel');
+        //   },
+        //   readonly: 'isConnected',
+        // },{
+        //   id: 'tunnel_username', label: gettext('Username'), type: 'text', group: gettext('SSH Tunnel'),
+        //   mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
+        //   disabled: function(model) {
+        //     return !model.get('use_ssh_tunnel');
+        //   },
+        //   readonly: 'isConnected',
+        // },{
+        //   id: 'tunnel_authentication', label: gettext('Authentication'), type: 'switch',
+        //   mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
+        //   'options': {'onText':  gettext('Identity file'),
+        //     'offText':  gettext('Password'), 'size': 'mini', width: '90'},
+        //   deps: ['use_ssh_tunnel'],
+        //   disabled: function(model) {
+        //     return !model.get('use_ssh_tunnel');
+        //   },
+        //   readonly: 'isConnected',
+        // }, {
+        //   id: 'tunnel_identity_file', label: gettext('Identity file'), type: 'text',
+        //   group: gettext('SSH Tunnel'), mode: ['properties', 'edit', 'create'],
+        //   control: Backform.FileControl, dialog_type: 'select_file', supp_types: ['*'],
+        //   deps: ['tunnel_authentication', 'use_ssh_tunnel'],
+        //   disabled: function(model) {
+        //     let file = model.get('tunnel_identity_file');
+        //     if (!model.get('tunnel_authentication') && file) {
+        //       setTimeout(function() {
+        //         model.set('tunnel_identity_file', null);
+        //       }, 10);
+        //     }
+        //     return !model.get('tunnel_authentication') || !model.get('use_ssh_tunnel');
+        //   },
+        // },{
+        //   id: 'tunnel_password', label: gettext('Password'), type: 'password',
+        //   group: gettext('SSH Tunnel'), control: 'input', mode: ['create'],
+        //   deps: ['use_ssh_tunnel'],
+        //   disabled: function(model) {
+        //     return !model.get('use_ssh_tunnel');
+        //   },
+        //   readonly: 'isConnected',
+        // }, {
+        //   id: 'save_tunnel_password', controlLabel: gettext('Save password?'),
+        //   type: 'checkbox', group: gettext('SSH Tunnel'), mode: ['create'],
+        //   deps: ['connect_now', 'use_ssh_tunnel'], visible: function(model) {
+        //     return model.get('connect_now') && model.isNew();
+        //   },
+        //   disabled: function(model) {
+        //     if (!current_user.allow_save_tunnel_password ||
+        //       !model.get('use_ssh_tunnel'))
+        //       return true;
+        //
+        //     return false;
+        //   },
+        // }, {
           // id: 'hostaddr', label: gettext('Hmeost address'), type: 'text', group: gettext('Advanced'),
           // mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         // },{
@@ -1161,7 +1161,7 @@ define('pgadmin.node.server', [
         //   type: 'int', group: gettext('Advanced'),
         //   mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         //   min: 0,
-        // },{
+        },{
           id: 'ssh_port', label: gettext('SSH port'), type: 'int', group: gettext('Advanced'),
           mode: ['properties', 'edit', 'create'],  max: 65535,
         },{
