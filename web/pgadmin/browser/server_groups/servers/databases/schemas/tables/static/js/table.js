@@ -315,7 +315,7 @@ define('pgadmin.node.table', [
           hastoasttable: true,
           toast_autovacuum_enabled: 'x',
           autovacuum_enabled: 'x',
-          primary_key: [],
+          primary_keys: [],
           partitions: [],
           partition_type: 'range',
           is_partitioned: false,
@@ -365,7 +365,7 @@ define('pgadmin.node.table', [
               if(engineValue=='ReplicatedMergeTree'){
                 document.querySelector('.engine_params\\.zoo_path').classList.remove("d-none");
                 document.querySelector('.engine_params\\.replica_name').classList.remove("d-none");
-                document.querySelector('.settings').classList.remove("d-none");
+                // document.querySelector('.settings').classList.remove("d-none");
               }
               if(engineValue=='Distributed'){
                 document.querySelector('.engine_params\\.cluster_name').classList.remove("d-none");
@@ -373,7 +373,7 @@ define('pgadmin.node.table', [
                 document.querySelector('.engine_params\\.remote_table').classList.remove("d-none");
                 // document.querySelector('.engine_params\\.policy_name').classList.remove("d-none");
                 document.querySelector('.engine_params\\.sharding_key').classList.remove("d-none");
-                document.querySelector('.settings').classList.remove("d-none");
+                // document.querySelector('.settings').classList.remove("d-none");
                 document.querySelector('.order_keys').classList.add("d-none");
                 document.querySelector('.partition_keys').classList.add("d-none");
               }
@@ -705,7 +705,7 @@ define('pgadmin.node.table', [
           type: 'nested', control: 'tab', group: gettext('Constraints'),
           mode: ['edit', 'create'],
           schema: [{
-            id: 'primary_key', label: '',
+            id: 'primary_keys', label: '',
             model: pgBrowser.Nodes['primary_key'].model,
             subnode: pgBrowser.Nodes['primary_key'].model,
             editable: false, type: 'collection',
