@@ -359,7 +359,7 @@ define('pgadmin.node.table', [
               document.querySelector('.engine_params\\.remote_database').classList.add("d-none");
               document.querySelector('.engine_params\\.remote_table').classList.add("d-none");
               document.querySelector('.order_keys').classList.remove("d-none");
-              document.querySelector('.partition_by').classList.remove("d-none");
+              document.querySelector('.partition_keys').classList.remove("d-none");
               // document.querySelector('.engine_params\\.policy_name').classList.add("d-none");
               document.querySelector('.engine_params\\.sharding_key').classList.add("d-none");
               if(engineValue=='ReplicatedMergeTree'){
@@ -375,7 +375,7 @@ define('pgadmin.node.table', [
                 document.querySelector('.engine_params\\.sharding_key').classList.remove("d-none");
                 document.querySelector('.settings').classList.remove("d-none");
                 document.querySelector('.order_keys').classList.add("d-none");
-                document.querySelector('.partition_by').classList.add("d-none");
+                document.querySelector('.partition_keys').classList.add("d-none");
               }
               console.log(engineValue);
               // this.model.set('rolcatupdate', this.model.get('rolsuper'));
@@ -460,7 +460,7 @@ define('pgadmin.node.table', [
           id: 'order_keys', label: gettext('Order By'), type: 'text', mode: ['properties','create'],
         },
         {
-          id: 'partition_by', label: gettext('Partition By'), type: 'text', mode: ['properties','create'],
+          id: 'partition_keys', label: gettext('Partition By'), type: 'text', mode: ['properties','create'],
         },
         // {
         //   id: 'description', label: gettext('Comment'), type: 'multiline',
@@ -478,91 +478,92 @@ define('pgadmin.node.table', [
           id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
           type: 'switch', mode: ['properties'],
           disabled: 'inSchema',
-        },{
-          id: 'coll_inherits', label: gettext('Inherited from table(s)'),
-          url: 'get_inherits', type: 'array', group: gettext('Columns'),
-          disabled: 'checkInheritance', deps: ['typname', 'is_partitioned'],
-          mode: ['create', 'edit'], first_empty: false,
-          select2: { multiple: true, allowClear: true, first_empty: false,
-            placeholder: gettext('Select to inherit from...')},
-          transform: function(data, cell) {
-            var control = cell || this,
-              m = control.model;
-            m.inherited_tables_list = data;
-            return data;
-          },
-          control: Backform.MultiSelectAjaxControl.extend({
-            // When changes we need to add/clear columns collection
-            onChange: function() {
-              Backform.MultiSelectAjaxControl.prototype.onChange.apply(this, arguments);
-              var self = this,
-                // current table list and previous table list
-                cTbl_list = self.model.get('coll_inherits') || [],
-                pTbl_list = self.model.previous('coll_inherits') || [];
+        },
+        // {
+        //   id: 'coll_inherits', label: gettext('Inherited from table(s)'),
+        //   url: 'get_inherits', type: 'array', group: gettext('Columns'),
+        //   disabled: 'checkInheritance', deps: ['typname', 'is_partitioned'],
+        //   mode: ['create', 'edit'], first_empty: false,
+        //   select2: { multiple: true, allowClear: true, first_empty: false,
+        //     placeholder: gettext('Select to inherit from...')},
+        //   transform: function(data, cell) {
+        //     var control = cell || this,
+        //       m = control.model;
+        //     m.inherited_tables_list = data;
+        //     return data;
+        //   },
+        //   control: Backform.MultiSelectAjaxControl.extend({
+        //     // When changes we need to add/clear columns collection
+        //     onChange: function() {
+        //       Backform.MultiSelectAjaxControl.prototype.onChange.apply(this, arguments);
+        //       var self = this,
+        //         // current table list and previous table list
+        //         cTbl_list = self.model.get('coll_inherits') || [],
+        //         pTbl_list = self.model.previous('coll_inherits') || [];
 
-              if (!_.isUndefined(cTbl_list)) {
-                var tbl_name = undefined,
-                  tid = undefined;
+        //       if (!_.isUndefined(cTbl_list)) {
+        //         var tbl_name = undefined,
+        //           tid = undefined;
 
-                // Add columns logic
-                // If new table is added in list
-                if(cTbl_list.length > 1 && cTbl_list.length > pTbl_list.length) {
-                  // Find newly added table from current list
-                  tbl_name = _.difference(cTbl_list, pTbl_list);
-                  tid = this.get_table_oid(tbl_name[0]);
-                  this.add_columns(tid);
-                } else if (cTbl_list.length == 1) {
-                  // First table added
-                  tid = this.get_table_oid(cTbl_list[0]);
-                  this.add_columns(tid);
-                }
+        //         // Add columns logic
+        //         // If new table is added in list
+        //         if(cTbl_list.length > 1 && cTbl_list.length > pTbl_list.length) {
+        //           // Find newly added table from current list
+        //           tbl_name = _.difference(cTbl_list, pTbl_list);
+        //           tid = this.get_table_oid(tbl_name[0]);
+        //           this.add_columns(tid);
+        //         } else if (cTbl_list.length == 1) {
+        //           // First table added
+        //           tid = this.get_table_oid(cTbl_list[0]);
+        //           this.add_columns(tid);
+        //         }
 
-                // Remove columns logic
-                if(cTbl_list.length > 0 && cTbl_list.length < pTbl_list.length) {
-                  // Find deleted table from previous list
-                  tbl_name = _.difference(pTbl_list, cTbl_list);
-                  this.remove_columns(tbl_name[0]);
-                } else if (pTbl_list.length === 1 && cTbl_list.length < 1) {
-                  // We got last table from list
-                  tbl_name = pTbl_list[0];
-                  this.remove_columns(tbl_name);
-                }
+        //         // Remove columns logic
+        //         if(cTbl_list.length > 0 && cTbl_list.length < pTbl_list.length) {
+        //           // Find deleted table from previous list
+        //           tbl_name = _.difference(pTbl_list, cTbl_list);
+        //           this.remove_columns(tbl_name[0]);
+        //         } else if (pTbl_list.length === 1 && cTbl_list.length < 1) {
+        //           // We got last table from list
+        //           tbl_name = pTbl_list[0];
+        //           this.remove_columns(tbl_name);
+        //         }
 
-              }
-            },
-            add_columns: function(tid) {
-              // Create copy of old model if anything goes wrong at-least we have backup
-              // Then send AJAX request to fetch table specific columns
-              var self = this,
-                m = self.model.top || self.model,
-                data = undefined,
-                column_collection = m.get('columns');
+        //       }
+        //     },
+        //     add_columns: function(tid) {
+        //       // Create copy of old model if anything goes wrong at-least we have backup
+        //       // Then send AJAX request to fetch table specific columns
+        //       var self = this,
+        //         m = self.model.top || self.model,
+        //         data = undefined,
+        //         column_collection = m.get('columns');
 
-              var arg = {'tid': tid};
-              data = self.model.fetch_columns_ajax.apply(self, [arg]);
+        //       var arg = {'tid': tid};
+        //       data = self.model.fetch_columns_ajax.apply(self, [arg]);
 
-              // Update existing column collection
-              column_collection.set(data, { merge:false,remove:false });
-            },
-            remove_columns: function(tblname) {
-              // Remove all the column models for deleted table
-              var tid = this.get_table_oid(tblname),
-                column_collection = this.model.get('columns');
-              column_collection.remove(column_collection.where({'inheritedid': tid }));
-            },
-            get_table_oid: function(tblname) {
-              // Here we will fetch the table oid from table name
-              var tbl_oid = undefined;
-              // iterate over list to find table oid
-              _.each(this.model.inherited_tables_list, function(obj) {
-                if(obj.label === tblname) {
-                  tbl_oid = obj.tid;
-                }
-              });
-              return tbl_oid;
-            },
-          }),
-        }, 
+        //       // Update existing column collection
+        //       column_collection.set(data, { merge:false,remove:false });
+        //     },
+        //     remove_columns: function(tblname) {
+        //       // Remove all the column models for deleted table
+        //       var tid = this.get_table_oid(tblname),
+        //         column_collection = this.model.get('columns');
+        //       column_collection.remove(column_collection.where({'inheritedid': tid }));
+        //     },
+        //     get_table_oid: function(tblname) {
+        //       // Here we will fetch the table oid from table name
+        //       var tbl_oid = undefined;
+        //       // iterate over list to find table oid
+        //       _.each(this.model.inherited_tables_list, function(obj) {
+        //         if(obj.label === tblname) {
+        //           tbl_oid = obj.tid;
+        //         }
+        //       });
+        //       return tbl_oid;
+        //     },
+        //   }),
+        // }, 
         // {
         //   id: 'advanced', label: gettext('Advanced'), type: 'group',
         //   visible: ShowAdvancedTab.show_advanced_tab,
@@ -588,7 +589,7 @@ define('pgadmin.node.table', [
           mode: ['create', 'edit'],
           disabled: function(m) {
             // In case of partitioned table remove inherited columns
-            if (m.isNew() && m.get('is_partitioned')) {
+            if (m.isNew() && m.get('is_partitioned')) {partition_by
               setTimeout(function() {
                 var coll = m.get('columns');
                 coll.remove(coll.filter(function(model) {
@@ -607,7 +608,7 @@ define('pgadmin.node.table', [
           },
           deps: ['typname', 'is_partitioned'],
           canAdd: 'check_grid_add_condition',
-          canEdit: true, canDelete: true,
+          canEdit: false, canDelete: true,
           // For each row edit/delete button enable/disable
           canEditRow: 'check_grid_row_edit_delete',
           canDeleteRow: 'check_grid_row_edit_delete',

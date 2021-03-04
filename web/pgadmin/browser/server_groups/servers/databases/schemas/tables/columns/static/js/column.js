@@ -616,8 +616,8 @@ define('pgadmin.node.column', [
             // Validation for Length field
             if (this.get('attlen') < this.get('min_val_attlen'))
               msg = gettext('Length/Precision should not be less than: ') + this.get('min_val_attlen');
-            if (this.get('attlen') > this.get('max_val_attlen'))
-              msg = gettext('Length/Precision should not be greater than: ') + this.get('max_val_attlen');
+            // if (this.get('attlen') > this.get('max_val_attlen'))
+            //   msg = gettext('Length/Precision should not be greater than: ') + this.get('max_val_attlen');
             // If we have any error set then throw it to user
             if(msg) {
               this.errorModel.set('attlen', msg);
