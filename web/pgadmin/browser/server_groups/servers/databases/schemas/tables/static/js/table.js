@@ -621,7 +621,7 @@ define('pgadmin.node.table', [
                 collection = self.model.get(self.field.get('name'));
 
               collection.on('change:is_primary_key', function(m) {
-                var primary_key_coll = self.model.get('primary_key'),
+                var primary_key_coll = self.model.get('primary_keys'),
                   column_name = m.get('name'),
                   primary_key, primary_key_column_coll;
 
@@ -718,7 +718,7 @@ define('pgadmin.node.table', [
               && !_.isUndefined(m.top.node_info.server.version) &&
                 m.top.node_info.server.version < 110000) {
                 setTimeout(function() {
-                  var coll = m.get('primary_key');
+                  var coll = m.get('primary_keys');
                   coll.remove(coll.filter(function() { return true; }));
                 }, 10);
                 return false;
@@ -730,8 +730,8 @@ define('pgadmin.node.table', [
               // User can only add one primary key
               var columns = m.get('columns');
 
-              return (m.get('primary_key') &&
-                m.get('primary_key').length < 1 &&
+              return (m.get('primary_keys') &&
+                m.get('primary_keys').length < 1 &&
                   _.some(columns.pluck('name')));
             },
           },{
