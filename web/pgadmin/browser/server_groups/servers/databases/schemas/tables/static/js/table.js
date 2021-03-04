@@ -562,22 +562,24 @@ define('pgadmin.node.table', [
               return tbl_oid;
             },
           }),
-        }, {
-          id: 'advanced', label: gettext('Advanced'), type: 'group',
-          visible: ShowAdvancedTab.show_advanced_tab,
-        }, {
-          id: 'data_paths', label: gettext('Data Paths'),
-          type: 'text', group: 'advanced', mode: ['properties'],
-        },{
-          id: 'metadata_path', label: gettext('Metadata Path'),
-          type: 'text', group: 'advanced', mode: ['properties'],
-        },{
-          id: 'metadata_modification_time', label: gettext('Metadata Modification Time'),
-          type: 'text', group: 'advanced', mode: ['properties'],
-        },{
-          id: 'storage_policy', label: gettext('Storage Policy'),
-          type: 'text', group: 'advanced', mode: ['properties'],
-        },{
+        }, 
+        // {
+        //   id: 'advanced', label: gettext('Advanced'), type: 'group',
+        //   visible: ShowAdvancedTab.show_advanced_tab,
+        // }, {
+        //   id: 'data_paths', label: gettext('Data Paths'),
+        //   type: 'text', group: 'advanced', mode: ['properties'],
+        // },{
+        //   id: 'metadata_path', label: gettext('Metadata Path'),
+        //   type: 'text', group: 'advanced', mode: ['properties'],
+        // },{
+        //   id: 'metadata_modification_time', label: gettext('Metadata Modification Time'),
+        //   type: 'text', group: 'advanced', mode: ['properties'],
+        // },{
+        //   id: 'storage_policy', label: gettext('Storage Policy'),
+        //   type: 'text', group: 'advanced', mode: ['properties'],
+        // },
+        {
           // Tab control for columns
           id: 'columns', label: gettext('Columns'), type: 'collection',
           group: gettext('Columns'),
@@ -758,17 +760,46 @@ define('pgadmin.node.table', [
               var columns = m.get('columns');
               return _.some(columns.pluck('name'));
             },
-          },{
-            id: 'check_constraint', label: '',
-            model: pgBrowser.Nodes['check_constraint'].model,
-            subnode: pgBrowser.Nodes['check_constraint'].model,
-            editable: false, type: 'collection',
-            group: gettext('Check'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
-            control: 'unique-col-collection',
-            canAdd: true,
-            columns : ['name', 'consrc'],
           },
+          // {
+          //   id: 'check_constraint', label: '',
+          //   model: pgBrowser.Nodes['unique_constraint'].model,
+          //   subnode: pgBrowser.Nodes['unique_constraint'].model,
+          //   editable: false, type: 'collection',
+          //   group: gettext('settings'), mode: ['edit', 'create'],
+          //   canEdit: true, canDelete: true, deps:['is_partitioned'],
+          //   control: 'unique-col-collection',
+          //   canAdd: true,
+          //   columns : ['label', 'value'],
+          // },
+        //   {
+        //     id: 'settings', label: '',
+        //     model: pgBrowser.Nodes['exclusion_constraint'].model,
+        //     subnode: pgBrowser.Nodes['exclusion_constraint'].model,
+        //     editable: false, type: 'collection',
+        //     group: gettext('Indexes'), mode: ['edit', 'create'],
+        //     canEdit: true, canDelete: true, deps:['is_partitioned'],
+        //     control: 'unique-col-collection',
+        //     columns : ['name','expr','type','granularity'],
+        //     canAdd: function(m) {
+        //       if (m.get('is_partitioned')) {
+        //         setTimeout(function() {
+        //           var coll = m.get('exclude_constraint');
+        //           coll.remove(coll.filter(function() { return true; }));
+        //         }, 10);
+        //         return false;
+        //       }
+
+        //       return true;
+        //     },
+        //     canAddRow: function(m) {
+        //       // User can only add if there is at least one column with name.
+        //       var columns = m.get('columns');
+        //       return _.some(columns.pluck('name'));
+        //     },
+        //   }
+        // ],
+        // }
           // {
           //   id: 'unique_constraint', label: '',
           //   model: pgBrowser.Nodes['unique_constraint'].model,
@@ -823,154 +854,157 @@ define('pgadmin.node.table', [
             },
           }
         ],
-        },{
-          id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
-          mode: ['create', 'edit'], min: 10, max: 100,
-          group: gettext('advanced'),
-          disabled: function(m) {
-            if(m.get('is_partitioned')) {
-              return true;
-            }
-            return m.inSchema();
-          },
-        },{
-          id: 'toast_tuple_target', label: gettext('Toast tuple target'), type: 'int',
-          mode: ['create', 'edit'], min: 128, min_version: 110000,
-          group: gettext('advanced'),
-          disabled: function(m) {
-            if(m.get('is_partitioned')) {
-              return true;
-            }
-            return m.inSchema();
-          },
-        },{
-          id: 'parallel_workers', label: gettext('Parallel workers'), type: 'int',
-          mode: ['create', 'edit'], group: gettext('advanced'), min_version: 90600,
-          disabled: function(m) {
-            if(m.get('is_partitioned')) {
-              return true;
-            }
-            return m.inSchema();
-          },
         },
-        {
-          id: 'typname', label: gettext('Of type'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-          disabled: 'checkOfType', url: 'get_oftype', group: gettext('advanced'),
-          deps: ['coll_inherits'], transform: function(data, cell) {
-            var control = cell || this,
-              m = control.model;
-            m.of_types_tables = data;
-            return data;
-          },
-          control: Backform.NodeAjaxOptionsControl.extend({
-            // When of_types changes we need to clear columns collection
-            onChange: function() {
-              Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
-              var self = this,
-                tbl_name = self.model.get('typname'),
-                data = undefined,
-                arg = undefined,
-                column_collection = self.model.get('columns');
+        // {
+        //   id: 'fillfactor', label: gettext('Fill factor'), type: 'int',
+        //   mode: ['create', 'edit'], min: 10, max: 100,
+        //   group: gettext('advanced'),
+        //   disabled: function(m) {
+        //     if(m.get('is_partitioned')) {
+        //       return true;
+        //     }
+        //     return m.inSchema();
+        //   },
+        // },{
+        //   id: 'toast_tuple_target', label: gettext('Toast tuple target'), type: 'int',
+        //   mode: ['create', 'edit'], min: 128, min_version: 110000,
+        //   group: gettext('advanced'),
+        //   disabled: function(m) {
+        //     if(m.get('is_partitioned')) {
+        //       return true;
+        //     }
+        //     return m.inSchema();
+        //   },
+        // },{
+        //   id: 'parallel_workers', label: gettext('Parallel workers'), type: 'int',
+        //   mode: ['create', 'edit'], group: gettext('advanced'), min_version: 90600,
+        //   disabled: function(m) {
+        //     if(m.get('is_partitioned')) {
+        //       return true;
+        //     }
+        //     return m.inSchema();
+        //   },
+        // },
+        // {
+        //   id: 'typname', label: gettext('Of type'), type: 'text',
+        //   mode: ['properties', 'create', 'edit'],
+        //   disabled: 'checkOfType', url: 'get_oftype', group: gettext('advanced'),
+        //   deps: ['coll_inherits'], transform: function(data, cell) {
+        //     var control = cell || this,
+        //       m = control.model;
+        //     m.of_types_tables = data;
+        //     return data;
+        //   },
+        //   control: Backform.NodeAjaxOptionsControl.extend({
+        //     // When of_types changes we need to clear columns collection
+        //     onChange: function() {
+        //       Backform.NodeAjaxOptionsControl.prototype.onChange.apply(this, arguments);
+        //       var self = this,
+        //         tbl_name = self.model.get('typname'),
+        //         data = undefined,
+        //         arg = undefined,
+        //         column_collection = self.model.get('columns');
 
-              if (!_.isUndefined(tbl_name) && !_.isNull(tbl_name) &&
-                tbl_name !== '' && column_collection.length !== 0) {
-                var title = gettext('Remove column definitions?'),
-                  msg = gettext('Changing \'Of type\' will remove column definitions.');
+        //       if (!_.isUndefined(tbl_name) && !_.isNull(tbl_name) &&
+        //         tbl_name !== '' && column_collection.length !== 0) {
+        //         var title = gettext('Remove column definitions?'),
+        //           msg = gettext('Changing \'Of type\' will remove column definitions.');
 
-                Alertify.confirm(
-                  title, msg, function () {
-                    // User clicks Ok, lets clear columns collection
-                    column_collection.remove(
-                      column_collection.filter(function() { return true; })
-                    );
-                  },
-                  function() {
-                    setTimeout(function() {
-                      self.model.set('typname', null);
-                    }, 10);
-                  }
-                );
-              } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
-                column_collection.remove(
-                  column_collection.filter(function() { return true; })
-                );
-              }
+        //         Alertify.confirm(
+        //           title, msg, function () {
+        //             // User clicks Ok, lets clear columns collection
+        //             column_collection.remove(
+        //               column_collection.filter(function() { return true; })
+        //             );
+        //           },
+        //           function() {
+        //             setTimeout(function() {
+        //               self.model.set('typname', null);
+        //             }, 10);
+        //           }
+        //         );
+        //       } else if (!_.isUndefined(tbl_name) && tbl_name === '') {
+        //         column_collection.remove(
+        //           column_collection.filter(function() { return true; })
+        //         );
+        //       }
 
-              // Run Ajax now to fetch columns
-              if (!_.isUndefined(tbl_name) && tbl_name !== '') {
-                arg = { 'tname': tbl_name };
-                data = self.model.fetch_columns_ajax.apply(self, [arg]);
-                // Add into column collection
-                column_collection.set(data, { merge:false,remove:false });
-              }
-            },
-          }),
-        },{
-          type: 'nested', control: 'fieldset', label: gettext('Like'),
-          group: gettext('advanced'),
-          schema:[{
-            id: 'like_relation', label: gettext('Relation'),
-            type: 'text', mode: ['create'], deps: ['typname', 'like_relation'],
-            control: 'node-ajax-options', url: 'get_relations',
-            disabled: 'isLikeDisable', group: gettext('Like'),
-          },{
-            id: 'like_default_value', label: gettext('With default values?'),
-            type: 'switch', mode: ['create'], deps: ['like_relation'],
-            disabled: 'isRelationDisable', group: gettext('Like'),
-          },{
-            id: 'like_constraints', label: gettext('With constraints?'),
-            type: 'switch', mode: ['create'], deps: ['like_relation'],
-            disabled: 'isRelationDisable', group: gettext('Like'),
-          },{
-            id: 'like_indexes', label: gettext('With indexes?'),
-            type: 'switch', mode: ['create'], deps: ['like_relation'],
-            disabled: 'isRelationDisable', group: gettext('Like'),
-          },{
-            id: 'like_storage', label: gettext('With storage?'),
-            type: 'switch', mode: ['create'], deps: ['like_relation'],
-            disabled: 'isRelationDisable', group: gettext('Like'),
-          },{
-            id: 'like_comments', label: gettext('With comments?'),
-            type: 'switch', mode: ['create'], deps: ['like_relation'],
-            disabled: 'isRelationDisable', group: gettext('Like'),
-          }],
-        },{
-          id: 'partition_type', label:gettext('Partition Type'),
-          editable: false, type: 'select2', select2: {allowClear: false},
-          group: 'partition', deps: ['is_partitioned'],
-          options: function() {
-            var options = [{
-              label: gettext('Range'), value: 'range',
-            },{
-              label: gettext('List'), value: 'list',
-            }];
+        //       // Run Ajax now to fetch columns
+        //       if (!_.isUndefined(tbl_name) && tbl_name !== '') {
+        //         arg = { 'tname': tbl_name };
+        //         data = self.model.fetch_columns_ajax.apply(self, [arg]);
+        //         // Add into column collection
+        //         column_collection.set(data, { merge:false,remove:false });
+        //       }
+        //     },
+        //   }),
+        // },
+        // {
+        //   type: 'nested', control: 'fieldset', label: gettext('Like'),
+        //   group: gettext('advanced'),
+        //   schema:[{
+        //     id: 'like_relation', label: gettext('Relation'),
+        //     type: 'text', mode: ['create'], deps: ['typname', 'like_relation'],
+        //     control: 'node-ajax-options', url: 'get_relations',
+        //     disabled: 'isLikeDisable', group: gettext('Like'),
+        //   },{
+        //     id: 'like_default_value', label: gettext('With default values?'),
+        //     type: 'switch', mode: ['create'], deps: ['like_relation'],
+        //     disabled: 'isRelationDisable', group: gettext('Like'),
+        //   },{
+        //     id: 'like_constraints', label: gettext('With constraints?'),
+        //     type: 'switch', mode: ['create'], deps: ['like_relation'],
+        //     disabled: 'isRelationDisable', group: gettext('Like'),
+        //   },{
+        //     id: 'like_indexes', label: gettext('With indexes?'),
+        //     type: 'switch', mode: ['create'], deps: ['like_relation'],
+        //     disabled: 'isRelationDisable', group: gettext('Like'),
+        //   },{
+        //     id: 'like_storage', label: gettext('With storage?'),
+        //     type: 'switch', mode: ['create'], deps: ['like_relation'],
+        //     disabled: 'isRelationDisable', group: gettext('Like'),
+        //   },{
+        //     id: 'like_comments', label: gettext('With comments?'),
+        //     type: 'switch', mode: ['create'], deps: ['like_relation'],
+        //     disabled: 'isRelationDisable', group: gettext('Like'),
+        //   }],
+        // },
+        // {
+        //   id: 'partition_type', label:gettext('Partition Type'),
+        //   editable: false, type: 'select2', select2: {allowClear: false},
+        //   group: 'partition', deps: ['is_partitioned'],
+        //   options: function() {
+        //     var options = [{
+        //       label: gettext('Range'), value: 'range',
+        //     },{
+        //       label: gettext('List'), value: 'list',
+        //     }];
 
-            if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-              && !_.isUndefined(this.node_info.server.version) &&
-                this.node_info.server.version >= 110000) {
-              options.push({
-                label: gettext('Hash'), value: 'hash',
-              });
-            }
-            return options;
-          },
-          mode:['create'],
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
+        //     if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
+        //       && !_.isUndefined(this.node_info.server.version) &&
+        //         this.node_info.server.version >= 110000) {
+        //       options.push({
+        //         label: gettext('Hash'), value: 'hash',
+        //       });
+        //     }
+        //     return options;
+        //   },
+        //   mode:['create'],
+        //   visible: function(m) {
+        //     if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+        //       && !_.isUndefined(m.node_info.server.version) &&
+        //         m.node_info.server.version >= 100000)
+        //       return true;
 
-            return false;
-          },
-          disabled: function(m) {
-            if (!m.get('is_partitioned'))
-              return true;
-            return false;
-          },
-          readonly: function(m) {return !m.isNew();},
-        },
+        //     return false;
+        //   },
+        //   disabled: function(m) {
+        //     if (!m.get('is_partitioned'))
+        //       return true;
+        //     return false;
+        //   },
+        //   readonly: function(m) {return !m.isNew();},
+        // },
         // {
         //   id: 'partition_keys', label:gettext('Partition Keys'),
         //   model: Backform.PartitionKeyModel,
@@ -1032,158 +1066,161 @@ define('pgadmin.node.table', [
         //     }
         //   },
         // },
+        // {
+        //   id: 'partition_scheme', label: gettext('Partition Scheme'),
+        //   type: 'note', group: 'partition', mode: ['edit'],
+        //   visible: function(m) {
+        //     if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+        //       && !_.isUndefined(m.node_info.server.version) &&
+        //         m.node_info.server.version >= 100000)
+        //       return true;
+
+        //     return false;
+        //   },
+        //   disabled: function(m) {
+        //     if (!m.isNew()) {
+        //       this.text = m.get('partition_scheme');
+        //     }
+        //   },
+        // },{
+        //   id: 'partition_key_note', label: gettext('Partition Keys'),
+        //   type: 'note', group: 'partition', mode: ['create'],
+        //   text: [
+        //     '<ul><li>',
+        //     gettext('Partition table supports two types of keys:'),
+        //     '</li><li>',
+        //     '<strong>', gettext('Column: '), '</strong>',
+        //     gettext('User can select any column from the list of available columns.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('Expression: '), '</strong>',
+        //     gettext('User can specify expression to create partition key.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('Example: '), '</strong>',
+        //     gettext('Let\'s say, we want to create a partition table based per year for the column \'saledate\', having datatype \'date/timestamp\', then we need to specify the expression as \'extract(YEAR from saledate)\' as partition key.'),
+        //     '</li></ul>',
+        //   ].join(''),
+        //   visible: function(m) {
+        //     if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+        //       && !_.isUndefined(m.node_info.server.version) &&
+        //         m.node_info.server.version >= 100000)
+        //       return true;
+
+        //     return false;
+        //   },
+        // },
+        //  {
+        //   id: 'partitions', label:gettext('Partitions'),
+        //   model: Backform.PartitionsModel,
+        //   subnode: Backform.PartitionsModel,
+        //   editable: true, type: 'collection',
+        //   group: 'partition', mode: ['edit', 'create'],
+        //   deps: ['is_partitioned', 'partition_type', 'typname'],
+        //   canEdit: true, canDelete: true,
+        //   customDeleteTitle: gettext('Detach Partition'),
+        //   customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
+        //   columns:['is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],
+        //   control: Backform.SubNodeCollectionControl.extend({
+        //     row: Backgrid.PartitionRow,
+        //     initialize: function() {
+        //       Backform.SubNodeCollectionControl.prototype.initialize.apply(this, arguments);
+        //       var self = this;
+        //       if (!this.model.isNew()) {
+        //         var node = this.field.get('schema_node'),
+        //           node_info = this.field.get('node_info');
+
+        //         // Make ajax call to get the tables to be attached
+        //         $.ajax({
+        //           url: node.generate_url.apply(
+        //             node, [
+        //               null, 'get_attach_tables', this.field.get('node_data'),
+        //               true, node_info,
+        //             ]),
+
+        //           type: 'GET',
+        //           async: false,
+        //         })
+        //           .done(function(res) {
+        //             if (res.success == 1) {
+        //               self.model.table_options = res.data;
+        //             }
+        //             else {
+        //               Alertify.alert(
+        //                 gettext('Error fetching tables to be attached'), res.data.result
+        //               );
+        //             }
+        //           })
+        //           .fail(function(xhr, status, error) {
+        //             Alertify.pgRespErrorNotify(xhr, error);
+        //           });
+        //       }
+        //     },
+        //   }
+        //   ),
+        //   canAdd: function(m) {
+        //     if (m.get('is_partitioned'))
+        //       return true;
+        //     return false;
+        //   },
+        //   visible: function(m) {
+        //     if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+        //       && !_.isUndefined(m.node_info.server.version) &&
+        //         m.node_info.server.version >= 100000)
+        //       return true;
+
+        //     return false;
+        //   },
+        //   disabled: function(m) {
+        //     if (m.isNew() && m.get('partitions') && m.get('partitions').models.length > 0) {
+        //       setTimeout(function () {
+        //         var coll = m.get('partitions');
+        //         coll.remove(coll.filter(function() { return true; }));
+        //       }, 10);
+        //     }
+        //   },
+        // },
+        // {
+        //   id: 'partition_note', label: gettext('Partitions'),
+        //   type: 'note', group: 'partition',
+        //   text: [
+        //     '<ul><li>',
+        //     '<strong>', gettext('Create a table: '), '</strong>',
+        //     gettext('User can create multiple partitions while creating new partitioned table. Operation switch is disabled in this scenario.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('Edit existing table: '), '</strong>',
+        //     gettext('User can create/attach/detach multiple partitions. In attach operation user can select table from the list of suitable tables to be attached.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('Default: '), '</strong>',
+        //     gettext('The default partition can store rows that do not fall into any existing partition’s range or list.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('From/To/In input: '), '</strong>',
+        //     gettext('From/To/In input: Values for these fields must be quoted with single quote. For more than one partition key values must be comma(,) separated.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('Example: From/To: '), '</strong>',
+        //     gettext('Enabled for range partition. Consider partitioned table with multiple keys of type Integer, then values should be specified like \'100\',\'200\'.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('In: '), '</strong>',
+        //     gettext('Enabled for list partition. Values must be comma(,) separated and quoted with single quote.'),
+        //     '</li><li>',
+        //     '<strong>', gettext('Modulus/Remainder: '), '</strong>',
+        //     gettext('Enabled for hash partition.'),
+        //     '</li></ul>',
+        //   ].join(''),
+        //   visible: function(m) {
+        //     if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+        //       && !_.isUndefined(m.node_info.server.version) &&
+        //         m.node_info.server.version >= 100000)
+        //       return true;
+
+        //     return false;
+        //   },
+        // },
         {
-          id: 'partition_scheme', label: gettext('Partition Scheme'),
-          type: 'note', group: 'partition', mode: ['edit'],
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
-          disabled: function(m) {
-            if (!m.isNew()) {
-              this.text = m.get('partition_scheme');
-            }
-          },
-        },{
-          id: 'partition_key_note', label: gettext('Partition Keys'),
-          type: 'note', group: 'partition', mode: ['create'],
-          text: [
-            '<ul><li>',
-            gettext('Partition table supports two types of keys:'),
-            '</li><li>',
-            '<strong>', gettext('Column: '), '</strong>',
-            gettext('User can select any column from the list of available columns.'),
-            '</li><li>',
-            '<strong>', gettext('Expression: '), '</strong>',
-            gettext('User can specify expression to create partition key.'),
-            '</li><li>',
-            '<strong>', gettext('Example: '), '</strong>',
-            gettext('Let\'s say, we want to create a partition table based per year for the column \'saledate\', having datatype \'date/timestamp\', then we need to specify the expression as \'extract(YEAR from saledate)\' as partition key.'),
-            '</li></ul>',
-          ].join(''),
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
-        },
-         {
-          id: 'partitions', label:gettext('Partitions'),
-          model: Backform.PartitionsModel,
-          subnode: Backform.PartitionsModel,
-          editable: true, type: 'collection',
-          group: 'partition', mode: ['edit', 'create'],
-          deps: ['is_partitioned', 'partition_type', 'typname'],
-          canEdit: true, canDelete: true,
-          customDeleteTitle: gettext('Detach Partition'),
-          customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
-          columns:['is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],
-          control: Backform.SubNodeCollectionControl.extend({
-            row: Backgrid.PartitionRow,
-            initialize: function() {
-              Backform.SubNodeCollectionControl.prototype.initialize.apply(this, arguments);
-              var self = this;
-              if (!this.model.isNew()) {
-                var node = this.field.get('schema_node'),
-                  node_info = this.field.get('node_info');
-
-                // Make ajax call to get the tables to be attached
-                $.ajax({
-                  url: node.generate_url.apply(
-                    node, [
-                      null, 'get_attach_tables', this.field.get('node_data'),
-                      true, node_info,
-                    ]),
-
-                  type: 'GET',
-                  async: false,
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      self.model.table_options = res.data;
-                    }
-                    else {
-                      Alertify.alert(
-                        gettext('Error fetching tables to be attached'), res.data.result
-                      );
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
-                  });
-              }
-            },
-          }
-          ),
-          canAdd: function(m) {
-            if (m.get('is_partitioned'))
-              return true;
-            return false;
-          },
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
-          disabled: function(m) {
-            if (m.isNew() && m.get('partitions') && m.get('partitions').models.length > 0) {
-              setTimeout(function () {
-                var coll = m.get('partitions');
-                coll.remove(coll.filter(function() { return true; }));
-              }, 10);
-            }
-          },
-        },{
-          id: 'partition_note', label: gettext('Partitions'),
-          type: 'note', group: 'partition',
-          text: [
-            '<ul><li>',
-            '<strong>', gettext('Create a table: '), '</strong>',
-            gettext('User can create multiple partitions while creating new partitioned table. Operation switch is disabled in this scenario.'),
-            '</li><li>',
-            '<strong>', gettext('Edit existing table: '), '</strong>',
-            gettext('User can create/attach/detach multiple partitions. In attach operation user can select table from the list of suitable tables to be attached.'),
-            '</li><li>',
-            '<strong>', gettext('Default: '), '</strong>',
-            gettext('The default partition can store rows that do not fall into any existing partition’s range or list.'),
-            '</li><li>',
-            '<strong>', gettext('From/To/In input: '), '</strong>',
-            gettext('From/To/In input: Values for these fields must be quoted with single quote. For more than one partition key values must be comma(,) separated.'),
-            '</li><li>',
-            '<strong>', gettext('Example: From/To: '), '</strong>',
-            gettext('Enabled for range partition. Consider partitioned table with multiple keys of type Integer, then values should be specified like \'100\',\'200\'.'),
-            '</li><li>',
-            '<strong>', gettext('In: '), '</strong>',
-            gettext('Enabled for list partition. Values must be comma(,) separated and quoted with single quote.'),
-            '</li><li>',
-            '<strong>', gettext('Modulus/Remainder: '), '</strong>',
-            gettext('Enabled for hash partition.'),
-            '</li></ul>',
-          ].join(''),
-          visible: function(m) {
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
-              && !_.isUndefined(m.node_info.server.version) &&
-                m.node_info.server.version >= 100000)
-              return true;
-
-            return false;
-          },
-        },{
           // Here - we will create tab control for storage parameters
           // (auto vacuum).
           type: 'nested', control: 'tab', group: gettext('Settings'),
           mode: ['edit', 'create'], deps: ['is_partitioned'],
-          schema: [{
+          schema: [
+            {
             id: 'settings', label: '',
             model: pgBrowser.Nodes['unique_constraint'].model,
             subnode: pgBrowser.Nodes['unique_constraint'].model,
@@ -1194,23 +1231,25 @@ define('pgadmin.node.table', [
             canAdd: true,
             columns : ['label','value'],
           }],
-        // },{
+        },
+        // {
         //   id: 'relacl_str', label: gettext('Privileges'), disabled: 'inSchema',
         //   type: 'text', mode: ['properties'], group: gettext('Security'),
         // }, pgBrowser.SecurityGroupSchema,{
 
-          id: 'relacl', label: gettext('Privileges'), type: 'collection',
-          group: 'security', control: 'unique-col-collection',
-          model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['a','r','w','d','D','x','t']}),
-          mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          uniqueCol : ['grantee'],
-        },{
-          id: 'seclabels', label: gettext('Security labels'), canEdit: false,
-          model: pgBrowser.SecLabelModel, editable: false, canAdd: true,
-          type: 'collection', min_version: 90100, mode: ['edit', 'create'],
-          group: 'security', canDelete: true, control: 'unique-col-collection',
-        }
+        //   id: 'relacl', label: gettext('Privileges'), type: 'collection',
+        //   group: 'security', control: 'unique-col-collection',
+        //   model: pgBrowser.Node.PrivilegeRoleModel.extend({
+        //     privileges: ['a','r','w','d','D','x','t']}),
+        //   mode: ['edit', 'create'], canAdd: true, canDelete: true,
+        //   uniqueCol : ['grantee'],
+        // },
+        // {
+        //   id: 'seclabels', label: gettext('Security labels'), canEdit: false,
+        //   model: pgBrowser.SecLabelModel, editable: false, canAdd: true,
+        //   type: 'collection', min_version: 90100, mode: ['edit', 'create'],
+        //   group: 'security', canDelete: true, control: 'unique-col-collection',
+        // }
       ],
         isReplicatedMergeTree: function(model) {
           return model.get('engine')=='isReplicatedMergeTree';
