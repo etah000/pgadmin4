@@ -20,7 +20,10 @@
 
 {% macro ENGINE_PRIMARY(engine_name, pdata) -%}
 {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and pdata %}
-    PRIMARY KEY ({{ pdata }})
+    PRIMARY KEY (
+{%- for order in pdata %}
+{% if order.expr %}{{ order.expr }}{% else %}{{ order.column }}{% endif %}{% if not loop.last %}, {% endif %}
+{% endfor %})
 {% endif %}
 {%- endmacro %}
 
@@ -43,7 +46,9 @@
 
 {% macro ENGINE_SETTINGS(engine_name, sdata) -%}
 {% if engine_name in ('MergeTree', 'ReplicatedMergeTree', 'Distributed') and sdata %}
-    SETTINGS {{ sdata }}
+    SETTINGS {% for set in sdata -%}
+{{ set.label }} = {{ set.value }}{% if not loop.last %}, {% endif %}
+{%- endfor %}
 {% endif %}
 {%- endmacro %}
 
