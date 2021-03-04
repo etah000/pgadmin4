@@ -332,16 +332,23 @@ define('pgadmin.node.database', [
         schema: [{
           id: 'name', label: gettext('Database'), cell: 'string',
           editable: false, type: 'text',
-        },{
-          id: 'engine', label: gettext('Engine'), cell: 'string',
-          editable: false, type: 'text',disabled:true,
-        },{
-          id: 'data_path', label: gettext('Data Path'), cell: 'string',
-          editable: false, type: 'text',disabled:true,
-        },{
-          id: 'metadata_path', label: gettext('Metadata Path'), cell: 'string',
-          editable: false, type: 'text',disabled:true,
         },
+        // {
+        //   id: 'engine', label: gettext('Engine'), cell: 'string',
+        //   editable: false, type: 'text',disabled:true,
+        // },
+        // {
+        //   id: 'data_path', label: gettext('Data Path'), cell: 'string',
+        //   editable: false, type: 'text',disabled:true,
+        // },
+        {
+          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+          select2: {allowClear: false}, control: 'node-list-by-name', editable: false,
+        },
+        // {
+        //   id: 'metadata_path', label: gettext('Metadata Path'), cell: 'string',
+        //   editable: false, type: 'text',disabled:true,
+        // },
         ],
         validate: function() {
           var name = this.get('name');

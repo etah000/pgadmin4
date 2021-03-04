@@ -47,6 +47,7 @@ define('pgadmin.node.table', [
       canEdit: false,
       hasSQL: true,
       hasDepends: true,
+      canDrop:true,
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
         gettext('TOAST table size'), gettext('Tuple length'),
@@ -377,7 +378,7 @@ define('pgadmin.node.table', [
                 document.querySelector('.order_keys').classList.add("d-none");
                 document.querySelector('.partition_keys').classList.add("d-none");
               }
-              console.log(engineValue);
+              // console.log(engineValue);
               // this.model.set('rolcatupdate', this.model.get('rolsuper'));
               // this.model.set('rolcreaterole', this.model.get('rolsuper'));
               // this.model.set('rolcreatedb', this.model.get('rolsuper'));

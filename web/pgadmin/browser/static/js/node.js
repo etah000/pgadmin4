@@ -569,7 +569,6 @@ define('pgadmin.browser.node', [
        *
        **/
       show_obj_properties: function(args, item) {
-        console.log("&&&&&&&&&");
         var t = pgBrowser.tree,
           i = (args && args.item) || item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined,
