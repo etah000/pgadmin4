@@ -15,5 +15,8 @@ WHERE 1
     AND db.database IN ({{db_restrictions}})
     {% endif %}
     AND name <>'_temporary_and_external_tables'
+    {% if did %}
+    AND name IN ('{{ did }}')
+    {% endif %}    
 ORDER BY
     name;
