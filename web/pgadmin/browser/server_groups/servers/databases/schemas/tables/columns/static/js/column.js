@@ -485,10 +485,30 @@ define('pgadmin.node.column', [
               flag = true;
             _.each(m.datatypes, function(o) {
               if ( of_type == o.value ) {
-                if(o.precision) {
-                  m.set('min_val_attprecision', 0, {silent: true});
-                  m.set('max_val_attprecision', o.max_val, {silent: true});
-                  flag = false;
+                // if(o.precision) {
+                //   m.set('min_val_attprecision', 0, {silent: true});
+                //   m.set('max_val_attprecision', o.max_val, {silent: true});
+                //   flag = false;
+                // }
+                m.set('min_val_attprecision', 0, {silent: true});
+                m.set('max_val_attprecision', o.max_scale_val, {silent: true});
+                console.log(o.value);
+                switch(o.value){
+                  case 'Decimal':
+                    flag = false;
+                    break;
+                  case 'Decimal128':
+                    flag = false;
+                    break;
+                  case 'Decimal256':
+                    flag = false;
+                    break;
+                  case 'Decimal32':
+                    flag = false;
+                    break;
+                  case 'Decimal64':
+                    flag = false;
+                    break;
                 }
               }
             });

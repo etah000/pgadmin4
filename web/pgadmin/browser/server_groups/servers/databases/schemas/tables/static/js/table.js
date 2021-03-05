@@ -312,6 +312,8 @@ define('pgadmin.node.table', [
           providers: undefined,
           is_sys_table: undefined,
           shifted:false,
+          isDistributed:false,
+          isRMergeTree:false,
           coll_inherits: [],
           hastoasttable: true,
           toast_autovacuum_enabled: 'x',
@@ -353,7 +355,8 @@ define('pgadmin.node.table', [
             onChange: function() {
               Backform.SelectControl.prototype.onChange.apply(this, arguments);
               let engineValue=this.model.get('engine');
-              document.querySelector('.engine_params\\.zoo_path').classList.add("d-none");
+              document.querySelector("div[class$='zoo_path']").classList.add("d-none");
+              // document.querySelector('.engine_params\\.zoo_path').classList.add("d-none");
               document.querySelector('.engine_params\\.replica_name').classList.add("d-none");
               document.querySelector('.settings').classList.add("d-none");
               document.querySelector('.engine_params\\.cluster_name').classList.add("d-none");
@@ -361,14 +364,19 @@ define('pgadmin.node.table', [
               document.querySelector('.engine_params\\.remote_table').classList.add("d-none");
               document.querySelector('.order_keys').classList.remove("d-none");
               document.querySelector('.partition_keys').classList.remove("d-none");
+              this.model.set('isRMergeTree', false);
+              this.model.set('isDistributed', false);
               // document.querySelector('.engine_params\\.policy_name').classList.add("d-none");
               document.querySelector('.engine_params\\.sharding_key').classList.add("d-none");
               if(engineValue=='ReplicatedMergeTree'){
-                document.querySelector('.engine_params\\.zoo_path').classList.remove("d-none");
+                this.model.set('isRMergeTree', true);
+                // document.querySelector('.engine_params\\.zoo_path').classList.remove("d-none");
+                document.querySelector("div[class$='zoo_path']").classList.remove("d-none");
                 document.querySelector('.engine_params\\.replica_name').classList.remove("d-none");
                 // document.querySelector('.settings').classList.remove("d-none");
               }
               if(engineValue=='Distributed'){
+                this.model.set('isDistributed', true);
                 document.querySelector('.engine_params\\.cluster_name').classList.remove("d-none");
                 document.querySelector('.engine_params\\.remote_database').classList.remove("d-none");
                 document.querySelector('.engine_params\\.remote_table').classList.remove("d-none");
@@ -425,28 +433,42 @@ define('pgadmin.node.table', [
         //   id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
         // },
         {
-          id: 'engine_params.zoo_path', label: gettext('ZooKeeper Path'), type: 'text', mode: ['properties','create'], visible: false,
+          id: 'engine_params.zoo_path', label: gettext('ZooKeeper Path'), type: 'text', mode: ['properties','create'], 
+          visible: function(m) {
+            return m.isRMergeTree;
+          },
         },
         {
-          id: 'engine_params.replica_name', label: gettext('Replica Name'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.replica_name', label: gettext('Replica Name'), type: 'text', mode: ['properties','create'], 
+           visible: function(m) {
+            return m.isRMergeTree;
+          },
         },
         {
           id: 'settings', label: gettext('settings'), type: 'text', mode: ['properties','create'],visible: false,
         },
         {
-          id: 'engine_params.remote_database', label: gettext('Remote Database'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.remote_database', label: gettext('Remote Database'), type: 'text', mode: ['properties','create'],visible: function(m) {
+            return m.isDistributed;
+          },
         },
         {
-          id: 'engine_params.remote_table', label: gettext('Remote Table'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.remote_table', label: gettext('Remote Table'), type: 'text', mode: ['properties','create'],visible: function(m) {
+            return m.isDistributed;
+          },
         },
         // {
         //   id: 'engine_params.policy_name', label: gettext('policy_name'), type: 'text', mode: ['properties','create'],visible: false,
         // },
         {
-          id: 'engine_params.sharding_key', label: gettext('Sharding Key'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.sharding_key', label: gettext('Sharding Key'), type: 'text', mode: ['properties','create'],visible: function(m) {
+            return m.isDistributed;
+          },
         },
         {
-          id: 'engine_params.cluster_name', label: gettext('Cluster Name'), type: 'text', mode: ['properties','create'],visible: false,
+          id: 'engine_params.cluster_name', label: gettext('Cluster Name'), type: 'text', mode: ['properties','create'], visible: function(m) {
+            return m.isDistributed;
+          },
         },
         // {
         //   id: 'distributed_table_suffix', label: gettext('distributed_table_suffix'), type: 'text', mode: ['properties','create'],
@@ -614,7 +636,8 @@ define('pgadmin.node.table', [
           canEditRow: 'check_grid_row_edit_delete',
           canDeleteRow: 'check_grid_row_edit_delete',
           uniqueCol : ['name'],
-          columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key'],
+          // columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key'],
+          columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull'],
           control: Backform.UniqueColCollectionControl.extend({
             initialize: function() {  
               Backform.UniqueColCollectionControl.prototype.initialize.apply(this, arguments);
@@ -705,37 +728,39 @@ define('pgadmin.node.table', [
           // Here we will create tab control for constraints
           type: 'nested', control: 'tab', group: gettext('Constraints'),
           mode: ['edit', 'create'],
-          schema: [{
-            id: 'primary_keys', label: '',
-            model: pgBrowser.Nodes['primary_key'].model,
-            subnode: pgBrowser.Nodes['primary_key'].model,
-            editable: false, type: 'collection',
-            group: gettext('Primary Key'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
-            control: 'unique-col-collection',
-            columns : ['expr', 'columns'],
-            canAdd: function(m) {
-              if (m.get('is_partitioned') && !_.isUndefined(m.top.node_info) && !_.isUndefined(m.top.node_info.server)
-              && !_.isUndefined(m.top.node_info.server.version) &&
-                m.top.node_info.server.version < 110000) {
-                setTimeout(function() {
-                  var coll = m.get('primary_keys');
-                  coll.remove(coll.filter(function() { return true; }));
-                }, 10);
-                return false;
-              }
+          schema: [
+          // {
+          //   id: 'primary_keys', label: '',
+          //   model: pgBrowser.Nodes['primary_key'].model,
+          //   subnode: pgBrowser.Nodes['primary_key'].model,
+          //   editable: false, type: 'collection',
+          //   group: gettext('Primary Key'), mode: ['edit', 'create'],
+          //   canEdit: true, canDelete: true, deps:['is_partitioned'],
+          //   control: 'unique-col-collection',
+          //   columns : ['expr', 'columns'],
+          //   canAdd: function(m) {
+          //     if (m.get('is_partitioned') && !_.isUndefined(m.top.node_info) && !_.isUndefined(m.top.node_info.server)
+          //     && !_.isUndefined(m.top.node_info.server.version) &&
+          //       m.top.node_info.server.version < 110000) {
+          //       setTimeout(function() {
+          //         var coll = m.get('primary_keys');
+          //         coll.remove(coll.filter(function() { return true; }));
+          //       }, 10);
+          //       return false;
+          //     }
 
-              return true;
-            },
-            canAddRow: function(m) {
-              // User can only add one primary key
-              var columns = m.get('columns');
+          //     return true;
+          //   },
+          //   canAddRow: function(m) {
+          //     // User can only add one primary key
+          //     var columns = m.get('columns');
 
-              return (m.get('primary_keys') &&
-                m.get('primary_keys').length < 1 &&
-                  _.some(columns.pluck('name')));
-            },
-          },{
+          //     return (m.get('primary_keys') &&
+          //       m.get('primary_keys').length < 1 &&
+          //         _.some(columns.pluck('name')));
+          //   },
+          // },
+          {
             id: 'constraints', label: '',
             model: pgBrowser.Nodes['foreign_key'].model,
             subnode: pgBrowser.Nodes['foreign_key'].model,
@@ -854,7 +879,18 @@ define('pgadmin.node.table', [
               var columns = m.get('columns');
               return _.some(columns.pluck('name'));
             },
-          }
+          },
+          {
+            id: 'settings', label: '',
+            model: pgBrowser.Nodes['unique_constraint'].model,
+            subnode: pgBrowser.Nodes['unique_constraint'].model,
+            editable: false, type: 'collection',
+            group: gettext('Settings'), mode: ['edit', 'create'],
+            canEdit: true, canDelete: true, deps:['is_partitioned'],
+            control: 'unique-col-collection',
+            canAdd: true,
+            columns : ['label','value'],
+          },
         ],
         },
         // {
@@ -1216,24 +1252,25 @@ define('pgadmin.node.table', [
         //     return false;
         //   },
         // },
-        {
-          // Here - we will create tab control for storage parameters
-          // (auto vacuum).
-          type: 'nested', control: 'tab', group: gettext('Settings'),
-          mode: ['edit', 'create'], deps: ['is_partitioned'],
-          schema: [
-            {
-            id: 'settings', label: '',
-            model: pgBrowser.Nodes['unique_constraint'].model,
-            subnode: pgBrowser.Nodes['unique_constraint'].model,
-            editable: false, type: 'collection',
-            group: gettext('Settings'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
-            control: 'unique-col-collection',
-            canAdd: true,
-            columns : ['label','value'],
-          }],
-        },
+        // {
+        //   // Here - we will create tab control for storage parameters
+        //   // (auto vacuum).
+        //   type: 'nested', control: 'tab', group: gettext('Settings'),
+        //   mode: ['edit', 'create'], deps: ['is_partitioned'],
+        //   schema: [
+        //     {
+        //     id: 'settings', label: '',
+        //     model: pgBrowser.Nodes['unique_constraint'].model,
+        //     subnode: pgBrowser.Nodes['unique_constraint'].model,
+        //     editable: false, type: 'collection',
+        //     group: gettext('Settings'), mode: ['edit', 'create'],
+        //     canEdit: true, canDelete: true, deps:['is_partitioned'],
+        //     control: 'unique-col-collection',
+        //     canAdd: true,
+        //     columns : ['label','value'],
+        //   }
+        // ],
+        // },
         // {
         //   id: 'relacl_str', label: gettext('Privileges'), disabled: 'inSchema',
         //   type: 'text', mode: ['properties'], group: gettext('Security'),
@@ -1273,6 +1310,7 @@ define('pgadmin.node.table', [
             relowner = this.get('relowner'),
             is_partitioned = this.get('is_partitioned'),
             partition_keys = this.get('partition_keys');
+            // console.log(this);
 
           if (
             _.isUndefined(name) || _.isNull(name) ||
