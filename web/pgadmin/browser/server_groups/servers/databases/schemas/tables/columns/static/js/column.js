@@ -543,10 +543,19 @@ define('pgadmin.node.column', [
             _.each(m.datatypes, function(o) {
               if ( of_type == o.value ) {
                 if(o.scale) {
-                  m.set('min_val_attprecision', o.min_scale_val, {silent: true});
+                  m.set('min_val_attprecision', 0, {silent: true});
                   m.set('max_val_attprecision', o.max_scale_val, {silent: true});
+                  if(o.value=='Decimal'){
+                    m.set('min_val_attprecision', 0, {silent: true});
+                    m.set('max_val_attprecision', 128, {silent: true});
+                  }
                   flag = true;
                 }
+                // if(o.scale) {
+                //   m.set('min_val_attprecision', o.min_scale_val, {silent: true});
+                //   m.set('max_val_attprecision', o.max_scale_val, {silent: true});
+                //   flag = true;
+                // }
               }
             });
 
@@ -662,6 +671,8 @@ define('pgadmin.node.column', [
             // Validation for precision field
             if (this.get('attprecision') < this.get('min_val_attprecision'))
               msg = gettext('Scale should not be less than: ') + this.get('min_val_attprecision');
+              console.log(this.get('attprecision'));
+              console.log(this.get('max_val_attprecision'));
             if (this.get('attprecision') > this.get('max_val_attprecision'))
               msg = gettext('Scale should not be greater than: ') + this.get('max_val_attprecision');
             // If we have any error set then throw it to user
