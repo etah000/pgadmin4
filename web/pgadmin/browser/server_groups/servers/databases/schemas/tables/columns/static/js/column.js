@@ -492,6 +492,10 @@ define('pgadmin.node.column', [
                 if(o.scale) {
                   m.set('min_val_attprecision', 0, {silent: true});
                   m.set('max_val_attprecision', o.max_scale_val, {silent: true});
+                  if(o.value=='Decimal'){
+                    m.set('min_val_attprecision', 0, {silent: true});
+                    m.set('max_val_attprecision', 128, {silent: true});
+                  }
                   flag = false;
                 }
                 // m.set('min_val_attprecision', 0, {silent: true});

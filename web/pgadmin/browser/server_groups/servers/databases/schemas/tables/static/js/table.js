@@ -644,7 +644,7 @@ define('pgadmin.node.table', [
           canDeleteRow: 'check_grid_row_edit_delete',
           uniqueCol : ['name'],
           // columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key'],
-          columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull'],
+          columns : ['name' , 'cltype', 'attprecision', 'attscale', 'attnotnull'],
           control: Backform.UniqueColCollectionControl.extend({
             initialize: function() {
               Backform.UniqueColCollectionControl.prototype.initialize.apply(this, arguments);
