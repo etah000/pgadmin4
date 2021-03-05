@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
-{% if config.SERVER_MODE and config.SHOW_GRAVATAR_IMAGE -%}
-{% import 'browser/macros/gravatar_icon.macro' as IMG with context %}
-{% elif config.SERVER_MODE %}
+{% if config.SERVER_MODE %}
 {% import 'browser/macros/static_user_icon.macro' as IMG with context %}
 {% endif %}
 

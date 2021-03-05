@@ -344,6 +344,7 @@ define('pgadmin.node.database', [
         {
           id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
           select2: {allowClear: false}, control: 'node-list-by-name', editable: false,
+          mode: ['edit', 'create'],
         },
         // {
         //   id: 'metadata_path', label: gettext('Metadata Path'), cell: 'string',
