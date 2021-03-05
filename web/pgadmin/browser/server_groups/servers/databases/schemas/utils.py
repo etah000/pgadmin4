@@ -148,11 +148,10 @@ class DataTypeReader:
                 elif dtype in ('Decimal', ):
                     precision = True
                     min_val, max_val = 1, 76
+                    scale = True
                 elif dtype in ('DateTime64', ):
                     precision = True
-                    min_val, max_val = 1, 76
-                    scale = True
-                    min_scale_val, max_sacle_val = 0, 0
+                    min_val, max_val = 1, 9
                 elif dtype in ('Decimal128','Decimal256','Decimal32','Decimal64',):
                     scale_val_map = {
                         'DateTime64': (1, 9),
@@ -170,11 +169,15 @@ class DataTypeReader:
 
                 res.append({
                     'label': row['typname'], 'value': row['typname'],
-                    'typval': typeval, 'precision': precision,
-                    'length': False, 'min_val': min_val, 'max_val': max_val,
-                    'is_collatable': row['is_collatable'], 'scale': scale,
+                    'typval': typeval, 
+                    'precision': precision, 
+                    'min_val': min_val, 'max_val': max_val,
+                    'scale': scale, 
                     'min_scale_val': min_scale_val, 'max_scale_val': max_sacle_val,
-                })
+                    'timezone': timezone,
+                    'length': False, 
+                    'is_collatable': row['is_collatable'], 
+                    })
 
         except Exception as e:
             return False, str(e)
