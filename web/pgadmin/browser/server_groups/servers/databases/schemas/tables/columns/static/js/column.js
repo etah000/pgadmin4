@@ -315,8 +315,8 @@ define('pgadmin.node.column', [
             });
 
             flag && setTimeout(function() {
-              if(m.get('attlen')) {
-                m.set('attlen', null);
+              if(m.get('attprecision')) {
+                m.set('attprecision', null);
               }
             },10);
 
@@ -346,8 +346,8 @@ define('pgadmin.node.column', [
             });
 
             !flag && setTimeout(function() {
-              if(m.get('attlen')) {
-                m.set('attlen', null, {silent: true});
+              if(m.get('attprecision')) {
+                m.set('attprecision', null, {silent: true});
               }
             },10);
 
@@ -521,8 +521,8 @@ define('pgadmin.node.column', [
             });
 
             flag && setTimeout(function() {
-              if(m.get('attprecision')) {
-                m.set('attprecision', null);
+              if(m.get('attscale')) {
+                m.set('attscale', null);
               }
             },10);
             return flag;
@@ -560,8 +560,8 @@ define('pgadmin.node.column', [
             });
 
             !flag && setTimeout(function() {
-              if(m.get('attprecision')) {
-                m.set('attprecision', null);
+              if(m.get('attscale')) {
+                m.set('attscale', null);
               }
             },10);
 
@@ -649,27 +649,27 @@ define('pgadmin.node.column', [
           }
 
           if (!_.isUndefined(this.get('cltype'))
-                && !_.isUndefined(this.get('attlen'))
-                && !_.isNull(this.get('attlen'))
-                && this.get('attlen') !== '') {
+                && !_.isUndefined(this.get('attprecision'))
+                && !_.isNull(this.get('attprecision'))
+                && this.get('attprecision') !== '') {
             // Validation for Length field
-            if (this.get('attlen') < this.get('min_val_attlen'))
+            if (this.get('attprecision') < this.get('min_val_attlen'))
               msg = gettext('Length/Precision should not be less than: ') + this.get('min_val_attlen');
             // if (this.get('attlen') > this.get('max_val_attlen'))
             //   msg = gettext('Length/Precision should not be greater than: ') + this.get('max_val_attlen');
             // If we have any error set then throw it to user
             if(msg) {
-              this.errorModel.set('attlen', msg);
+              this.errorModel.set('attprecision', msg);
               return msg;
             }
           }
 
           if (!_.isUndefined(this.get('cltype'))
-                && !_.isUndefined(this.get('attprecision'))
-                && !_.isNull(this.get('attprecision'))
-                && this.get('attprecision') !== '') {
+                && !_.isUndefined(this.get('attscale'))
+                && !_.isNull(this.get('attscale'))
+                && this.get('attscale') !== '') {
             // Validation for precision field
-            if (this.get('attprecision') < this.get('min_val_attprecision'))
+            if (this.get('attscale') < this.get('min_val_attprecision'))
               msg = gettext('Scale should not be less than: ') + this.get('min_val_attprecision');
               console.log(this.get('attprecision'));
               console.log(this.get('max_val_attprecision'));
@@ -677,7 +677,7 @@ define('pgadmin.node.column', [
               msg = gettext('Scale should not be greater than: ') + this.get('max_val_attprecision');
             // If we have any error set then throw it to user
             if(msg) {
-              this.errorModel.set('attprecision', msg);
+              this.errorModel.set('attscale', msg);
               return msg;
             }
           }
