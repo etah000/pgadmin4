@@ -295,7 +295,8 @@ define('pgadmin.node.column', [
           type: 'text', disabled: 'notInSchema', mode: ['properties'],
         },
         {
-          id: 'attlen', label: gettext('Length/Precision'), cell: IntegerDepCell,
+          // id: 'attlen', label: gettext('Length/Precision'), cell: IntegerDepCell,
+          id: 'attprecision', label: gettext('Length/Precision'), cell: IntegerDepCell,
           deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
           mode: ['edit', 'create'],
           disabled: function(m) {
@@ -478,7 +479,8 @@ define('pgadmin.node.column', [
           },
         },
         {
-          id: 'attprecision', label: gettext('Scale'), cell: IntegerDepCell,
+          // id: 'attprecision', label: gettext('Scale'), cell: IntegerDepCell,
+          id: 'attscale', label: gettext('Scale'), cell: IntegerDepCell,
           deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
           mode: ['edit', 'create'],
           disabled: function(m) {
