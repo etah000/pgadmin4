@@ -1329,7 +1329,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return sql
 
     @BaseTableView.check_precondition
-    def _msql(self, gid, sid, did, scid=0, tid=None):
+    def msql(self, gid, sid, did, scid=0, tid=None):
         """
         This function will create modified sql for table object
 
@@ -1353,7 +1353,19 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
-        return self._fetch_sql(did, scid, tid, data)
+        if 'database' in data and data['database']:
+            did = data['database']
+
+        SQL = render_template(
+            "/".join([self.table_template_path, 'create.sql']),
+            data=data, conn=self.conn, did=did
+        )
+        SQL = re.sub('\n+,\n+', ',\n', SQL, flags=re.M)
+        SQL = re.sub('\n+', '\n', SQL, flags=re.M)
+
+        # return self._fetch_sql(did, scid, tid, data)
+        return make_json_response(data=SQL)
+
 
     def _fetch_sql(self, did,tid, data, scid=0, json_resp=True):
         res = None

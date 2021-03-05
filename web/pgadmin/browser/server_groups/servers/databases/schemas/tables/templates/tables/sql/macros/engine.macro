@@ -32,7 +32,7 @@
 {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and odata %}
     ORDER BY ({{ odata }})
 {% elif engine_name in ('MergeTree', 'ReplicatedMergeTree') %}
-   ORDER BY tuple()
+    ORDER BY tuple()
 {% endif %}
 {%- endmacro %}
 
