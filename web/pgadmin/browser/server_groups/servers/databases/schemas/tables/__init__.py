@@ -1037,6 +1037,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             "/".join([self.table_template_path, 'create.sql']),
             data=data, conn=self.conn, did=did
         )
+        SQL = re.sub('\n+,\n+', ',\n', SQL, flags=re.M)
+        SQL = re.sub('\n+', '\n', SQL, flags=re.M)
 
         # print('========================\n', SQL)
         # return make_json_response()
@@ -1072,6 +1074,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             "/".join([self.table_template_path, 'create.sql']),
             data=data, conn=self.conn, did="{database}"
         )
+        SQL = re.sub('\n+,\n+', ',\n', SQL, flags=re.M)
+        SQL = re.sub('\n+', '\n', SQL, flags=re.M)
 
         # print('========================\n', SQL)
         # return make_json_response()
@@ -1325,7 +1329,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             return sql
 
     @BaseTableView.check_precondition
-    def msql(self, gid, sid, did, scid=0, tid=None):
+    def _msql(self, gid, sid, did, scid=0, tid=None):
         """
         This function will create modified sql for table object
 

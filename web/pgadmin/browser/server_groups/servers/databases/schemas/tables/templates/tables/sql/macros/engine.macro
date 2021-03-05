@@ -22,7 +22,7 @@
 {% if engine_name in ('MergeTree', 'ReplicatedMergeTree') and pdata %}
     PRIMARY KEY (
 {%- for order in pdata %}
-{% if order.expr %}{{ order.expr }}{% else %}{{ order.columns.column }}{% endif %}{% if not loop.last %}, {% endif %}
+{% if order.expr %}{{ order.expr }}{% else %}{{ order.columns[0].column }}{% endif %}{% if not loop.last %}, {% endif %}
 {% endfor %})
 {% endif %}
 {%- endmacro %}

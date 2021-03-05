@@ -135,22 +135,25 @@ class DataTypeReader:
                 min_scale_val = 0
                 max_sacle_val = 0
                 # range of FixedString
-                length = False
+                # length = False
                 # for DateTime and DateTime64
                 timezone = False
 
                 # Check if the type will have length and precision or not
-                if row['elemoid']:
-                    length, precision, typeval = self.get_length_precision(
-                        row['elemoid'])
+                dtype = row['elemoid']
+                _, precision, typeval = self.get_length_precision(dtype)
 
-                if length:
+                if dtype in ('FixedString', ):
                     min_val = 1
-
-                if precision:
+                elif dtype in ('Decimal', ):
+                    precision = True
                     min_val, max_val = 1, 76
-
-                if row['elemoid'] in ('DateTime64','Decimal','Decimal128','Decimal256','Decimal32','Decimal64',):
+                elif dtype in ('DateTime64', ):
+                    precision = True
+                    min_val, max_val = 1, 76
+                    scale = True
+                    min_scale_val, max_sacle_val = 0, 0
+                elif dtype in ('Decimal128','Decimal256','Decimal32','Decimal64',):
                     scale_val_map = {
                         'DateTime64': (1, 9),
                         'Decimal': (0, 0),
@@ -162,13 +165,13 @@ class DataTypeReader:
                     scale = True
                     min_scale_val, max_sacle_val = scale_val_map[row['elemoid']]
 
-                if row['elemoid'] in ('DateTime','DateTime64',):
+                if dtype in ('DateTime','DateTime64',):
                     timezone = True
 
                 res.append({
                     'label': row['typname'], 'value': row['typname'],
                     'typval': typeval, 'precision': precision,
-                    'length': length, 'min_val': min_val, 'max_val': max_val,
+                    'length': False, 'min_val': min_val, 'max_val': max_val,
                     'is_collatable': row['is_collatable'], 'scale': scale,
                     'min_scale_val': min_scale_val, 'max_scale_val': max_sacle_val,
                 })
@@ -189,7 +192,7 @@ class DataTypeReader:
         if elemoid_or_name:
             if elemoid_or_name in (1560, 'FixedString',
                                     ):
-                typeval = 'L'
+                typeval = 'P'
             elif elemoid_or_name in (1083, 'Date','DateTime','DateTime64',
                                     ):
                 typeval = 'D'
@@ -203,11 +206,11 @@ class DataTypeReader:
                 typeval = ' '
 
         # Set precision & length/min/max values
-        if elemoid_or_name == 'Decimal':
-            precision = True
+        # if elemoid_or_name == 'Decimal':
+        #     precision = True
 
-        if elemoid_or_name in ('FixedString', ):
-            length = True
+        if elemoid_or_name in ('FixedString', 'Decimal'):
+            precision = True
 
         return length, precision, typeval
 
