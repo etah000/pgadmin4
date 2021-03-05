@@ -297,6 +297,7 @@ define('pgadmin.node.column', [
         {
           id: 'attlen', label: gettext('Length/Precision'), cell: IntegerDepCell,
           deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
+          mode: ['edit', 'create'],
           disabled: function(m) {
             var of_type = m.get('cltype'),
               flag = true;
@@ -356,6 +357,7 @@ define('pgadmin.node.column', [
           cell: Backgrid.Extension.NodeAjaxOptionsCell,
           type: 'text', disabled: 'inSchemaWithColumnCheck',
           control: 'node-ajax-options', url: 'get_types', node: 'table',
+          mode: ['edit', 'create'],
           cellHeaderClasses:'width_percent_30', first_empty: true,
           select2: { allowClear: false }, group: gettext('Definition'),
           cache_node: 'table',
@@ -477,6 +479,7 @@ define('pgadmin.node.column', [
         {
           id: 'attprecision', label: gettext('Scale'), cell: IntegerDepCell,
           deps: ['cltype'], type: 'int', group: gettext('Definition'), cellHeaderClasses:'width_percent_20',
+          mode: ['edit', 'create'],
           disabled: function(m) {
             var of_type = m.get('cltype'),
               flag = true;
@@ -545,10 +548,10 @@ define('pgadmin.node.column', [
           id: 'indkey', label: gettext('Sorting key?'),
           type: 'switch', mode: ['properties'],
           group: gettext('Definition'),
-        },{
-          id: 'is_in_sampling_key', label: gettext('Sampling key?'),
-          type: 'switch', mode: ['properties'],
-          group: gettext('Definition'),
+        // },{
+        //   id: 'is_in_sampling_key', label: gettext('Sampling key?'),
+        //   type: 'switch', mode: ['properties'],
+        //   group: gettext('Definition'),
         },{
           id: 'tbls_inherited', label: gettext('Inherited from table(s)'),
           type: 'text', mode: ['properties'], deps: ['is_in_sampling_key'],
