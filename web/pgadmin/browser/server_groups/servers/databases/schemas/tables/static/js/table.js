@@ -28,7 +28,7 @@ define('pgadmin.node.table', [
         node: 'table',
         label: gettext('Tables'),
         type: 'coll-table',
-        columns: ['name', 'engine', 'primarykey', 'partition_key'],
+        columns: ['name', 'p_engine', 'primarykey', 'partition_key'],
         hasStatistics: false,
         statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
           gettext('TOAST table size'), gettext('Tuple length'),
@@ -70,15 +70,15 @@ define('pgadmin.node.table', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Table...'),
           icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          enable: false,
         },{
-          name: 'create_table', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('Table...'),
-          icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },
-        {
+          // name: 'create_table', node: 'table', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 1, label: gettext('Table...'),
+          // icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },
+        // {
           name: 'create_table_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Table...'),
@@ -95,12 +95,12 @@ define('pgadmin.node.table', [
           name: 'truncate_table', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'truncate_table',
           category: gettext('Truncate'), priority: 3, label: gettext('Truncate'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
-        },{
-          name: 'truncate_table_cascade', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'truncate_table_cascade',
-          category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
+          icon: 'fa fa-eraser', enable : false,
+        // },{
+        //   name: 'truncate_table_cascade', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'truncate_table_cascade',
+        //   category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
+        //   icon: 'fa fa-eraser', enable : 'canCreate',
         },{
           // To enable/disable all triggers for the table
           // name: 'enable_all_triggers', node: 'table', module: this,
@@ -339,19 +339,24 @@ define('pgadmin.node.table', [
         pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
 
         },
-        schema: [{
+        schema: [
+          {
           id: 'name', label: gettext('Name'), type: 'text',
           mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         },
+          {
+            id: 'p_engine', label: gettext('Engine'), type: 'text',
+            mode: ['properties'], disabled: 'inSchema',
+          },
         {
-          id: 'engine', label: gettext('Engine'), type: 'text', mode: ['properties','create'],
+          id: 'engine', label: gettext('Engine'), type: 'text', mode: ['create'],
           options: [
             {label: gettext('MergeTree'), value: 'MergeTree'},
             {label: gettext('ReplicatedMergeTree'), value: 'ReplicatedMergeTree'},
             {label: gettext('Distributed'), value: 'Distributed'}
           ],
           control: Backform.SelectControl.extend({
-            
+
             onChange: function() {
               Backform.SelectControl.prototype.onChange.apply(this, arguments);
               let engineValue=this.model.get('engine');
@@ -424,22 +429,22 @@ define('pgadmin.node.table', [
         //   ],select2: { allowClear: false, width: '100%' },
         // },
 
-        
+
         {
           id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-          mode: ['properties', 'edit','create'], select2: {allowClear: false}, control: 'node-list-by-name',
+          mode: ['edit','create'], select2: {allowClear: false}, control: 'node-list-by-name',
         },
         // {
         //   id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
         // },
         {
-          id: 'engine_params.zoo_path', label: gettext('ZooKeeper Path'), type: 'text', mode: ['properties','create'], 
+          id: 'engine_params.zoo_path', label: gettext('ZooKeeper Path'), type: 'text', mode: ['properties','create'],
           visible: function(m) {
             return m.isRMergeTree;
           },
         },
         {
-          id: 'engine_params.replica_name', label: gettext('Replica Name'), type: 'text', mode: ['properties','create'], 
+          id: 'engine_params.replica_name', label: gettext('Replica Name'), type: 'text', mode: ['properties','create'],
            visible: function(m) {
             return m.isRMergeTree;
           },
@@ -489,19 +494,21 @@ define('pgadmin.node.table', [
         //   id: 'description', label: gettext('Comment'), type: 'multiline',
         //   mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
         // },
-        {
-          id: 'primary_keys', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
-        },{
-          id: 'partition_key', label: gettext('Partition Key'), type: 'text', mode: ['properties'],
-        },{
-          id: 'sorting_key', label: gettext('Sorting Key'), type: 'text', mode: ['properties'],
-        },{
-          id: 'sampling_key', label: gettext('Sampling Key'), type: 'text', mode: ['properties'],
-        },{
-          id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
-          type: 'switch', mode: ['properties'],
-          disabled: 'inSchema',
-        },
+        // {
+        //   id: 'primary_keys', label: gettext('Primary Key'), type: 'text', mode: ['properties'],
+        // },{
+        //   id: 'partition_key', label: gettext('Partition Key'), type: 'text', mode: ['properties'],
+        // },
+          // {
+          // id: 'sorting_key', label: gettext('Sorting Key'), type: 'text', mode: ['properties'],
+        // },
+          // {
+          // id: 'sampling_key', label: gettext('Sampling Key'), type: 'text', mode: ['properties'],
+        // },{
+        //   id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
+        //   type: 'switch', mode: ['properties'],
+        //   disabled: 'inSchema',
+        // },
         // {
         //   id: 'coll_inherits', label: gettext('Inherited from table(s)'),
         //   url: 'get_inherits', type: 'array', group: gettext('Columns'),
@@ -586,7 +593,7 @@ define('pgadmin.node.table', [
         //       return tbl_oid;
         //     },
         //   }),
-        // }, 
+        // },
         // {
         //   id: 'advanced', label: gettext('Advanced'), type: 'group',
         //   visible: ShowAdvancedTab.show_advanced_tab,
@@ -639,7 +646,7 @@ define('pgadmin.node.table', [
           // columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull', 'is_primary_key'],
           columns : ['name' , 'cltype', 'attlen', 'attprecision', 'attnotnull'],
           control: Backform.UniqueColCollectionControl.extend({
-            initialize: function() {  
+            initialize: function() {
               Backform.UniqueColCollectionControl.prototype.initialize.apply(this, arguments);
               var self = this,
                 collection = self.model.get(self.field.get('name'));
