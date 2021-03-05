@@ -49,6 +49,7 @@ SELECT
     database,
     uuid,
     engine,
+    engine as p_engine,
     is_temporary,
     data_paths,
     metadata_path,

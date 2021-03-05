@@ -61,56 +61,57 @@ define('pgadmin.node.table', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
-          name: 'create_table_on_coll', node: 'coll-table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('Table...'),
-          icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_table', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('Table...'),
-          icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
-          enable: 'canCreate',
-        },{
-          name: 'create_table__on_schema', node: 'schema', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Table...'),
-          icon: 'wcTabIcon icon-table', data: {action: 'create', check: false},
-          enable: 'canCreate',
-        },{
-          name: 'truncate_table', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'truncate_table',
-          category: gettext('Truncate'), priority: 3, label: gettext('Truncate'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
-        },{
-          name: 'truncate_table_cascade', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'truncate_table_cascade',
-          category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
-        },{
+        pgBrowser.add_menus([
+          // {
+          // name: 'create_table_on_coll', node: 'coll-table', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 1, label: gettext('Table...'),
+          // icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
+          // enable: 'canCreate',
+        // },{
+        //   name: 'create_table', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 1, label: gettext('Table...'),
+        //   icon: 'wcTabIcon icon-table', data: {action: 'create', check: true},
+        //   enable: 'canCreate',
+        // },{
+        //   name: 'create_table__on_schema', node: 'schema', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Table...'),
+        //   icon: 'wcTabIcon icon-table', data: {action: 'create', check: false},
+        //   enable: 'canCreate',
+        // },{
+        //   name: 'truncate_table', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'truncate_table',
+        //   category: gettext('Truncate'), priority: 3, label: gettext('Truncate'),
+        //   icon: 'fa fa-eraser', enable : 'canCreate',
+        // },{
+        //   name: 'truncate_table_cascade', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'truncate_table_cascade',
+        //   category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
+        //   icon: 'fa fa-eraser', enable : 'canCreate',
+        // },{
           // To enable/disable all triggers for the table
-          name: 'enable_all_triggers', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'enable_triggers_on_table',
-          category: gettext('Trigger(s)'), priority: 4, label: gettext('Enable All'),
-          icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
-        },{
-          name: 'disable_all_triggers', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'disable_triggers_on_table',
-          category: gettext('Trigger(s)'), priority: 4, label: gettext('Disable All'),
-          icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
-        },{
-          name: 'reset_table_stats', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'reset_table_stats',
-          category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
-          icon: 'fa fa-bar-chart', enable : 'canCreate',
-        },{
-          name: 'count_table_rows', node: 'table', module: this,
-          applies: ['object', 'context'], callback: 'count_table_rows',
-          category: 'Count', priority: 2, label: gettext('Count Rows'),
-          enable: true,
-        },
+          // name: 'enable_all_triggers', node: 'table', module: this,
+          // applies: ['object', 'context'], callback: 'enable_triggers_on_table',
+          // category: gettext('Trigger(s)'), priority: 4, label: gettext('Enable All'),
+          // icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
+        // },{
+        //   name: 'disable_all_triggers', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'disable_triggers_on_table',
+        //   category: gettext('Trigger(s)'), priority: 4, label: gettext('Disable All'),
+        //   icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
+        // },{
+        //   name: 'reset_table_stats', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'reset_table_stats',
+        //   category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
+        //   icon: 'fa fa-bar-chart', enable : 'canCreate',
+        // },{
+        //   name: 'count_table_rows', node: 'table', module: this,
+        //   applies: ['object', 'context'], callback: 'count_table_rows',
+        //   category: 'Count', priority: 2, label: gettext('Count Rows'),
+        //   enable: true,
+        // },
         ]);
         pgBrowser.Events.on(
           'pgadmin:browser:node:table:updated', this.onTableUpdated, this
