@@ -1050,7 +1050,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 tid,
-                'public',
+                did,
                 data['name'],
                 icon=self.get_icon_css_class(data),
                 is_partitioned=self.is_table_partitioned(data)
