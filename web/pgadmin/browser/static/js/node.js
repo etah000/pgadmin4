@@ -142,7 +142,7 @@ define('pgadmin.browser.node', [
           applies: ['object', 'context'],
           callback: 'delete_obj',
           priority: self.dropPriority,
-          label: (self.dropAsRemove) ? gettext('Remove %s', self.label) : gettext('Delete/Drop'),
+          label: (self.dropAsRemove) ? gettext('Remove %s', self.label) : gettext('Drop'),
           data: {
             'url': 'drop',
           },
@@ -154,23 +154,25 @@ define('pgadmin.browser.node', [
         }]);
 
         if (self.canDropCascade) {
-          pgAdmin.Browser.add_menus([{
-            name: 'delete_object_cascade',
-            node: self.type,
-            module: self,
-            applies: ['object', 'context'],
-            callback: 'delete_obj',
-            priority: 3,
-            label: gettext('Drop Cascade'),
-            data: {
-              'url': 'delete',
-            },
-            icon: 'fa fa-trash',
-            enable: _.isFunction(self.canDropCascade) ?
-              function() {
-                return self.canDropCascade.apply(self, arguments);
-              } : (!!self.canDropCascade),
-          }]);
+          pgAdmin.Browser.add_menus([
+            // {
+            // name: 'delete_object_cascade',
+            // node: self.type,
+            // module: self,
+            // applies: ['object', 'context'],
+            // callback: 'delete_obj',
+            // priority: 3,
+            // label: gettext('Drop Cascade'),
+            // data: {
+            //   'url': 'delete',
+            // },
+            // icon: 'fa fa-trash',
+            // enable: _.isFunction(self.canDropCascade) ?
+            //   function() {
+            //     return self.canDropCascade.apply(self, arguments);
+            //   } : (!!self.canDropCascade),
+          // }
+          ]);
         }
       }
 
