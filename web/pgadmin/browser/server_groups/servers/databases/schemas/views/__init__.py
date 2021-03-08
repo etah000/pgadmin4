@@ -673,15 +673,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 SQL = render_template(
                     "/".join([
                         self.template_path, 'sql/delete.sql'
-                    ]),
-                    nspname=res_data['rows'][0]['schema'],
-                    name=res_data['rows'][0]['name'], cascade=cascade
+                    ]), did=did, vid=vid,
+                    # nspname=res_data['rows'][0]['schema'],
+                    # name=res_data['rows'][0]['name'], cascade=cascade
                 )
 
                 if only_sql:
                     return SQL
 
-                status, res = self.conn.execute_scalar(SQL)
+                status, res = self.conn.execute_void(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
 

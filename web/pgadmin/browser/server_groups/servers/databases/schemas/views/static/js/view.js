@@ -54,7 +54,7 @@ define('pgadmin.node.view', [
       label: gettext('View'),
       hasSQL:  true,
       canEdit: false,
-      canDrop: false,
+      canDrop: true,
       canDropCascade: false,
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
