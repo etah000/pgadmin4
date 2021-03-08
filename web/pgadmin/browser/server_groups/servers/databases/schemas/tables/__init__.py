@@ -972,6 +972,10 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             request.data, encoding='utf-8'
         )
 
+        print(data)
+
+        data['engine_params'] = dict()
+
         for k, v in data.items():
             try:
                 # comments should be taken as is because if user enters a
@@ -982,6 +986,13 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                     data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError, KeyError):
                 data[k] = v
+
+            try:
+                if k.startswith('ep_'):
+                    k = '_'.join(k.split('_')[1:])
+                    data['engine_params'][k] = v
+            except (ValueError, TypeError, KeyError):
+                data['engine_params'][k] = v
 
         required_args = [
             'name'
