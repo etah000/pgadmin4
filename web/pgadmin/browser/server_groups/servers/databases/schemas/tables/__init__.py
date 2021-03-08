@@ -972,8 +972,6 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             request.data, encoding='utf-8'
         )
 
-        print(data)
-
         data['engine_params'] = dict()
 
         for k, v in data.items():
@@ -988,6 +986,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data[k] = v
 
             try:
+                # reformat engine_params for frontend
+                # to resolve onfocus/onblue issue
                 if k.startswith('ep_'):
                     k = '_'.join(k.split('_')[1:])
                     data['engine_params'][k] = v
@@ -1352,6 +1352,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
            tid: Table ID
         """
         data = dict()
+        data['engine_params'] = dict()
         SQL = ''
         for k, v in request.args.items():
             try:
@@ -1363,6 +1364,15 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                     data[k] = json.loads(v, encoding='utf-8')
             except (ValueError, TypeError, KeyError):
                 data[k] = v
+
+            try:
+                # reformat engine_params for frontend
+                # to resolve onfocus/onblue issue
+                if k.startswith('ep_'):
+                    k = '_'.join(k.split('_')[1:])
+                    data['engine_params'][k] = json.loads(v, encoding='utf-8')
+            except (ValueError, TypeError, KeyError):
+                data['engine_params'][k] = v
 
         if 'database' in data and data['database']:
             did = data['database']
