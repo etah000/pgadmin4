@@ -348,6 +348,10 @@ define('pgadmin.node.table', [
             id: 'p_engine', label: gettext('Engine'), type: 'text',
             mode: ['properties'], disabled: 'inSchema',
           },
+          {
+            id: 'engine_full', label: gettext('Engine Full'), type: 'text',
+            mode: ['properties'], disabled: 'inSchema',
+          },
         {
           id: 'engine', label: gettext('Engine'), type: 'text', mode: ['create'],
           options: [
