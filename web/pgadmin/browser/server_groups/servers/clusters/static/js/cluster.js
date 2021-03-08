@@ -55,13 +55,14 @@ define('pgadmin.node.cluster', [
         this.initialized = true;
 
         pgBrowser.add_menus([
-          {
-          name: 'create_cluster_on_server', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Cluster...'),
-          icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
-          enable: 'can_create_cluster',
-        },{
+          // {
+          // name: 'create_cluster_on_server', node: 'server', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Cluster...'),
+          // icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
+          // enable: 'can_create_cluster',
+        // },
+           {
           name: 'create_cluster_on_coll', node: 'coll-cluster', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Cluster...'),

@@ -58,7 +58,7 @@ define('pgadmin.node.mview', [
       label: gettext('Materialized View'),
       hasSQL: true,
       canEdit: false,
-      canDrop: false,
+      canDrop: true,
       canDropCascade: false,
       hasDepends: true,
       hasScriptTypes: ['create', 'select'],
