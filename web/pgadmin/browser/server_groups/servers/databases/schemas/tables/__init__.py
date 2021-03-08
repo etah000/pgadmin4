@@ -972,6 +972,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             request.data, encoding='utf-8'
         )
 
+        print(data)
+
         data['engine_params'] = dict()
 
         for k, v in data.items():
@@ -986,7 +988,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 data[k] = v
 
             try:
-                if k.starts('ep_'):
+                if k.startswith('ep_'):
                     k = '_'.join(k.split('_')[1:])
                     data['engine_params'][k] = v
             except (ValueError, TypeError, KeyError):
