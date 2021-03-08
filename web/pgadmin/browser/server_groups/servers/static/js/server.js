@@ -114,11 +114,11 @@ define('pgadmin.node.server', [
         //   category: 'restore', priority: 9, label: gettext('Add Named Restore Point...'),
         //   icon: 'fa fa-anchor', enable : 'is_applicable',
         // },{
-          name: 'change_password', node: 'server', module: this,
-          applies: ['object'], callback: 'change_password',
-          label: gettext('Change Password...'), priority: 10,
-          icon: 'fa fa-lock', enable : 'is_connected',
-        },{
+        //   name: 'change_password', node: 'server', module: this,
+        //   applies: ['object'], callback: 'change_password',
+        //   label: gettext('Change Password...'), priority: 10,
+        //   icon: 'fa fa-lock', enable : 'is_connected',
+        // },{
           // name: 'wal_replay_pause', node: 'server', module: this,
           // applies: ['tools', 'context'], callback: 'pause_wal_replay',
           // category: 'wal_replay_pause', priority: 7, label: gettext('Pause Replay of WAL'),

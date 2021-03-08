@@ -348,25 +348,27 @@ define('pgadmin.node.role', [
 
         this.initialized = true;
 
-        pgBrowser.add_menus([{
-          name: 'create_role_on_server', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Login/Group Role...'),
-          icon: 'wcTabIcon icon-role', data: {action: 'create'},
-          enable: 'can_create_role',
-        },{
-          name: 'create_role_on_roles', node: 'coll-role', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Login/Group Role...'),
-          icon: 'wcTabIcon icon-role', data: {action: 'create'},
-          enable: 'can_create_role',
-        },{
-          name: 'create_role', node: 'role', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Login/Group Role...'),
-          icon: 'wcTabIcon icon-role', data: {action: 'create'},
-          enable: 'can_create_role',
-        }]);
+        pgBrowser.add_menus([
+          // {
+          // name: 'create_role_on_server', node: 'server', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Login/Group Role...'),
+          // icon: 'wcTabIcon icon-role', data: {action: 'create'},
+          // enable: 'can_create_role',
+        // },{
+        //   name: 'create_role_on_roles', node: 'coll-role', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Login/Group Role...'),
+        //   icon: 'wcTabIcon icon-role', data: {action: 'create'},
+        //   enable: 'can_create_role',
+        // },{
+        //   name: 'create_role', node: 'role', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Login/Group Role...'),
+        //   icon: 'wcTabIcon icon-role', data: {action: 'create'},
+        //   enable: 'can_create_role',
+        // }
+        ]);
       },
       can_create_role: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),

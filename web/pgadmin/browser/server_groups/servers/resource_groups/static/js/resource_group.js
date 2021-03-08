@@ -44,32 +44,34 @@ define('pgadmin.node.resource_group', [
         this.initialized = true;
 
         // Creating menu for the resource group node
-        pgBrowser.add_menus([{
-          name: 'create_resourcegroup_on_server', node: 'server', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
+        pgBrowser.add_menus([
+          // {
+          // name: 'create_resourcegroup_on_server', node: 'server', module: this,
+          // applies: ['object', 'context'], callback: 'show_obj_properties',
+          // category: 'create', priority: 4, label: gettext('Resource Group...'),
+          // icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
           /* Function is used to check the server type and version.
            * Resource Group only supported in PPAS 9.4 and above.
            */
-          enable: function(node, item) {
-            var treeData = this.getTreeNodeHierarchy(item),
-              server = treeData['server'];
-            return server.connected && node.server_type === 'ppas' &&
-              node.version >= 90400;
-          },
-        },{
-          name: 'create_resource_group_on_coll', node: 'coll-resource_group', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
-        },{
-          name: 'create_resource_group', node: 'resource_group', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
-        },
-        ]);
+          // enable: function(node, item) {
+          //   var treeData = this.getTreeNodeHierarchy(item),
+          //     server = treeData['server'];
+          //   return server.connected && node.server_type === 'ppas' &&
+          //     node.version >= 90400;
+          // },
+        // },{
+        //   name: 'create_resource_group_on_coll', node: 'coll-resource_group', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Resource Group...'),
+        //   icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
+        // },{
+        //   name: 'create_resource_group', node: 'resource_group', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Resource Group...'),
+        //   icon: 'wcTabIcon icon-resource_group', data: {action: 'create'},
+        // },
+        ]
+        );
       },
 
       // Defining model for resource group node
