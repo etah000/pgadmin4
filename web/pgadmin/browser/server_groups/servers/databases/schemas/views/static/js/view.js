@@ -75,13 +75,14 @@ define('pgadmin.node.view', [
           system view nodes.
           */
         pgBrowser.add_menus([
-          // {
-          // name: 'create_view_on_coll', node: 'coll-view', module: this,
-          // applies: ['object', 'context'], callback: 'show_obj_properties',
-          // category: 'create', priority: 1, label: gettext('View...'),
-          // icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
-          // enable: 'canCreate',
-        // },{
+          {
+          name: 'create_view_on_coll', node: 'coll-view', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, label: gettext('View...'),
+          icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
+          enable: 'canCreate',
+        },
+        // {
         //   name: 'create_view', node: 'view', module: this,
         //   applies: ['object', 'context'], callback: 'show_obj_properties',
         //   category: 'create', priority: 1, label: gettext('View...'),
@@ -89,13 +90,13 @@ define('pgadmin.node.view', [
         //   enable: 'canCreate',
         // }
         // ,
-        // {
-        //   name: 'create_view_on_database', node: 'database', module: this,
-        //   applies: ['object', 'context'], callback: 'show_obj_properties',
-        //   category: 'create', priority: 8, label: gettext('View...'),
-        //   icon: 'wcTabIcon icon-view', data: {action: 'create', check: false},
-        //   enable: false,
-        // },
+        {
+          name: 'create_view_on_database', node: 'database', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 8, label: gettext('View...'),
+          icon: 'wcTabIcon icon-view', data: {action: 'create', check: false},
+          enable: false,
+        },
         // {
         //   name: 'create_view', node: 'schema', module: this,
         //   applies: ['object', 'context'], callback: 'show_obj_properties',

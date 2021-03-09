@@ -545,6 +545,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                         "Could not find the required parameter ({})."
                     ).format(arg)
                 )
+        vid = data['name']
+
         try:
             SQL, nameOrError = self.getSQL(gid, sid, did, data)
             if SQL is None:
@@ -554,25 +556,25 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            SQL = render_template("/".join(
-                [self.template_path, 'sql/view_id.sql']), data=data)
-            status, view_id = self.conn.execute_scalar(SQL)
+            # SQL = render_template("/".join(
+            #     [self.template_path, 'sql/view_id.sql']), data=data)
+            # status, view_id = self.conn.execute_scalar(SQL)
 
-            if not status:
-                return internal_server_error(errormsg=res)
+            # if not status:
+            #     return internal_server_error(errormsg=res)
 
             # Get updated schema oid
-            SQL = render_template("/".join(
-                [self.template_path, 'sql/get_oid.sql']), vid=view_id)
-            status, scid = self.conn.execute_scalar(SQL)
+            # SQL = render_template("/".join(
+            #     [self.template_path, 'sql/get_oid.sql']), vid=view_id)
+            # status, scid = self.conn.execute_scalar(SQL)
 
-            if not status:
-                return internal_server_error(errormsg=res)
+            # if not status:
+            #     return internal_server_error(errormsg=res)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    view_id,
-                    scid,
+                    vid,
+                    did,
                     data['name'],
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
@@ -641,33 +643,33 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             data = {'ids': [vid]}
 
         # Below will decide if it's simple drop or drop with cascade call
-        cascade = True if self.cmd == 'delete' else False
+        # cascade = True if self.cmd == 'delete' else False
 
         try:
             for vid in data['ids']:
                 # Get name for view from vid
-                SQL = render_template(
-                    "/".join([
-                        self.template_path, 'sql/properties.sql'
-                    ]),
-                    did=did,
-                    vid=vid,
-                    datlastsysoid=self.datlastsysoid
-                )
-                status, res_data = self.conn.execute_dict(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res_data)
+                # SQL = render_template(
+                #     "/".join([
+                #         self.template_path, 'sql/properties.sql'
+                #     ]),
+                #     did=did,
+                #     vid=vid,
+                #     datlastsysoid=self.datlastsysoid
+                # )
+                # status, res_data = self.conn.execute_dict(SQL)
+                # if not status:
+                #     return internal_server_error(errormsg=res_data)
 
-                if not res_data['rows']:
-                    return make_json_response(
-                        success=0,
-                        errormsg=gettext(
-                            'Error: Object not found.'
-                        ),
-                        info=gettext(
-                            'The specified view could not be found.\n'
-                        )
-                    )
+                # if not res_data['rows']:
+                #     return make_json_response(
+                #         success=0,
+                #         errormsg=gettext(
+                #             'Error: Object not found.'
+                #         ),
+                #         info=gettext(
+                #             'The specified view could not be found.\n'
+                #         )
+                #     )
 
                 # drop view
                 SQL = render_template(
@@ -837,7 +839,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         else:
             required_args = [
                 'name',
-                'schema',
                 'definition'
             ]
             for arg in required_args:
@@ -848,32 +849,32 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                     )
 
             # Get Schema Name from its OID.
-            if 'schema' in data and isinstance(data['schema'], int):
-                data['schema'] = self._get_schema(data['schema'])
+            # if 'schema' in data and isinstance(data['schema'], int):
+            #     data['schema'] = self._get_schema(data['schema'])
 
-            acls = []
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, 'sql/allowed_privs.json'])
-                )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
+            # acls = []
+            # try:
+            #     acls = render_template(
+            #         "/".join([self.template_path, 'sql/allowed_privs.json'])
+            #     )
+            #     acls = json.loads(acls, encoding='utf-8')
+            # except Exception as e:
+            #     current_app.logger.exception(e)
 
-            # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
-                    data[aclcol] = parse_priv_to_db(
-                        data[aclcol], allowedacl['acl']
-                    )
+            # # Privileges
+            # for aclcol in acls:
+            #     if aclcol in data:
+            #         allowedacl = acls[aclcol]
+            #         data[aclcol] = parse_priv_to_db(
+            #             data[aclcol], allowedacl['acl']
+            #         )
 
             SQL = render_template("/".join(
                 [self.template_path, 'sql/create.sql']), data=data)
-            if data['definition']:
-                SQL += "\n"
-                SQL += render_template("/".join(
-                    [self.template_path, 'sql/grant.sql']), data=data)
+            # if data['definition']:
+            #     SQL += "\n"
+            #     SQL += render_template("/".join(
+            #         [self.template_path, 'sql/grant.sql']), data=data)
 
         return SQL, data['name'] if 'name' in data else old_data['name']
 
