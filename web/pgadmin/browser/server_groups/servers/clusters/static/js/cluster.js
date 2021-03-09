@@ -45,7 +45,7 @@ define('pgadmin.node.cluster', [
       },
       label: gettext('Cluster'),
       node_image: function() {
-        return 'pg-icon-cluster';
+        return 'pg-icon-database';
       },
       Init: function() {
         /* Avoid mulitple registration of menus */
@@ -66,13 +66,13 @@ define('pgadmin.node.cluster', [
           name: 'create_cluster_on_coll', node: 'coll-cluster', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Cluster...'),
-          icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
+          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
           enable: 'can_create_cluster',
         },{
           name: 'create_cluster', node: 'cluster', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Cluster...'),
-          icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
+          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
           enable: 'can_create_cluster',
         }
         // ,{
