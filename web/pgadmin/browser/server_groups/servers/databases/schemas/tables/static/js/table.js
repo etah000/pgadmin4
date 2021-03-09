@@ -436,7 +436,7 @@ define('pgadmin.node.table', [
 
         {
           id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-          mode: ['edit','create'], select2: {allowClear: false}, control: 'node-list-by-name',
+          mode: ['edit','create'], select2: {allowClear: true}, control: 'node-list-by-name',
         },
         // {
         //   id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
