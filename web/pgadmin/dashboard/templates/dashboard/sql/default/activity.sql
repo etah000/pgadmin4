@@ -1,4 +1,5 @@
 SELECT
+    --snowAdmin process
     query_id as pid,
     memory_usage,
     address,
@@ -8,4 +9,5 @@ SELECT
     query,
     user as usename
 FROM system.processes
+where query not like '%--snowAdmin process%'
 ORDER BY query_id ASC;
