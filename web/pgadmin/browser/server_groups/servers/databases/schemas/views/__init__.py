@@ -1709,7 +1709,6 @@ class MViewNode(ViewNode, VacuumSettings):
         else:
             required_args = [
                 'name',
-                'schema',
                 'definition'
             ]
             for arg in required_args:
@@ -1720,54 +1719,54 @@ class MViewNode(ViewNode, VacuumSettings):
                     )
 
             # Get Schema Name from its OID.
-            if 'schema' in data and isinstance(data['schema'], int):
-                data['schema'] = self._get_schema(data['schema'])
+            # if 'schema' in data and isinstance(data['schema'], int):
+            #     data['schema'] = self._get_schema(data['schema'])
 
             # merge vacuum lists into one
-            vacuum_table = [item for item in data.get('vacuum_table', [])
-                            if 'value' in item.keys() and
-                            item['value'] is not None]
-            vacuum_toast = [
-                {'name': 'toast.' + item['name'], 'value': item['value']}
-                for item in data.get('vacuum_toast', [])
-                if 'value' in item.keys() and item['value'] is not None]
+            # vacuum_table = [item for item in data.get('vacuum_table', [])
+            #                 if 'value' in item.keys() and
+            #                 item['value'] is not None]
+            # vacuum_toast = [
+            #     {'name': 'toast.' + item['name'], 'value': item['value']}
+            #     for item in data.get('vacuum_toast', [])
+            #     if 'value' in item.keys() and item['value'] is not None]
 
             # add vacuum_toast dict to vacuum_data
-            data['vacuum_data'] = []
-            if (
-                'autovacuum_custom' in data and
-                data['autovacuum_custom'] is True
-            ):
-                data['vacuum_data'] = vacuum_table
-            if (
-                'toast_autovacuum' in data and
-                data['toast_autovacuum'] is True
-            ):
-                data['vacuum_data'] += vacuum_toast
+            # data['vacuum_data'] = []
+            # if (
+            #     'autovacuum_custom' in data and
+            #     data['autovacuum_custom'] is True
+            # ):
+            #     data['vacuum_data'] = vacuum_table
+            # if (
+            #     'toast_autovacuum' in data and
+            #     data['toast_autovacuum'] is True
+            # ):
+            #     data['vacuum_data'] += vacuum_toast
 
-            acls = []
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, 'sql/allowed_privs.json'])
-                )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
+            # acls = []
+            # try:
+            #     acls = render_template(
+            #         "/".join([self.template_path, 'sql/allowed_privs.json'])
+            #     )
+            #     acls = json.loads(acls, encoding='utf-8')
+            # except Exception as e:
+            #     current_app.logger.exception(e)
 
             # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
-                    data[aclcol] = parse_priv_to_db(
-                        data[aclcol], allowedacl['acl']
-                    )
+            # for aclcol in acls:
+            #     if aclcol in data:
+            #         allowedacl = acls[aclcol]
+            #         data[aclcol] = parse_priv_to_db(
+            #             data[aclcol], allowedacl['acl']
+            #         )
 
             SQL = render_template("/".join(
                 [self.template_path, 'sql/create.sql']), data=data)
-            if data['definition']:
-                SQL += "\n"
-                SQL += render_template("/".join(
-                    [self.template_path, 'sql/grant.sql']), data=data)
+            # if data['definition']:
+            #     SQL += "\n"
+            #     SQL += render_template("/".join(
+            #         [self.template_path, 'sql/grant.sql']), data=data)
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     def _fetch_ddl(self, did, vid, scid=0):
