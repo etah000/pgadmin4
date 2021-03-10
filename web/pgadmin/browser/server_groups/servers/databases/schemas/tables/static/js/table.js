@@ -29,7 +29,7 @@ define('pgadmin.node.table', [
         label: gettext('Tables'),
         type: 'coll-table',
         columns: ['name', 'p_engine', 'primarykey', 'partition_key'],
-        hasStatistics: false,
+        hasStatistics: true,
         statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
           gettext('TOAST table size'), gettext('Tuple length'),
           gettext('Dead tuple length'), gettext('Free space')],

@@ -90,7 +90,7 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
                 is_status_changed = false;
 
               // Raise notify messages comes from database server.
-              sqleditor_obj.update_notifications(res.data.notifies);
+              // sqleditor_obj.update_notifications(res.data.notifies);
 
               // Inject CSS as required
               switch(status) {
