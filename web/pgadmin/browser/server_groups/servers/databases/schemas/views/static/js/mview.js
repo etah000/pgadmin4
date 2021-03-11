@@ -82,58 +82,60 @@ define('pgadmin.node.mview', [
         // pgAdmin.Browser.add_menu_category(
         //   'refresh_mview', gettext('Refresh View'), 18, '');
         pgBrowser.add_menus([
-          // {
-          // name: 'create_mview_on_coll', node: 'coll-mview', module: this,
-          // applies: ['object', 'context'], callback: 'show_obj_properties',
-          // category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
-          // data: {action: 'create', check: true}, enable: 'canCreate',
-          // label: gettext('Materialized View...'),
-        // },{
-        //   name: 'create_mview_on_database', node: 'database', module: this,
-        //   applies: ['object', 'context'], callback: 'show_obj_properties',
-        //   category: 'create', priority: 9, icon: 'wcTabIcon icon-mview',
-        //   data: {action: 'create', check: true}, enable: false,
-        //   label: gettext('Materialized View...'),
-        // },
-        // {
-        //   name: 'create_mview', node: 'mview', module: this,
-        //   applies: ['object', 'context'], callback: 'show_obj_properties',
-        //   category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
-        //   data: {action: 'create', check: true}, enable: 'canCreate',
-        //   label: gettext('Materialized View...'),
-        // },{
-        //   name: 'create_mview', node: 'schema', module: this,
-        //   applies: ['object', 'context'], callback: 'show_obj_properties',
-        //   category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
-        //   data: {action: 'create', check: false}, enable: 'canCreate',
-        //   label: gettext('Materialized View...'),
-        // },
-       // {
-       //    name: 'refresh_mview_data', node: 'mview', module: this,
-       //    priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
-       //    applies: ['object', 'context'], label: gettext('With data'),
-       //    data: {concurrent: false, with_data: true}, icon: 'fa fa-recycle',
-       //  },{
-       //    name: 'refresh_mview_nodata', node: 'mview',
-       //    callback: 'refresh_mview', priority: 2, module: this,
-       //    category: 'refresh_mview', applies: ['object', 'context'],
-       //    label: gettext('With no data'), data: {
-       //      concurrent: false, with_data: false,
-       //    }, icon: 'fa fa-refresh',
-       //  },{
-       //    name: 'refresh_mview_concurrent', node: 'mview', module: this,
-       //    category: 'refresh_mview', enable: 'is_version_supported',
-       //    data: {concurrent: true, with_data: true}, priority: 3,
-       //    applies: ['object', 'context'], callback: 'refresh_mview',
-       //    label: gettext('With data (concurrently)'), icon: 'fa fa-recycle',
-       //  },{
-       //    name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
-       //    category: 'refresh_mview', enable: 'is_version_supported',
-       //    data: {concurrent: true, with_data: false}, priority: 4,
-       //    applies: ['object', 'context'], callback: 'refresh_mview',
-       //    label: gettext('With no data (concurrently)'),
-       //    icon: 'fa fa-refresh',
-       //  }
+          {
+          name: 'create_mview_on_coll', node: 'coll-mview', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
+          data: {action: 'create', check: true}, enable: 'canCreate',
+          label: gettext('Materialized View...'),
+        },
+        {
+          name: 'create_mview_on_database', node: 'database', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 9, icon: 'wcTabIcon icon-mview',
+          data: {action: 'create', check: true}, enable: false,
+          label: gettext('Materialized View...'),
+        },
+        {
+          name: 'create_mview', node: 'mview', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
+          data: {action: 'create', check: true}, enable: 'canCreate',
+          label: gettext('Materialized View...'),
+        },
+      // {
+      //   name: 'create_mview', node: 'schema', module: this,
+      //   applies: ['object', 'context'], callback: 'show_obj_properties',
+      //   category: 'create', priority: 18, icon: 'wcTabIcon icon-mview',
+      //   data: {action: 'create', check: false}, enable: 'canCreate',
+      //   label: gettext('Materialized View...'),
+      // },
+      //  {
+      //     name: 'refresh_mview_data', node: 'mview', module: this,
+      //     priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
+      //     applies: ['object', 'context'], label: gettext('With data'),
+      //     data: {concurrent: false, with_data: true}, icon: 'fa fa-recycle',
+      //   },{
+      //     name: 'refresh_mview_nodata', node: 'mview',
+      //     callback: 'refresh_mview', priority: 2, module: this,
+      //     category: 'refresh_mview', applies: ['object', 'context'],
+      //     label: gettext('With no data'), data: {
+      //       concurrent: false, with_data: false,
+      //     }, icon: 'fa fa-refresh',
+      //   },{
+      //     name: 'refresh_mview_concurrent', node: 'mview', module: this,
+      //     category: 'refresh_mview', enable: 'is_version_supported',
+      //     data: {concurrent: true, with_data: true}, priority: 3,
+      //     applies: ['object', 'context'], callback: 'refresh_mview',
+      //     label: gettext('With data (concurrently)'), icon: 'fa fa-recycle',
+      //   },{
+      //     name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
+      //     category: 'refresh_mview', enable: 'is_version_supported',
+      //     data: {concurrent: true, with_data: false}, priority: 4,
+      //     applies: ['object', 'context'], callback: 'refresh_mview',
+      //     label: gettext('With no data (concurrently)'),
+      //     icon: 'fa fa-refresh',
+      //   }
         ]);
       },
 

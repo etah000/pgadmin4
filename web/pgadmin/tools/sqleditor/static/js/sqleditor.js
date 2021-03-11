@@ -285,15 +285,15 @@ define('tools.querytool', [
         content: '<div class="sql-scratch"><textarea wrap="off" tabindex="0"></textarea></div>',
       });
 
-      var notifications = new pgAdmin.Browser.Panel({
-        name: 'notifications',
-        title: gettext('Notifications'),
-        width: '100%',
-        height: '100%',
-        isCloseable: false,
-        isPrivate: true,
-        content: '<div id ="notification_grid" class="sql-editor-notifications" tabindex="0"></div>',
-      });
+      // var notifications = new pgAdmin.Browser.Panel({
+      //   name: 'notifications',
+      //   title: gettext('Notifications'),
+      //   width: '100%',
+      //   height: '100%',
+      //   isCloseable: false,
+      //   isPrivate: true,
+      //   content: '<div id ="notification_grid" class="sql-editor-notifications" tabindex="0"></div>',
+      // });
 
       var geometry_viewer = new pgAdmin.Browser.Panel({
         name: 'geometry_viewer',
@@ -313,7 +313,7 @@ define('tools.querytool', [
       messages.load(self.docker);
       history.load(self.docker);
       scratch.load(self.docker);
-      notifications.load(self.docker);
+      // notifications.load(self.docker);
       geometry_viewer.load(self.docker);
 
       // restore the layout if present else fallback to buildDefaultLayout
@@ -328,11 +328,11 @@ define('tools.querytool', [
       self.data_output_panel = self.docker.findPanels('data_output')[0];
       self.explain_panel = self.docker.findPanels('explain')[0];
       self.messages_panel = self.docker.findPanels('messages')[0];
-      self.notifications_panel = self.docker.findPanels('notifications')[0];
+      // self.notifications_panel = self.docker.findPanels('notifications')[0];
 
       if (_.isUndefined(self.sql_panel_obj) || _.isUndefined(self.history_panel) ||
        _.isUndefined(self.data_output_panel) || _.isUndefined(self.explain_panel) ||
-       _.isUndefined(self.messages_panel) || _.isUndefined(self.notifications_panel)) {
+       _.isUndefined(self.messages_panel)) {
         alertify.alert(
           gettext('Panel Loading Error'),
           gettext('Something went wrong while loading the panels.'
@@ -355,7 +355,7 @@ define('tools.querytool', [
         self.fetch_query_history();
       });
 
-      queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
+      // queryToolNotifications.renderNotificationsGrid(self.notifications_panel);
 
       var text_container = $('<textarea id="sql_query_tool" tabindex="-1"></textarea>');
       var output_container = $('<div id="output-panel" tabindex="0"></div>').append(text_container);
@@ -4441,9 +4441,9 @@ define('tools.querytool', [
       /* This function is used to raise notify messages and update
        * the notification grid.
        */
-      update_notifications: function (notifications) {
-        queryToolNotifications.updateNotifications(notifications);
-      },
+      // update_notifications: function (notifications) {
+      //   queryToolNotifications.updateNotifications(notifications);
+      // },
     });
 
   pgAdmin.SqlEditor = {

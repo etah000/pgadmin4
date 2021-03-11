@@ -5,24 +5,8 @@
 -- DROP VIEW {{ conn|qtIdent(data.schema, data.name) }};
 
 {% endif %}
-{% if data.name and data.schema and data.definition %}
-CREATE OR REPLACE VIEW {{ conn|qtIdent(data.schema, data.name) }}
-{% if ((data.check_option and data.check_option.lower() != 'no') or data.security_barrier) %}
-WITH ({% if data.check_option and data.check_option.lower() != 'no' %}
-
-  check_option={{ data.check_option }}{% endif %}{{ ',' if data.check_option and data.check_option.lower() != 'no' and data.security_barrier }}
-{% if data.security_barrier %}
-  security_barrier={{ data.security_barrier|lower }}
-{% endif %}
-){% endif %} AS
+{% if data.name and data.definition %}
+CREATE {% if data.replace %}OR REPLACE {% endif %}VIEW IF NOT EXISTS {% if data.database %}{{ data.database }}.{% endif %}{{ data.name }}{% if data.on_cluster %} ON CLUSTER {{ data.on_cluster }}{% endif %}
+ AS
 {{ data.definition.rstrip(';') }};
-{% if data.owner and data.m_view is undefined %}
-
-ALTER TABLE {{ conn|qtIdent(data.schema, data.name) }}
-    OWNER TO {{ conn|qtIdent(data.owner) }};
-{% endif %}
-{% if data.comment %}
-COMMENT ON VIEW {{ conn|qtIdent(data.schema, data.name) }}
-    IS {{ data.comment|qtLiteral }};
-{% endif %}
 {% endif %}
