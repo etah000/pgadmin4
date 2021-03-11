@@ -8,9 +8,17 @@
 ##########################################################################
 
 """Server helper utilities"""
+import os
+
+
+import paramiko
+
+
 from pgadmin.utils.crypto import encrypt, decrypt
 import config
 from pgadmin.model import db, Server
+from pgadmin.tools.scripts.ssh_utils import SSHClient
+from pgadmin.utils import get_storage_directory
 
 
 def parse_priv_from_db(db_privileges):
@@ -247,3 +255,104 @@ def remove_saved_passwords(user_id):
     except Exception as _:
         db.session.rollback()
         raise
+
+
+def get_ssh_client(host, user, port=22, password=None, pkey=None, ):
+    ssh_client = SSHClient(host, user, port=port,
+                           password=password, pkey=pkey)
+
+    return ssh_client
+
+
+def get_ssh_info(gid, sid):
+    """
+    This function is used to get ssh connection information
+    :param gid:
+    :param sid:
+    :return: ssh_data or None
+    """
+    # Fetch Server Details
+    server = Server.query.filter_by(id=sid).first()
+    if server is None:
+        return bad_request(gettext("Server not found."))
+
+    # if current_user and hasattr(current_user, 'id'):
+    #     # Fetch User Details.
+    #     user = User.query.filter_by(id=current_user.id).first()
+    #     if user is None:
+    #         return unauthorized(gettext("Unauthorized request."))
+    # else:
+    #     return unauthorized(gettext("Unauthorized request."))
+
+    # data = request.form if request.form else json.loads(
+    #     request.data, encoding='utf-8'
+    # ) if request.data else {}
+    data = dict()
+
+    ssh_data = dict()
+    # Connect the Server
+    # manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+    # conn = manager.connection()
+
+    # Get enc key
+    # crypt_key_present, crypt_key = get_crypt_key()
+    # if not crypt_key_present:
+    #     raise CryptKeyMissing
+
+    if 'ssh_username' not in data:
+        ssh_data['ssh_username'] = server.ssh_username
+    else:
+        ssh_data['ssh_username'] = data['ssh_usernmae']
+
+    if 'ssh_port' not in data:
+        ssh_data['ssh_port'] = server.ssh_port
+    else:
+        ssh_data['ssh_port'] = data['ssh_port']
+
+    if 'host' not in data:
+        ssh_data['host'] = server.host
+    else:
+        ssh_data['host'] = data['host']
+
+    if 'ssh_authentication_type' not in data:
+        ssh_data['ssh_authentication_type'] = int(server.ssh_authentication_type)
+    else:
+        ssh_data['ssh_authentication_type'] = int(data['ssh_authentication_type'])
+
+    if ssh_data['ssh_authentication_type'] == 1:
+        # get ssh key file path and user email for generate an absolute path
+        if 'ssh_key_file' not in data:
+            ssh_data['ssh_key_file'] = server.ssh_key_file
+        else:
+            ssh_data['ssh_key_file'] = data['ssh_key_file']
+
+        if ssh_data['ssh_key_file'].startswith('/'):
+            ssh_data['ssh_key_file'] = ssh_data['ssh_key_file'][1:]
+        # retrieve ssh key directory path
+        storage_path = get_storage_directory()
+        if storage_path:
+            # generate full path of ssh key file
+            ssh_data['ssh_key_path'] = os.path.join(
+                storage_path,
+                ssh_data['ssh_key_file'].lstrip('/').lstrip('\\')
+            )
+            ssh_data['private_key'] = paramiko.RSAKey.from_private_key_file(
+                ssh_data['ssh_key_path'])
+        ssh_data['ssh_password'] = None
+
+    if ssh_data['ssh_authentication_type'] == 0:
+        if 'ssh_password' not in data:
+            ssh_data['ssh_password'] = server.ssh_password
+        else:
+            ssh_data['ssh_password'] = data['ssh_password']
+        ssh_data['ssh_key_file'] = None
+
+    if ssh_data['ssh_username'] is None \
+       or (
+           ssh_data['ssh_key_file'] is None
+           and ssh_data['ssh_password'] is None
+    ):
+
+        ssh_data = None
+
+    return ssh_data

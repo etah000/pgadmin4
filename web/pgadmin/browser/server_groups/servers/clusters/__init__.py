@@ -9,6 +9,8 @@
 
 """Implements the Database Node"""
 
+import io
+import os
 import re
 from functools import wraps
 
@@ -34,6 +36,7 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.model import Server
+from pgadmin.browser.server_groups.servers.utils import get_ssh_client, get_ssh_info
 
 
 class DatabaseModule(CollectionNodeModule):
@@ -159,6 +162,10 @@ class DatabaseView(PGClusterChildNodeView):
         # 'vopts': [
         #     {}, {'get': 'variable_options'}
         # ],
+        'get_hosts': [
+            {'get': 'get_hosts'},
+            {'get': 'get_hosts'}
+        ],
     })
 
     def check_precondition(action=None):
@@ -552,7 +559,9 @@ class DatabaseView(PGClusterChildNodeView):
     def create(self, gid, sid):
         """Create the database."""
         required_args = [
-            u'name'
+            u'name',
+            u'hosts',
+            u'data',
         ]
 
         data = request.form if request.form else json.loads(
@@ -568,53 +577,46 @@ class DatabaseView(PGClusterChildNodeView):
                         "Could not find the required parameter ({})."
                     ).format(arg)
                 )
-        # The below SQL will execute CREATE DDL only
-        SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
-            data=data, conn=self.conn
-        )
-        status, msg = self.conn.execute_scalar(SQL)
-        if not status:
-            return internal_server_error(errormsg=msg)
-
-        if 'datacl' in data:
-            data['datacl'] = parse_priv_to_db(data['datacl'], 'DATABASE')
-
+        did = data['name']
+        hosts = data['hosts']
         # The below SQL will execute rest DMLs because we cannot execute
         # CREATE with any other
-        SQL = render_template(
-            "/".join([self.template_path, 'grant.sql']),
-            data=data, conn=self.conn
-        )
-        SQL = SQL.strip('\n').strip(' ')
-        if SQL and SQL != "":
-            status, msg = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=msg)
 
-        # We need oid of newly created database
-        SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
-            name=data['name'], conn=self.conn, last_system_oid=0
-        )
-        SQL = SQL.strip('\n').strip(' ')
-        if SQL and SQL != "":
-            status, res = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+        # get ssh connection info
+        ssh_info = get_ssh_info(gid, sid)
+        if not ssh_info:
+            errmsg = 'please submit ssh connection information in properties!'
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
 
-        response = res['rows'][0]
+        fl = io.StringIO(data['data'])
+
+        remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(data['name']))
+
+        for host in hosts:
+            ssh_client = get_ssh_client(host,
+                user=ssh_info['ssh_username'],
+                port=ssh_info['ssh_port'],
+                password=ssh_info['ssh_password'],
+                pkey=ssh_info['private_key'],)
+
+            fl.seek(0, os.SEEK_SET)
+            ssh_client.execute_cmd('mkdir -p /etc/snowball-server/config.d')
+            ssh_client.putfo(fl, remote_path)
+            ssh_client.disconnect()
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
-                response['did'],
-                sid,
-                response['name'],
-                icon="icon-database-not-connected",
+                data['name'],
+                gid,
+                data['name'],
+                icon="pg-icon-database",
                 connected=False,
-                tablespace=response['default_tablespace'],
+                tablespace='public',
                 allowConn=True,
-                canCreate=response['cancreate'],
+                canCreate=True,
                 canDisconn=True,
                 canDrop=True
             )
@@ -751,53 +753,50 @@ class DatabaseView(PGClusterChildNodeView):
 
     @check_precondition(action="drop")
     def delete(self, gid, sid, did=None):
-        """Delete the database."""
+        """Delete the cluster configuration file via ssh on physical cluster."""
 
         if did is None:
             data = request.form if request.form else json.loads(
                 request.data, encoding='utf-8'
             )
-        else:
-            data = {'ids': [did]}
 
-        for did in data['ids']:
-            default_conn = self.manager.connection()
-            SQL = render_template(
-                "/".join([self.template_path, 'delete.sql']),
-                did=did, conn=self.conn
-            )
-            status, res = default_conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            if res is None:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=_(
-                        'Error: Object not found.'
-                    ),
-                    info=_(
-                        'The specified database could not be found.\n'
-                    )
-                )
+            if not data['ids']:
+                return make_json_response(success=1)
             else:
+                did = data['ids'][0]
 
-                status = self.manager.release(did=did)
+        # get hosts from system.clusters
+        SQL = render_template(
+            "/".join([self.template_path, 'get_hosts.sql']),
+            did=did, conn=self.conn,
+        )
+        status, rset = self.conn.execute_2darray(SQL)
 
-                SQL = render_template(
-                    "/".join([self.template_path, 'delete.sql']),
-                    datname=res, conn=self.conn
-                )
+        if not status:
+            return internal_server_error(errormsg=rset)
 
-                status, msg = default_conn.execute_scalar(SQL)
-                if not status:
-                    # reconnect if database drop failed.
-                    conn = self.manager.connection(did=did,
-                                                   auto_reconnect=True)
-                    status, errmsg = conn.connect()
+        hosts = [row['host_name'] for row in rset['rows']]
 
-                    return internal_server_error(errormsg=msg)
+        # get ssh connection info
+        ssh_info = get_ssh_info(gid, sid)
+        if not ssh_info:
+            errmsg = 'please submit ssh connection information in properties!'
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
+
+        remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(did))
+
+        for host in hosts:
+            ssh_client = get_ssh_client(host,
+                user=ssh_info['ssh_username'],
+                port=ssh_info['ssh_port'],
+                password=ssh_info['ssh_password'],
+                pkey=ssh_info['private_key'],)
+
+            ssh_client.execute_cmd('rm -f {}'.format(remote_path))
+            ssh_client.disconnect()
 
         return make_json_response(success=1)
 
@@ -1109,6 +1108,19 @@ class DatabaseView(PGClusterChildNodeView):
             response=dependencies_result,
             status=200
         )
+
+    @check_precondition(action="get_hosts")
+    def get_hosts(self, gid, sid, did=None):
+        SQL = render_template(
+            "/".join([self.template_path, 'get_hosts.sql']),
+            did=did, conn=self.conn,
+        )
+        status, rset = self.conn.execute_2darray(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        return make_json_response(data=rset['rows'], status=200)
 
 
 SchemaDiffRegistry(blueprint.node_type, DatabaseView)
