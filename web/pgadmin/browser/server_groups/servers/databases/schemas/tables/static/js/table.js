@@ -475,7 +475,9 @@ define('pgadmin.node.table', [
           },
         },
         {
-          id: 'ep_cluster_name', label: gettext('Cluster Name'), type: 'text', mode: ['properties','create'], visible: function(m) {
+          id: 'ep_cluster_name', label: gettext('Cluster Name'), type: 'text', node: 'cluster',
+          mode: ['properties','create'], select2: {allowClear: true}, control: 'node-list-by-name',
+          visible: function(m) {
             return m.isDistributed;
           },
         },

@@ -964,14 +964,17 @@ define('pgadmin.node.server', [
 
             return false;
           },
-        },{
-          id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
-        },{
-          id: 'service', label: gettext('Service'), type: 'text',
-          mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
-          group: gettext('Connection'),
-        // },{
+        },
+        // {
+        //   id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
+        //   mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+        // },
+        // {
+        //   id: 'service', label: gettext('Service'), type: 'text',
+        //   mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
+        //   group: gettext('Connection'),
+        // },
+        // {
         //   id: 'sslmode', label: gettext('SSL mode'), control: 'select2', group: gettext('SSL'),
         //   select2: {
         //     allowClear: false,
@@ -1161,7 +1164,8 @@ define('pgadmin.node.server', [
         //   type: 'int', group: gettext('Advanced'),
         //   mode: ['properties', 'edit', 'create'], readonly: 'isConnected',
         //   min: 0,
-        },{
+        // },
+        {
           id: 'ssh_port', label: gettext('SSH port'), type: 'int', group: gettext('Advanced'),
           mode: ['properties', 'edit', 'create'],  max: 65535,
         },{
