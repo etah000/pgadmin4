@@ -19,6 +19,8 @@ from flask_babelex import gettext
 from flask_security import current_user
 import pgadmin.browser.server_groups.servers.databases as databases
 from config import PG_DEFAULT_DRIVER
+from pgadmin.browser.server_groups.servers.databases.utils import \
+    ClusterReader
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, parse_rule_definition, VacuumSettings, get_schema
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -251,7 +253,7 @@ def check_precondition(f):
     return wrap
 
 
-class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
+class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, ClusterReader):
     """
     This class is responsible for generating routes for view node.
 
@@ -308,6 +310,9 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
     * compare(**kwargs):
       - This function will compare the view nodes from two
         different schemas.
+
+    * clusters(gid, sid, did, vid):
+      - Returns available clusters
     """
     node_type = view_blueprint.node_type
 
@@ -345,7 +350,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             {'get': 'get_table_vacuum'}],
         'get_toast_table_vacuum': [
             {'get': 'get_toast_table_vacuum'},
-            {'get': 'get_toast_table_vacuum'}]
+            {'get': 'get_toast_table_vacuum'}],
+        'get_clusters': [
+            {'get': 'clusters'},
+            {'get': 'clusters'}],
     })
 
     keys_to_ignore = ['oid', 'schema', 'xmin', 'oid-2']
@@ -1563,6 +1571,23 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                                json_resp=False)
         return sql
 
+    @check_precondition
+    def clusters(self, gid, sid, did, vid=None):
+        """
+        Returns:
+            This function will return list of cluster available
+            for node-ajax-control
+        """
+
+        status, types = self.get_clusters(self.conn, )
+
+        if not status:
+            return internal_server_error(errormsg=types)
+
+        return make_json_response(
+            data=types,
+            status=200
+        )
 
 # Override the operations for materialized view
 mview_operations = {
