@@ -130,13 +130,19 @@ define('pgadmin.node.view', [
         },{
           id: 'engine', label: gettext('Engine'), cell: 'string',
           type: 'text', mode: ['properties'],
-        },{
+        },
+        {
+          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+          mode: ['edit','create'], select2: {allowClear: true},
+          control: 'node-list-by-name',
+        },
+        {
           id: 'database', label: gettext('Database'), cell: 'string',
-          type: 'text', mode: ['properties'],
+          type: 'text', mode: ['create', 'edit'],
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
-          node: 'schema', disabled: 'notInSchema', mode: ['create', 'edit'],
+          node: 'schema', disabled: 'notInSchema', mode: [],
           select2: { allowClear: false }, cache_node: 'database',
         // },{
         //   id: 'system_view', label: gettext('System view?'), cell: 'string',
@@ -192,22 +198,25 @@ define('pgadmin.node.view', [
               }
             },
           }),
-        }, pgBrowser.SecurityGroupSchema, {
-          // Add Privilege Control
-          id: 'datacl', label: gettext('Privileges'), type: 'collection',
-          model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't'],
-          }), uniqueCol : ['grantee'], editable: false, group: 'security',
-          mode: ['edit', 'create'], canAdd: true, canDelete: true,
-          control: 'unique-col-collection', disabled: 'notInSchema',
-        },{
-          // Add Security Labels Control
-          id: 'seclabels', label: gettext('Security labels'),
-          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          canEdit: false, group: 'security', canDelete: true,
-          mode: ['edit', 'create'], canAdd: true, disabled: 'notInSchema',
-          control: 'unique-col-collection', uniqueCol : ['provider'],
-        }],
+        },
+        //  pgBrowser.SecurityGroupSchema, {
+        //   // Add Privilege Control
+        //   id: 'datacl', label: gettext('Privileges'), type: 'collection',
+        //   model: pgBrowser.Node.PrivilegeRoleModel.extend({
+        //     privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't'],
+        //   }), uniqueCol : ['grantee'], editable: false, group: 'security',
+        //   mode: ['edit', 'create'], canAdd: true, canDelete: true,
+        //   control: 'unique-col-collection', disabled: 'notInSchema',
+        // }
+        // ,{
+        //   // Add Security Labels Control
+        //   id: 'seclabels', label: gettext('Security labels'),
+        //   model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
+        //   canEdit: false, group: 'security', canDelete: true,
+        //   mode: ['edit', 'create'], canAdd: true, disabled: 'notInSchema',
+        //   control: 'unique-col-collection', uniqueCol : ['provider'],
+        // }
+      ],
         validate: function() {
           // Triggers specific error messages for fields
           var err = {},
