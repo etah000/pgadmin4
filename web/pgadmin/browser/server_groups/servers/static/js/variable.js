@@ -130,50 +130,51 @@ function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode)
     },
     schema: [
       {
-        id: 'name', label: gettext('Name'), type:'text', cellHeaderClasses: 'width_percent_30',
-        editable: function(m) {
-          return (m instanceof Backbone.Collection) ? true : m.isNew();
-        },
-        cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
-          initialize: function() {
-            Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
+        id: 'name', label: gettext('Name'), type:'text', editable: true,
+        cellFunction: cellFunction, cellHeaderClasses: 'width_percent_40',
+        // editable: function(m) {
+        //   return (m instanceof Backbone.Collection) ? true : m.isNew();
+        // },
+        // cell: Backgrid.Extension.NodeAjaxOptionsCell.extend({
+        //   initialize: function() {
+        //     Backgrid.Extension.NodeAjaxOptionsCell.prototype.initialize.apply(this, arguments);
 
             // Immediately process options as we need them before render.
 
-            var opVals = _.clone(this.optionValues ||
-                (_.isFunction(this.column.get('options')) ?
-                  (this.column.get('options'))(this) :
-                  this.column.get('options')));
-
-            this.column.set('options', opVals);
-          },
-        }),
-        url: 'vopts',
-        select2: { allowClear: false },
-        transform: function(vars, cell) {
-          var res = [],
-            availVariables = {};
-
-          _.each(vars, function(v) {
-            res.push({
-              'value': v.name,
-              'image': undefined,
-              'label': v.name,
-            });
-            availVariables[v.name] = v;
-          });
-
-          cell.column.set('availVariables', availVariables);
-          return res;
-        },
+            // var opVals = _.clone(this.optionValues ||
+            //     (_.isFunction(this.column.get('options')) ?
+            //       (this.column.get('options'))(this) :
+            //       this.column.get('options')));
+            //
+            // this.column.set('options', opVals);
+          // },
+        // }),
+        // url: 'vopts',
+        // select2: { allowClear: false },
+        // transform: function(vars, cell) {
+        //   var res = [],
+        //     availVariables = {};
+        //
+        //   _.each(vars, function(v) {
+        //     res.push({
+        //       'value': v.name,
+        //       'image': undefined,
+        //       'label': v.name,
+        //     });
+        //     availVariables[v.name] = v;
+        //   });
+        //
+        //   cell.column.set('availVariables', availVariables);
+        //   return res;
+        // },
       },
       {
         id: 'value', label: gettext('Value'), type: 'text', editable: true,
         cellFunction: cellFunction, cellHeaderClasses: 'width_percent_40',
       },
-      {id: 'database', label: gettext('Database'), type: 'text', editable: true,
-        node: 'database', cell: Backgrid.Extension.NodeListByNameCell,
-      },
+      // {id: 'database', label: gettext('Database'), type: 'text', editable: true,
+      //   node: 'database', cell: Backgrid.Extension.NodeListByNameCell,
+      // },
       {id: 'role', label: gettext('Role'), type: 'text', editable: true,
         node: 'role', cell: Backgrid.Extension.NodeListByNameCell},
     ],

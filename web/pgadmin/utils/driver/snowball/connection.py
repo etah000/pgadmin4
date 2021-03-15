@@ -499,7 +499,13 @@ class Connection(BaseConnection):
 #     pg_catalog.pg_roles
 # WHERE
 #     rolname = current_user""")
-        status = _execute(cur, """SELECT currentUser(), 1 as is_superuser;""")
+# need modify user.xml and config.xml definition
+#         status = _execute(cur, """select name,default_roles_all as is_superuser,
+#                                   default_roles_all as can_create_role,
+#                                   default_roles_all as can_create_db
+#                                   from system.users
+#                                   where name=currentUser();""")
+        status = _execute(cur, """SELECT currentUser(), 1 as is_superuser, 1 as can_create_role;""")
 
         if status is None:
             manager.user_info = dict()

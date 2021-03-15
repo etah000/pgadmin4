@@ -20,8 +20,12 @@ from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, precondition_required, \
     internal_server_error, forbidden, success_return, gone
 from pgadmin.utils.driver import get_driver
+from pgadmin.browser.server_groups.servers.databases.utils import ClusterReader
 
 from config import PG_DEFAULT_DRIVER
+
+from pgadmin.browser.server_groups.servers.databases.schemas.tables import \
+    BaseTableView
 
 
 class RoleModule(CollectionNodeModule):
@@ -86,7 +90,7 @@ class RoleModule(CollectionNodeModule):
 blueprint = RoleModule(__name__)
 
 
-class RoleView(PGChildNodeView):
+class RoleView(PGChildNodeView, ClusterReader):
     node_type = 'role'
 
     parent_ids = [
@@ -109,7 +113,8 @@ class RoleView(PGChildNodeView):
         'dependent': [{'get': 'dependents'}],
         'children': [{'get': 'children'}],
         'vopts': [{}, {'get': 'voptions'}],
-        'variables': [{'get': 'variables'}],
+        # 'variables': [{'get': 'variables'}],
+        'get_clusters': [{'get': 'clusters'}, {'get': 'clusters'}],
     })
 
     def validate_request(f):
@@ -763,7 +768,7 @@ rolmembership:{
         show_password = self.conn.manager.user_info['is_superuser']
         status, res = self.conn.execute_scalar(
             render_template(
-                self.sql_path + 'sql.sql', show_password=show_password, 
+                self.sql_path + 'sql.sql', show_password=show_password,
                 rid=rid, is_user=self.rolCanLogin,
             ),
             dict({'rid': rid})
@@ -808,16 +813,16 @@ rolmembership:{
                 _("Could not create the role.\n{0}").format(msg)
             )
 
-        status, rid = self.conn.execute_scalar(
-            "SELECT oid FROM pg_roles WHERE rolname = %(rolname)s",
-            {'rolname': self.request[u'rolname']}
-        )
+        # status, rid = self.conn.execute_scalar(
+        #     "SELECT oid FROM pg_roles WHERE rolname = %(rolname)s",
+        #     {'rolname': self.request[u'rolname']}
+        # )
 
-        if not status:
-            return internal_server_error(
-                _("Could not retrieve the role information.\n{0}").format(msg)
-            )
-
+        # if not status:
+        #     return internal_server_error(
+        #         _("Could not retrieve the role information.\n{0}").format(msg)
+        #     )
+        rid=self.request[u'rolname']
         status, rset = self.conn.execute_dict(
             render_template(self.sql_path + 'nodes.sql',
                             rid=rid
@@ -1088,25 +1093,25 @@ rolmembership:{
 
         return dependents
 
-    @check_precondition()
-    def variables(self, gid, sid, rid):
-
-        status, rset = self.conn.execute_dict(
-            render_template(self.sql_path + 'variables.sql',
-                            rid=rid
-                            )
-        )
-
-        if not status:
-            return internal_server_error(
-                _(
-                    "Error retrieving variable information for the role.\n{0}"
-                ).format(rset)
-            )
-
-        return make_json_response(
-            data=rset['rows']
-        )
+    # @check_precondition()
+    # def variables(self, gid, sid, rid):
+    #
+    #     status, rset = self.conn.execute_dict(
+    #         render_template(self.sql_path + 'variables.sql',
+    #                         rid=rid
+    #                         )
+    #     )
+    #
+    #     if not status:
+    #         return internal_server_error(
+    #             _(
+    #                 "Error retrieving variable information for the role.\n{0}"
+    #             ).format(rset)
+    #         )
+    #
+    #     return make_json_response(
+    #         data=rset['rows']
+    #     )
 
     @check_precondition()
     def voptions(self, gid, sid):
@@ -1140,5 +1145,22 @@ WHERE
             data=res['rows']
         )
 
+    @BaseTableView.check_precondition
+    def clusters(self, gid, sid, did=None, tid=None):
+        """
+        Returns:
+            This function will return list of cluster available
+            for node-ajax-control
+        """
+
+        status, types = self.get_clusters(self.conn, )
+
+        if not status:
+            return internal_server_error(errormsg=types)
+
+        return make_json_response(
+            data=types,
+            status=200
+        )
 
 RoleView.register_node_view(blueprint)
