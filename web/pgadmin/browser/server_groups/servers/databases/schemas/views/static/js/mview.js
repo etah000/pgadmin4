@@ -57,6 +57,7 @@ define('pgadmin.node.mview', [
       dialogHelp: url_for('help.static', {'filename': 'materialized_view_dialog.html'}),
       label: gettext('Materialized View'),
       hasSQL: true,
+      populate:false,
       canEdit: false,
       canDrop: true,
       canDropCascade: false,
@@ -165,19 +166,46 @@ define('pgadmin.node.mview', [
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchema',
-        },{
-          id: 'engine', label: gettext('Engine'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
+        },
+        {
+          id: 'engine', label: gettext('Engine'),
+          control: 'select2',
+          type: 'text', mode: ['properties','create'],
+          options: [
+            {label: gettext('MergeTree'), value: 'MergeTree'},
+            {label: gettext('ReplicatedMergeTree'), value: 'ReplicatedMergeTree'},
+            {label: gettext('Distributed'), value: 'Distributed'}
+          ],select2: { allowClear: false, width: '100%' },
+        },
+          // {
+        //   id: 'shifted', label: gettext('shifted'), type: 'options', mode: ['create'],
+        //   options: [
+        //     {label: gettext('true'), value: 'true'},
+        //     {label: gettext('false'), value: 'false'},
+        //   ],select2: { allowClear: false, width: '100%' },
+        // },
+           {
+          id: 'populate', label: gettext('populate?'), type: 'switch',
+          mode: ['create'],'options': {
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+          },
+        },
+        {
+          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+          mode: ['edit','create'], select2: {allowClear: true},
+          control: 'node-list-by-name',
+        },
+        {
           id: 'database', label: gettext('Database'), cell: 'string',
-          type: 'text', mode: ['properties'],
+          type: 'text', mode: ['properties','create', 'edit'],
         // },{
         //   id: 'system_view', label: gettext('System materialized view?'), cell: 'string',
         //   type: 'switch', mode: ['properties'],
         // }, pgBrowser.SecurityGroupSchema, {
         //   id: 'acl', label: gettext('Privileges'),
         //   mode: ['properties'], type: 'text', group: gettext('Security'),
-        },{
+        },
+        {
           id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           tabPanelCodeClass: 'sql-code-control',
@@ -200,35 +228,39 @@ define('pgadmin.node.mview', [
               }
             },
           }),
-        },{
-          id: 'with_data', label: gettext('With data?'),
-          group: gettext('Storage'), mode: ['edit', 'create'],
-          type: 'switch',
-        },{
-          id: 'fillfactor', label: gettext('Fill factor'),
-          group: gettext('Storage'), mode: ['edit', 'create'],
-          type: 'int', min: 10, max: 100,
-        },{
-          type: 'nested', control: 'tab', id: 'materialization',
-          label: gettext('Parameter'), mode: ['edit', 'create'],
-          group: gettext('Parameter'),
-          schema: Backform.VacuumSettingsSchema,
-        },{
-          // Add Privilege Control
-          id: 'datacl', label: gettext('Privileges'), type: 'collection',
-          model: pgBrowser.Node.PrivilegeRoleModel.extend({
-            privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't'],
-          }), uniqueCol : ['grantee'], editable: false,
-          group: 'security', canAdd: true, canDelete: true,
-          mode: ['edit', 'create'], control: 'unique-col-collection',
-        },{
-        // Add Security Labels Control
-          id: 'seclabels', label: gettext('Security labels'),
-          model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
-          canEdit: false, group: 'security', canDelete: true,
-          mode: ['edit', 'create'], canAdd: true,
-          control: 'unique-col-collection', uniqueCol : ['provider'],
-        }],
+        },
+        // {
+        //   id: 'with_data', label: gettext('With data?'),
+        //   group: gettext('Storage'), mode: ['edit', 'create'],
+        //   type: 'switch',
+        // },{
+        //   id: 'fillfactor', label: gettext('Fill factor'),
+        //   group: gettext('Storage'), mode: ['edit', 'create'],
+        //   type: 'int', min: 10, max: 100,
+        // },
+        // {
+        //   type: 'nested', control: 'tab', id: 'materialization',
+        //   label: gettext('Parameter'), mode: ['edit', 'create'],
+        //   group: gettext('Parameter'),
+        //   schema: Backform.VacuumSettingsSchema,
+        // }
+        // ,{
+        //   // Add Privilege Control
+        //   id: 'datacl', label: gettext('Privileges'), type: 'collection',
+        //   model: pgBrowser.Node.PrivilegeRoleModel.extend({
+        //     privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't'],
+        //   }), uniqueCol : ['grantee'], editable: false,
+        //   group: 'security', canAdd: true, canDelete: true,
+        //   mode: ['edit', 'create'], control: 'unique-col-collection',
+        // },{
+        // // Add Security Labels Control
+        //   id: 'seclabels', label: gettext('Security labels'),
+        //   model: pgBrowser.SecLabelModel, editable: false, type: 'collection',
+        //   canEdit: false, group: 'security', canDelete: true,
+        //   mode: ['edit', 'create'], canAdd: true,
+        //   control: 'unique-col-collection', uniqueCol : ['provider'],
+        // }
+      ],
         sessChanged: function() {
           /* If only custom autovacuum option is enabled the check if the options table is also changed. */
           if(_.size(this.sessAttrs) == 2 && this.sessAttrs['autovacuum_custom'] && this.sessAttrs['toast_autovacuum']) {
