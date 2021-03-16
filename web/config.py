@@ -30,7 +30,7 @@ from pgadmin.utils import env, IS_WIN, fs_short_path
 ##########################################################################
 
 # Name of the application to display in the UI
-APP_NAME = 'SnowAdmin 1'
+APP_NAME = 'SuperAdmin 1'
 APP_ICON = 'pg-icon'
 
 ##########################################################################
@@ -67,7 +67,7 @@ else:
 
 # Copyright string for display in the app
 # Any changes made here must also be made in runtime/pgAdmin4.pro
-APP_COPYRIGHT = 'Copyright (C) 2019 - 2021, The SnowAdmin Development Team'
+APP_COPYRIGHT = ''
 
 ##########################################################################
 # Misc stuff

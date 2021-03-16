@@ -66,7 +66,7 @@ class HelpModule(PgAdminModule):
 
         self.edbas_help_path = self.help_preference.register(
             'help', 'edbas_help_path',
-            gettext("SnowAdmin Help Path"), 'text',
+            gettext("SuperAdmin Help Path"), 'text',
             '',
             category_label=gettext('Help'),
             help_str=gettext(
