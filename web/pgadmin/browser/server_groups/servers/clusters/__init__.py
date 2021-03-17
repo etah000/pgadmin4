@@ -37,7 +37,7 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.model import Server
 from pgadmin.browser.server_groups.servers.utils import get_ssh_client, get_ssh_info
-
+from pgadmin.tools.scripts.cluster_utils import check_xml
 
 class DatabaseModule(CollectionNodeModule):
     NODE_TYPE = 'cluster'
@@ -577,6 +577,18 @@ class DatabaseView(PGClusterChildNodeView):
                         "Could not find the required parameter ({})."
                     ).format(arg)
                 )
+
+        # check xml_str
+        status, msg = check_xml(data['data'])
+        if not status:
+            return make_json_response(
+                status=410,
+                success=0,
+                errormsg=_(
+                    "XMLSyntaxError ({})."
+                ).format(msg)
+            )
+
         did = data['name']
         hosts = data['hosts']
         # The below SQL will execute rest DMLs because we cannot execute
