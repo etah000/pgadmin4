@@ -136,6 +136,7 @@ define('pgadmin.node.view', [
           mode: ['edit','create'], select2: {allowClear: true},
           control: 'node-list-by-name',
         },
+        
         {
           id: 'database', label: gettext('Database'), cell: 'string',
           type: 'text', mode: ['create', 'edit'],

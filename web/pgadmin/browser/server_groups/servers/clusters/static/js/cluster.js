@@ -96,7 +96,7 @@ define('pgadmin.node.cluster', [
       can_create_cluster: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];
-          return false;
+          return true;
         // return server.connected && server.user.can_create_db;
       },
       is_not_connected: function(node) {
@@ -307,35 +307,46 @@ define('pgadmin.node.cluster', [
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
 
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({'datowner': userInfo.name}, {silent: true});
-          }
+          // if (isNew) {
+          //   var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+          //   this.set({'datowner': userInfo.name}, {silent: true});
+          // }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
 
         schema: [{
           id: 'name', label: gettext('Cluster Name'), cell: 'string',
           editable: false, type: 'text',
-        },{
-          id: 'datowner', label: gettext('Owner'), cell: 'string',
-          editable: false, type: 'text',
-        },{
-          id: 'host_name', label: gettext('Host Name'), cell: 'string',
-          editable: false, type: 'text',
-        },{
+        },
+        // {
+        //   id: 'datowner', label: gettext('Owner'), cell: 'string',
+        //   editable: false, type: 'text',
+        // },
+        {
+          id: 'host_name', label: gettext('Host Name1'), type: 'text', node: 'host',
+          mode: ['edit','create'], select2: {allowClear: true},
+          control: 'node-ajax-options', url: 'get_hosts',
+          // control: 'node-list-by-name',
+        },
+        // {
+        //   id: 'host_name', label: gettext('Host Name'), cell: 'string',
+        //   editable: false, type: 'text',
+        // },
+        {
           id: 'host_address', label: gettext('Host Address'),
           editable: false, type: 'text',
         },{
           id: 'port', label: gettext('Port'),
           editable: false, type: 'text',
-        },{
-          id: 'shard_num', label: gettext('Shard Num'),
-          editable: false, type: 'text',
-        },{
-          id: 'shard_weight', label: gettext('Shard Weight'),
-          editable: false, type: 'text',
+        },
+        // {
+        //   id: 'shard_num', label: gettext('Shard Num'),
+        //   editable: false, type: 'text',
         // },{
+        //   id: 'shard_weight', label: gettext('Shard Weight'),
+        //   editable: false, type: 'text',
+        // },
+        // {
         //   id: 'acl', label: gettext('Privileges'), type: 'text',
         //   group: gettext('Security'), mode: ['properties'],
         // },{
@@ -475,7 +486,7 @@ define('pgadmin.node.cluster', [
         //     mode: ['edit', 'create'], min_version: 90200,
         //   },
         //   ],
-        },
+        // },
         ],
         validate: function() {
           var name = this.get('name');
