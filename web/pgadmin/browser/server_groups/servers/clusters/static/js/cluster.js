@@ -284,6 +284,7 @@ define('pgadmin.node.cluster', [
           name: undefined,
           owner: undefined,
           is_sys_obj: undefined,
+          shifted:false,
           comment: undefined,
           encoding: 'UTF8',
           template: undefined,
@@ -323,20 +324,29 @@ define('pgadmin.node.cluster', [
         //   editable: false, type: 'text',
         // },
         {
-          id: 'host_name', label: gettext('Host Name1'), type: 'text', node: 'host',
-          mode: ['edit','create'], select2: {allowClear: true},
+          id: 'host_name', label: gettext('Host Name'), type: 'text', node: 'host',
+          mode: ['edit','create'], select2: {multiple: true, allowClear: true,},deps: ['host_name'],
           control: 'node-ajax-options', url: 'get_hosts',
+          transform: function(d) {
+             for(let item of d){
+                 item.label=item.host_name;
+             }
+            return d;
+          },
           // control: 'node-list-by-name',
         },
         // {
         //   id: 'host_name', label: gettext('Host Name'), cell: 'string',
         //   editable: false, type: 'text',
         // },
+         {
+          id: 'shifted', label: gettext('shifted?'), type: 'switch',
+          mode: ['create'],'options': {
+            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+          },
+        },
         {
-          id: 'host_address', label: gettext('Host Address'),
-          editable: false, type: 'text',
-        },{
-          id: 'port', label: gettext('Port'),
+          id: 'default_databases', label: gettext('Default Databases'),
           editable: false, type: 'text',
         },
         // {
