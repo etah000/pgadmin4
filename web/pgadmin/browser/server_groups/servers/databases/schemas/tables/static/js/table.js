@@ -28,7 +28,7 @@ define('pgadmin.node.table', [
         node: 'table',
         label: gettext('Tables'),
         type: 'coll-table',
-        columns: ['name', 'p_engine', 'primarykey', 'partition_key'],
+        columns: ['name', 'p_engine', 'order_keys', 'partition_keys'],
         hasStatistics: true,
         statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
           gettext('TOAST table size'), gettext('Tuple length'),
@@ -443,7 +443,7 @@ define('pgadmin.node.table', [
             onChange: function() {
                 var selectedValue = this.$el.find('select').val();
                 // $(".ep_cluster_name").find("select option").removeAttr("selected");
-                // $(".ep_cluster_name").find("select option").each(function(){ 
+                // $(".ep_cluster_name").find("select option").each(function(){
                 //        let text=$(this).val();
                 //         if(text==selectedValue){
                 //           console.log(text);
@@ -466,9 +466,9 @@ define('pgadmin.node.table', [
                     filter = self.field.get('filter') || function() {
                       return true;
                     };
-          
+
                   filter = filter.bind(self);
-          
+
                   _.each(rows, function(r) {
                     if (filter(r)) {
                       var l = (_.isFunction(node['node_label']) ?
@@ -486,7 +486,7 @@ define('pgadmin.node.table', [
                       });
                     }
                   });
-          
+
                   return res;
                 },
               }
