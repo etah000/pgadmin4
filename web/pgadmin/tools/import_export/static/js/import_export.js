@@ -249,7 +249,7 @@ define([
 
         return res;
       },
-      helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
+      // helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
     // }, {
     //   id: 'null_string',
     //   label: gettext('NULL Strings'),
@@ -277,7 +277,7 @@ define([
         placeholder: gettext('Not null columns...'),
       },
       visible: 'importing',
-      helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
+      // helpMessage: gettext('An optional list of columns to be copied. If no column list is specified, all columns of the table will be copied.'),
     }, {
       type: 'nested',
       control: 'fieldset',
@@ -330,21 +330,21 @@ define([
           width: '100%',
           placeholder: gettext('Select from list...'),
         },
-        helpMessage: gettext('Specifies the character that separates columns within each row (line) of the file. The default is a tab character in text format, a comma in CSV format. This must be a single one-byte character. This option is not allowed when using binary format.'),
+        // helpMessage: gettext('Specifies the character that separates columns within each row (line) of the file. The default is a tab character in text format, a comma in CSV format. This must be a single one-byte character. This option is not allowed when using binary format.'),
       },
       {
         id: 'errorsnum', label: gettext('Allow errors number'), type: 'text',
         group: gettext('Miscellaneous'),
         deps: ['format', 'is_import'],
         disabled: 'isDisabled',
-        helpMessage: gettext('input_format_allow_errors_num: Sets the maximum number of acceptable errors when reading from text formats (CSV, TSV, etc.).'),
+        // helpMessage: gettext('input_format_allow_errors_num: Sets the maximum number of acceptable errors when reading from text formats (CSV, TSV, etc.).'),
       },
       {
         id: 'errorsratio', label: gettext('Allow errors ratio'), type: 'text',
         group: gettext('Miscellaneous'),
         deps: ['format', 'is_import'],
         disabled: 'isDisabled',
-        helpMessage: gettext('input_format_allow_errors_ratio: Sets the maximum percentage of errors allowed when reading from text formats (CSV, TSV, etc.). The percentage of errors is set as a floating-point number between 0 and 1.'),
+        // helpMessage: gettext('input_format_allow_errors_ratio: Sets the maximum percentage of errors allowed when reading from text formats (CSV, TSV, etc.). The percentage of errors is set as a floating-point number between 0 and 1.'),
       },
         /*
       {
