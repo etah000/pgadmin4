@@ -436,65 +436,7 @@ define('pgadmin.node.table', [
 
         {
           id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-<<<<<<< HEAD
           mode: ['edit','create'], select2: {allowClear: true}, control: 'node-list-by-name',
-=======
-          mode: ['edit','create'], select2: {allowClear: true},
-          // control: 'node-list-by-name',
-          control: Backform.NodeListByNameControl.extend({
-            onChange: function() {
-                var selectedValue = this.$el.find('select').val();
-                // $(".ep_cluster_name").find("select option").removeAttr("selected");
-                // $(".ep_cluster_name").find("select option").each(function(){
-                //        let text=$(this).val();
-                //         if(text==selectedValue){
-                //           console.log(text);
-                //           $(this).attr('selected', true);
-                //           // $(this).trigger("click");
-                //         }
-                // });
-                // console.log($(".ep_cluster_name").find("select option"));
-                this.model.set('cluster',selectedValue);
-                // console.log(selectedValue);
-            },
-            defaults: _.extend(
-              {},
-              Backform.NodeListByIdControl.prototype.defaults,
-              {
-                transform: function(rows) {
-                  var self = this,
-                    node = self.field.get('schema_node'),
-                    res = [],
-                    filter = self.field.get('filter') || function() {
-                      return true;
-                    };
-
-                  filter = filter.bind(self);
-
-                  _.each(rows, function(r) {
-                    if (filter(r)) {
-                      var l = (_.isFunction(node['node_label']) ?
-                          (node['node_label']).apply(node, [r, self.model, self]) :
-                          r.label),
-                        image = (_.isFunction(node['node_image']) ?
-                          (node['node_image']).apply(
-                            node, [r, self.model, self]
-                          ) :
-                          (node['node_image'] || ('icon-' + node.type)));
-                      res.push({
-                        'value': r.label,
-                        'image': image,
-                        'label': l,
-                      });
-                    }
-                  });
-
-                  return res;
-                },
-              }
-            ),
-          }),
->>>>>>> 47cdea7... fixed table properties
         },
         // {
         //   id: 'distributed_database', label: gettext('distributed_database'), type: 'text', mode: ['properties','create'],
