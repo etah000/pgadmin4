@@ -86,12 +86,12 @@ function updateUIPreferences(sqlEditor) {
     .attr('aria-label', shortcut_accesskey_title(gettext('Clear'),preferences.btn_clear_options))
     .attr('accesskey', shortcut_key(preferences.btn_clear_options));
 
-  $el.find('#btn-conn-status')
-    .attr('accesskey', shortcut_key(preferences.btn_conn_status))
-    .find('i')
-    .attr('title',
-      shortcut_accesskey_title(gettext('Connection status (click for details)'),
-        preferences.btn_conn_status));
+  // $el.find('#btn-conn-status')
+  //   .attr('accesskey', shortcut_key(preferences.btn_conn_status))
+  //   .find('i')
+  //   .attr('title',
+  //     shortcut_accesskey_title(gettext('Connection status (click for details)'),
+  //       preferences.btn_conn_status));
 
   /* Accessed using ctrl,atl,shift and key */
   $el.find('#btn-flash')

@@ -64,32 +64,32 @@ define('pgadmin.node.database', [
           icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
           enable: false,
         },
-        {
-          name: 'create_database_on_coll', node: 'coll-database', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Database...'),
-          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
-          enable: 'can_create_database',
-        },
+        // {
+        //   name: 'create_database_on_coll', node: 'coll-database', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Database...'),
+        //   icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
+        //   enable: 'can_create_database',
+        // },
         {
           name: 'create_database', node: 'coll-database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Database...'),
           icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
         },
-        {
-          name: 'create_database', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Database...'),
-          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
-          enable: 'can_create_database',
-        },
-        {
-          name: 'connect_database', node: 'database', module: this,
-          applies: ['object', 'context'], callback: 'connect_database',
-          category: 'connect', priority: 4, label: gettext('Connect Database...'),
-          icon: 'fa fa-link', enable : 'is_not_connected',
-        }
+        // {
+        //   name: 'create_database', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'show_obj_properties',
+        //   category: 'create', priority: 4, label: gettext('Database...'),
+        //   icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
+        //   enable: 'can_create_database',
+        // },
+        // {
+        //   name: 'connect_database', node: 'database', module: this,
+        //   applies: ['object', 'context'], callback: 'connect_database',
+        //   category: 'connect', priority: 4, label: gettext('Connect Database...'),
+        //   icon: 'fa fa-link', enable : 'is_not_connected',
+        // }
         // ,{
         //   name: 'disconnect_database', node: 'database', module: this,
         //   applies: ['object', 'context'], callback: 'disconnect_database',

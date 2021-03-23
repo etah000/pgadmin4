@@ -314,7 +314,7 @@ def RegisterQueryToolPreferences(self):
         category_label=gettext('Display'),
         help_str=gettext('If set to True, the Query Tool '
                          'will monitor and display the connection and '
-                         'transaction status.')
+                         'status.')
     )
 
     self.connection_status = self.preference.register(
@@ -323,7 +323,7 @@ def RegisterQueryToolPreferences(self):
         min_val=1, max_val=600,
         category_label=gettext('Display'),
         help_str=gettext(
-            'The number of seconds between connection/transaction '
+            'The number of seconds between connection '
             'status polls.'
         )
     )
@@ -382,23 +382,23 @@ def RegisterQueryToolPreferences(self):
         fields=shortcut_fields
     )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'explain_analyze_query',
-        gettext('EXPLAIN ANALYZE query'),
-        'keyboardshortcut',
-        {
-            'alt': False,
-            'shift': True,
-            'control': False,
-            'key': {
-                'key_code': 118,
-                'char': 'F7'
-            }
-        },
-        category_label=gettext('Keyboard shortcuts'),
-        fields=shortcut_fields
-    )
+    # self.preference.register(
+    #     'keyboard_shortcuts',
+    #     'explain_analyze_query',
+    #     gettext('EXPLAIN ANALYZE query'),
+    #     'keyboardshortcut',
+    #     {
+    #         'alt': False,
+    #         'shift': True,
+    #         'control': False,
+    #         'key': {
+    #             'key_code': 118,
+    #             'char': 'F7'
+    #         }
+    #     },
+    #     category_label=gettext('Keyboard shortcuts'),
+    #     fields=shortcut_fields
+    # )
 
     self.preference.register(
         'keyboard_shortcuts',

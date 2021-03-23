@@ -245,7 +245,7 @@ msgstr "显示"
 
 #: pgadmin/browser/register_browser_preferences.py:27
 msgid "Enable browser tree animation?"
-msgstr "是否启用树浏览器动画？"
+msgstr "是否启用浏览器目录树动画？"
 
 #: pgadmin/browser/register_browser_preferences.py:33
 msgid "Enable dialogue/notification animation?"
@@ -253,17 +253,17 @@ msgstr "是否启用对话框/通知动画？"
 
 #: pgadmin/browser/register_browser_preferences.py:39
 msgid "Browser tree state saving interval"
-msgstr "树浏览器状态保存间隔"
+msgstr "浏览器目录树状态保存间隔"
 
 #: pgadmin/browser/register_browser_preferences.py:41
 msgid ""
 "Browser tree state saving interval in seconds. Use -1 to disable the tree"
 " saving mechanism."
-msgstr ""
+msgstr "浏览器目录树状态保存间隔(以秒为单位)。 使用-1禁用目录树保存机制"
 
 #: pgadmin/browser/register_browser_preferences.py:49
 msgid "Confirm on close or refresh?"
-msgstr ""
+msgstr "确认关闭或刷新?"
 
 #: pgadmin/browser/register_browser_preferences.py:51
 msgid ""
@@ -273,13 +273,13 @@ msgstr "在继续之前, 请确认关闭或刷新浏览器或浏览器选项卡�
 
 #: pgadmin/browser/register_browser_preferences.py:59
 msgid "Confirm before Close/Reset in object properties dialog?"
-msgstr ""
+msgstr "在对象属性对话框关闭/重置之前需要确认？"
 
 #: pgadmin/browser/register_browser_preferences.py:62
 msgid ""
 "Confirm before closing or resetting the changes in the properties dialog "
 "for an object if the changes are not saved."
-msgstr ""
+msgstr "如果对象的属性对话框中的更改没有保存，在关闭或重置之前确认。"
 
 #: pgadmin/browser/register_browser_preferences.py:70
 msgid "Auto-expand sole children"
@@ -297,7 +297,7 @@ msgstr "将 UI 布局锁定在不同级别"
 
 #: pgadmin/browser/register_browser_preferences.py:95
 msgid "Count rows if estimated less than"
-msgstr "如果估计小于行, 则对行进行计数"
+msgstr "对行进行计数，如果估计行数小于"
 
 #: pgadmin/browser/register_browser_preferences.py:96
 #: pgadmin/browser/register_browser_preferences.py:102
@@ -338,7 +338,7 @@ msgstr "Alt/Option"
 
 #: pgadmin/browser/register_browser_preferences.py:120
 msgid "Browser tree"
-msgstr "树浏览器"
+msgstr "浏览器目录树"
 
 #: pgadmin/browser/register_browser_preferences.py:128
 #: pgadmin/browser/register_browser_preferences.py:143
@@ -473,7 +473,7 @@ msgstr "对话框选项卡向后"
 
 #: pgadmin/browser/register_browser_preferences.py:405
 msgid "Refresh browser tree"
-msgstr "刷新树浏览器"
+msgstr "刷新浏览目录树"
 
 #: pgadmin/browser/register_browser_preferences.py:420
 msgid "Add grid row"
@@ -1057,7 +1057,7 @@ msgstr "--请先创建列..."
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1641
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1715
 msgid "Table rows counted: {}"
-msgstr ""
+msgstr "表的行数: {}"
 
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/utils.py:696
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:756
@@ -2922,7 +2922,7 @@ msgstr "主机地址"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:333
 msgid "Shard Num"
-msgstr "分片数量"
+msgstr "分片序号"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:336
 msgid "Shard Weight"
@@ -4982,20 +4982,20 @@ msgstr "数据类型"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:425
 msgid "Default expression"
-msgstr "表达式"
+msgstr "默认表达式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:483
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:144
 msgid "Scale"
-msgstr "规模"
+msgstr "小数位数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:572
 msgid "Compression codec"
-msgstr "压缩率"
+msgstr "压缩编解码器"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:576
 msgid "Partition key?"
-msgstr "分区键"
+msgstr "分区键?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:584
 msgid "Sorting key?"
@@ -5318,11 +5318,11 @@ msgstr "排除约束..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:676
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:125
 msgid "Expr"
-msgstr "导出"
+msgstr "表达式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:686
 msgid "Granularity"
-msgstr "一月"
+msgstr "粒度"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.js:694
 msgid "System exclusion constraint?"
@@ -5443,7 +5443,7 @@ msgstr "验证外键"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:718
 msgid "expr"
-msgstr "导出"
+msgstr "表达式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:726
 msgid "System foreign key?"
@@ -9009,12 +9009,12 @@ msgstr ""
 #: pgadmin/browser/static/js/node.js:786
 #, python-format
 msgid "Are you sure you want to drop %s \"%s\"?"
-msgstr ""
+msgstr "你确定想要删除表  %s \"%s\"?"
 
 #: pgadmin/browser/static/js/node.js:787
 #, python-format
 msgid "Drop %s?"
-msgstr ""
+msgstr "删除 %s?"
 
 #: pgadmin/browser/static/js/node.js:793
 #, python-format
@@ -9756,11 +9756,11 @@ msgstr "否"
 
 #: pgadmin/help/__init__.py:59
 msgid "Snowball Help Path"
-msgstr ""
+msgstr "雪球帮助文档路径"
 
 #: pgadmin/help/__init__.py:69
 msgid "SuperAdmin Help Path"
-msgstr ""
+msgstr "SuperAdmin帮助文档路径"
 
 #: pgadmin/misc/__init__.py:63 pgadmin/misc/__init__.py:64
 msgid "User language"
@@ -9768,17 +9768,17 @@ msgstr "用户语言"
 
 #: pgadmin/misc/__init__.py:85
 msgid "Theme"
-msgstr ""
+msgstr "主题"
 
 #: pgadmin/misc/__init__.py:86
 msgid "Themes"
-msgstr ""
+msgstr "主题"
 
 #: pgadmin/misc/__init__.py:88
 msgid ""
 "A refresh is required to apply the theme. Below is the preview of the "
 "theme"
-msgstr ""
+msgstr "需要刷新才能应用该主题。下面是主题的预览"
 
 #: pgadmin/misc/bgprocess/processes.py:89
 #: pgadmin/misc/bgprocess/processes.py:687
@@ -10604,12 +10604,12 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:30
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:31
 msgid "Open File"
-msgstr ""
+msgstr "打开文件"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:35
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:36
 msgid "Save File"
-msgstr ""
+msgstr "保存文件"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:40
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:41
@@ -10624,12 +10624,12 @@ msgstr "查找"
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:46
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:79
 msgid "Copy"
-msgstr ""
+msgstr "复制"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:50
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:51
 msgid "Paste"
-msgstr ""
+msgstr "粘贴"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:55
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:56
@@ -10654,12 +10654,12 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:80
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:81
 msgid "Cancel query"
-msgstr ""
+msgstr "取消查询"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:85
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:86
 msgid "Clear"
-msgstr ""
+msgstr "清除"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:93
 msgid "Connection status (click for details)"
@@ -10668,13 +10668,13 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:99
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:101
 msgid "Execute/Refresh"
-msgstr ""
+msgstr "执行/刷新"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:105
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:107
 #: pgadmin/tools/sqleditor/static/js/sqleditor.js:250
 msgid "Explain"
-msgstr "解释"
+msgstr "查看执行计划"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:111
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:113
@@ -10684,7 +10684,7 @@ msgstr ""
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:117
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:119
 msgid "Download as CSV/TXT"
-msgstr ""
+msgstr "下载为CSV/TXT"
 
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:123
 #: pgadmin/static/js/sqleditor/query_tool_preferences.js:125
@@ -11208,7 +11208,7 @@ msgstr " (Ctrl+Shift+G)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:94
 msgid "Persistent Find"
-msgstr "Persistent Find"
+msgstr "全部查找"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:100
 msgid "Replace"
@@ -11232,7 +11232,7 @@ msgstr "跳转至 (Alt + G)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:134
 msgid "Copy with headers"
-msgstr ""
+msgstr "带有标题的复制"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:158
 msgid "Edit"
@@ -11244,7 +11244,7 @@ msgstr "缩进所选(Tab)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:169
 msgid "Unindent Selection (Shift+Tab)"
-msgstr "取消缩进所选 (Tab)"
+msgstr "取消缩进所选 (Shift+Tab)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:174
 msgid "Inline Comment Selection"
@@ -11272,7 +11272,7 @@ msgstr " (Ctrl+.)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:190
 msgid "Block Comment/Uncomment Selection"
-msgstr "块注释/取消注释所选"
+msgstr "块注释或取消注释所选(Shift+Ctrl+/)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:191
 msgid " (Shift+Cmd+/)"
@@ -11949,7 +11949,7 @@ msgstr "指定用于分隔文件每行（行）中的列的字符。默认值为
 
 #: pgadmin/tools/import_export/static/js/import_export.js:336
 msgid "Allow errors number"
-msgstr ""
+msgstr "允许跳过的错误数"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:340
 msgid ""
@@ -11959,7 +11959,7 @@ msgstr ""
 
 #: pgadmin/tools/import_export/static/js/import_export.js:343
 msgid "Allow errors ratio"
-msgstr ""
+msgstr "允许跳过的错误比率"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:347
 msgid ""
@@ -12817,30 +12817,30 @@ msgstr "如果设置为 True, 则将在新的浏览器选项卡中打开查询�
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:137
 msgid "Plain text mode?"
-msgstr ""
+msgstr "纯文本模式？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:138
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:149
 msgid "Editor"
-msgstr ""
+msgstr "编辑"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:139
 msgid ""
 "When set to True, keywords wont be highlighted and code folding will be "
 "disabled. Plain text mode will improve editor performance with large "
 "files."
-msgstr ""
+msgstr "当设置为真时，关键字不会突出显示，代码折叠也将禁用。纯文本模式将提高使用大文件的编辑器性能。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:148
 msgid "Code folding?"
-msgstr ""
+msgstr "代码折叠?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:150
 msgid ""
 "Enable or disable code folding. In plain text mode, this will have no "
 "effect as code folding is always disabled in that mode. Disabling will "
 "improve editor performance with large files."
-msgstr ""
+msgstr "启用或禁用代码折叠。在纯文本模式下，它不起作用。因为在该模式下代码折叠总是禁用。禁用将提高使用大文件的编辑器性能。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:159
 msgid "Font size"
@@ -12902,17 +12902,17 @@ msgstr "指定是否在编辑器中突出显示匹配的大括号。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:224
 msgid "CSV quoting"
-msgstr "CSV引用"
+msgstr "CSV加引号的字段类型"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:225
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:238
 msgid "CSV/TXT Output"
-msgstr ""
+msgstr "CSV/TXT输出"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:228
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:278
 msgid "Strings"
-msgstr ""
+msgstr "字符串"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:237
 msgid "CSV quote character"
@@ -12925,7 +12925,7 @@ msgstr "CSV字段分隔符"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:250
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:264
 msgid "CSV/TXT output"
-msgstr ""
+msgstr "CSV/TXT输出"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:254
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:304
@@ -12945,7 +12945,7 @@ msgstr "指定在以 CSV 形式下载查询结果时表示空值的字符串。�
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:274
 msgid "Result copy quoting"
-msgstr "复制结果时包含引用"
+msgstr "复制结果时使用引号的字段类型"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:275
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:288
@@ -12976,8 +12976,8 @@ msgid "Connection status refresh rate"
 msgstr "连接状态刷新率"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:325
-msgid "The number of seconds between connection/transaction status polls."
-msgstr "连接/事务状态轮询之间的秒数。"
+msgid "The number of seconds between connection status polls."
+msgstr "连接状态轮询之间的秒数。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:334
 msgid "Execute query"
@@ -12993,7 +12993,7 @@ msgstr "解释查询"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:388
 msgid "EXPLAIN ANALYZE query"
-msgstr "解释优化查询"
+msgstr "查看查询计划"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:406
 msgid "Download CSV"
