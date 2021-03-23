@@ -1405,9 +1405,7 @@ def query_tool_status(trans_id):
             return make_json_response(
                 data={
                     'status': status,
-                    'message': gettext(
-                        CONNECTION_STATUS_MESSAGE_MAPPING.get(status),
-                    ),
+                    'message': '',
                     'notifies': notifies
                 }
             )

@@ -46,33 +46,33 @@ class HelpModule(PgAdminModule):
             #          url='https://www.postgresql.org/')
                  ]}
 
-    def register_preferences(self):
-        """
-        register_preferences
-        Register preferences for this module.
-        """
-        # Register options for the PG and PPAS help paths
-        self.help_preference = Preferences('paths', gettext('Paths'))
-
-        self.pg_help_path = self.help_preference.register(
-            'help', 'pg_help_path',
-            gettext("Snowball Help Path"), 'text',
-            '',
-            category_label=gettext('Help'),
-            help_str=gettext(
-                ''
-            )
-        )
-
-        self.edbas_help_path = self.help_preference.register(
-            'help', 'edbas_help_path',
-            gettext("SuperAdmin Help Path"), 'text',
-            '',
-            category_label=gettext('Help'),
-            help_str=gettext(
-                ''
-            )
-        )
+    # def register_preferences(self):
+    #     """
+    #     register_preferences
+    #     Register preferences for this module.
+    #     """
+    #     Register options for the PG and PPAS help paths
+        # self.help_preference = Preferences('paths', gettext('Paths'))
+        #
+        # self.pg_help_path = self.help_preference.register(
+        #     'help', 'pg_help_path',
+        #     gettext("Snowball Help Path"), 'text',
+        #     '',
+        #     category_label=gettext('Help'),
+        #     help_str=gettext(
+        #         ''
+        #     )
+        # )
+        #
+        # self.edbas_help_path = self.help_preference.register(
+        #     'help', 'edbas_help_path',
+        #     gettext("SuperAdmin Help Path"), 'text',
+        #     '',
+        #     category_label=gettext('Help'),
+        #     help_str=gettext(
+        #         ''
+        #     )
+        # )
 
     def get_exposed_url_endpoints(self):
         """

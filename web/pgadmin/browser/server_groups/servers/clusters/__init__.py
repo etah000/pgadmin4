@@ -594,6 +594,22 @@ class DatabaseView(PGClusterChildNodeView):
         # The below SQL will execute rest DMLs because we cannot execute
         # CREATE with any other
 
+        SQL = render_template(
+            "/".join([self.template_path, 'get_hosts.sql']),
+            did=did, conn=self.conn,
+        )
+        status, rset = self.conn.execute_2darray(SQL)
+
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        if rset['rows']:
+            errmsg = 'cluster: {} existed, can not be overided!'.format(data['name'])
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
+
         # get ssh connection info
         ssh_info = get_ssh_info(gid, sid)
         if not ssh_info:

@@ -102,6 +102,15 @@ class SchemaModule(CollectionNodeModule):
         """
         return False
 
+    def register_preferences(self):
+        """
+        Registers the preferences object for this module.
+
+        Sets the browser_preference, show_system_objects, show_node preference
+        objects for this submodule.
+        """
+        return False
+
 
 class CatalogModule(SchemaModule):
     """

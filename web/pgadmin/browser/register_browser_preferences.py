@@ -101,10 +101,10 @@ def register_browser_preferences(self):
         gettext("Maximum job history rows"), 'integer', 250,
         category_label=gettext('Properties'),
         min_val=1, max_val=9999,
-        help_str=gettext(
-            'The maximum number of history rows to show on '
-            'the Statistics tab for pgAgent jobs'
-        )
+        # help_str=gettext(
+        #     'The maximum number of history rows to show on '
+        #     'the Statistics tab for pgAgent jobs'
+        # )
     )
 
     fields = [
@@ -249,20 +249,20 @@ def register_browser_preferences(self):
         fields=fields
     )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'sub_menu_search_objects',
-        gettext('Search objects'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 83, 'char': 's'}
-        },
-        category_label=gettext('Keyboard shortcuts'),
-        fields=fields
-    )
+    # self.preference.register(
+    #     'keyboard_shortcuts',
+    #     'sub_menu_search_objects',
+    #     gettext('Search objects'),
+    #     'keyboardshortcut',
+    #     {
+    #         'alt': True,
+    #         'shift': True,
+    #         'control': False,
+    #         'key': {'key_code': 83, 'char': 's'}
+    #     },
+    #     category_label=gettext('Keyboard shortcuts'),
+    #     fields=fields
+    # )
 
     self.preference.register(
         'keyboard_shortcuts',
