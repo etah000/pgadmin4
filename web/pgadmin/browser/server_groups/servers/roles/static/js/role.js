@@ -536,7 +536,7 @@ define('pgadmin.node.role', [
           },{
             id: 'cluster', label: gettext('On Cluster'), type: 'text', node:'cluster',
             mode: ['edit','create'], select2: {allowClear: true}, control: 'node-list-by-name',
-            helpMessage:gettext('Select the item for cluster.'),
+            // helpMessage:gettext('Select the item for cluster.'),
           },{
             id: 'rolmembership', label: gettext('Roles'),
             type: 'collection',
@@ -558,37 +558,38 @@ define('pgadmin.node.role', [
             filter: function(d) {
               return this.model.isNew() || (this.model.get('rolname') != d.label);
             },
-            helpMessage: function(m) {
-              if (m.has('read_only') && m.get('read_only') == false) {
-                return gettext('Select the checkbox for roles.');
-              } else {
-                return gettext('Roles shown with a check mark.');
-              }
-            },
+            // helpMessage: function(m) {
+            //   if (m.has('read_only') && m.get('read_only') == false) {
+            //     return gettext('Select the checkbox for roles.');
+            //   } else {
+            //     return gettext('Roles shown with a check mark.');
+            //   }
+            // },
           }],
         }, {
           id: 'profile', label: gettext('Profile'), type: 'text',
           readonly: 'readonly', mode: ['edit', 'create'],
           cell: 'string',
         },
-        {id: 'read_write_mode',
-          label: gettext('Read/Write'),
-          cell: 'string',
-          control: 'select2',
-          mode: ['edit', 'create'],
-          options: [{
-            'label': 'Writable',
-            'value': 'WRITABLE',
-          }, {
-            'label': 'ReadOnly',
-            'value': 'READONLY',
-          }],
-          // disabled: 'isDisabled',
-          select2: {
-            allowClear: true,
-            width: '100%',
-          },
-        },{
+        // {id: 'read_write_mode',
+        //   label: gettext('Read/Write'),
+        //   cell: 'string',
+        //   control: 'select2',
+        //   mode: ['edit', 'create'],
+        //   options: [{
+        //     'label': 'Writable',
+        //     'value': 'WRITABLE',
+        //   }, {
+        //     'label': 'ReadOnly',
+        //     'value': 'READONLY',
+        //   }],
+        //   disabled: 'isDisabled',
+          // select2: {
+          //   allowClear: true,
+          //   width: '100%',
+          // },
+        // },
+          {
           type: 'nested',
           control: 'fieldset',
           label: gettext('Host Info'),

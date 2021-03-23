@@ -22,13 +22,14 @@ CREATE USER IF NOT EXISTS {{ conn|qtIdent(data.rolname) }}{% if data.cluster %} 
 
    DEFAULT ROLE {{ conn|qtIdent(data.members)|join(', ') }}{% endif %}{% if data.variables %}
 
-   SETTINGS {% for var in data.variables %}{{ var.name }}={{ var.value }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %} {% if data.read_write_mode=='WRITABLE' %}
+   SETTINGS {% for var in data.variables %}{{ var.name }}={{ var.value }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %}{% if data.profile %}
+
+   SETTINGS PROFILE {{ data.profile| qtLiteral(True) }}{% endif %} {% if data.read_write_mode=='WRITABLE' %}
 
    WRITABLE {% else %} {% if data.read_write_mode=='READONLY' %}
 
-   READONLY {% endif %} {% endif %} {% if data.profile %}
+   READONLY {% endif %} {% endif %}
 
-   PROFILE {{ data.profile| qtLiteral(True) }}{% endif %}
 
 ;
 {% endif %}
