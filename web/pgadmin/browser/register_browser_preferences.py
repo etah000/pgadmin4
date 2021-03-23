@@ -249,20 +249,20 @@ def register_browser_preferences(self):
         fields=fields
     )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'sub_menu_search_objects',
-        gettext('Search objects'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 83, 'char': 's'}
-        },
-        category_label=gettext('Keyboard shortcuts'),
-        fields=fields
-    )
+    # self.preference.register(
+    #     'keyboard_shortcuts',
+    #     'sub_menu_search_objects',
+    #     gettext('Search objects'),
+    #     'keyboardshortcut',
+    #     {
+    #         'alt': True,
+    #         'shift': True,
+    #         'control': False,
+    #         'key': {'key_code': 83, 'char': 's'}
+    #     },
+    #     category_label=gettext('Keyboard shortcuts'),
+    #     fields=fields
+    # )
 
     self.preference.register(
         'keyboard_shortcuts',
