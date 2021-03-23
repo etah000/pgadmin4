@@ -23,6 +23,7 @@ define('pgadmin.node.cluster', [
         columns: ['name', 'datowner', 'comments'],
         hasStatistics: false,
         canDrop: false,
+        isNext: true,
         canDropCascade: false,
         statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       });
@@ -37,6 +38,7 @@ define('pgadmin.node.cluster', [
       // dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
       hasSQL: false,
       canEdit:false,
+      isNext: true,
       hasDepends: true,
       hasStatistics: false,
       statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
@@ -330,6 +332,7 @@ define('pgadmin.node.cluster', [
           transform: function(d) {
              for(let item of d){
                  item.label=item.host_name;
+                 item.value=item.host_name;
              }
             return d;
           },
@@ -339,16 +342,58 @@ define('pgadmin.node.cluster', [
         //   id: 'host_name', label: gettext('Host Name'), cell: 'string',
         //   editable: false, type: 'text',
         // },
-         {
-          id: 'shifted', label: gettext('shifted?'), type: 'switch',
-          mode: ['create'],'options': {
-            'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
-          },
+        //  {
+        //   id: 'shifted', label: gettext('shifted?'), type: 'switch',
+        //   mode: ['create'],'options': {
+        //     'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
+        //   },
+        // },
+        {
+          id: 'shifted', label: gettext('cluster type'), type: 'text', mode: ['create'],
+          options: [
+            {label: gettext('Average cluster'), value: 'Average'},
+            {label: gettext('Circular replication cluster'), value: 'Circular'},
+            {label: gettext('Single point replication cluster'), value: 'Single'}
+          ],
+          control: Backform.SelectControl.extend({
+
+            onChange: function() {
+              Backform.SelectControl.prototype.onChange.apply(this, arguments);
+              let shifted=this.model.get('shifted');
+              document.querySelector('.default_databases').classList.add("d-none");
+              if(shifted=='Circular'){
+                document.querySelector('.default_databases').classList.remove("d-none");
+              }else{
+                document.querySelector('.default_databases').classList.add("d-none");
+              }
+            },
+          }),
         },
         {
           id: 'default_databases', label: gettext('Default Databases'),
           editable: false, type: 'text',
         },
+        // {
+        //   id: 'preview', label: gettext('Privileges'), type: 'text',
+        //   group: gettext('Security'), mode: ['properties'],
+        // },
+
+        {
+          id: 'data', label: gettext('preview xml'),
+          editable: false, type: 'multiline',visible:false,
+        },
+        // {
+        //   id: 'definition', label: gettext('Code'), cell: 'string',
+        //   type: 'text', mode: ['create', 'edit'], group: gettext('Code'),
+        //   tabPanelCodeClass: 'sql-code-control',
+        //   disabled: false,
+        //   control: Backform.SqlCodeControl.extend({
+        //     onChange: function() {
+        //       Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
+
+        //     },
+        //   }),
+        // },
         // {
         //   id: 'shard_num', label: gettext('Shard Num'),
         //   editable: false, type: 'text',
@@ -359,7 +404,8 @@ define('pgadmin.node.cluster', [
         // {
         //   id: 'acl', label: gettext('Privileges'), type: 'text',
         //   group: gettext('Security'), mode: ['properties'],
-        // },{
+        // },
+        //{
         //   id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
         //   group: gettext('Security'), mode: ['properties'],
         // },{

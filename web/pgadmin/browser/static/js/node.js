@@ -1158,6 +1158,9 @@ define('pgadmin.browser.node', [
               // the group div
 
               // icon may not present for this button
+              if(btn.visible){
+                return true;
+              }
               if (!btn.icon) {
                 btn.icon = '';
               }
@@ -1411,7 +1414,40 @@ define('pgadmin.browser.node', [
             });
           }
         }.bind(panel),
+        //下一步
+        nextFunc = function(view, saveBtn){
+          console.log("this is next");
+          document.querySelector('.tab-pane .name').classList.add("d-none");
+          document.querySelector('.host_name').classList.add("d-none");
+          document.querySelector('.shifted').classList.add("d-none");
+          document.querySelector('.default_databases').classList.add("d-none");
+          document.querySelector('.data').classList.remove("d-none");
+          let name=view.model.get('name');
+          let host_name=view.model.get('host_name');
+          let shifted=view.model.get('shifted');
+          let default_databases=view.model.get('default_databases');
+          let yandex='<yandex>';
+          let remote_servers='<remote_servers>';
+          let cluster=name;
+          let shardBegin='<shard>';
+          let internalBegin='<internal_replication>';
+          let internalEnd='</internal_replication>';
+          let replicaBegin='<replica>';
+          let replicaEnd='</replica>';
+          let shardEnd='</shard>';
+          
+          let textarea=yandex+remote_servers+cluster+shardBegin;
+          $('.data').find("textarea").val(textarea);
+          console.log(name);
+          console.log(host_name);
+          console.log(shifted);
+          console.log(default_databases);
 
+
+
+
+
+        },
         editFunc = function() {
           var panel = this;
           if (action && action == 'properties') {
@@ -1502,7 +1538,8 @@ define('pgadmin.browser.node', [
                   onDialogHelp();
                 });
               },
-            }, {
+            }, 
+            {
               label: gettext('Cancel'),
               type: 'cancel',
               tooltip: gettext('Cancel changes to this object.'),
@@ -1516,7 +1553,8 @@ define('pgadmin.browser.node', [
                   onCancelFunc.call(true);
                 });
               },
-            }, {
+            },
+             {
               label: gettext('Reset'),
               type: 'reset',
               tooltip: gettext('Reset the fields on this dialog.'),
@@ -1536,7 +1574,41 @@ define('pgadmin.browser.node', [
                   );
                 });
               },
-            }, {
+            },
+            {
+              label: gettext('next'),
+              type: 'next',
+              tooltip: gettext('Cancel changes to this object.'),
+              extraClasses: ['btn-secondary', 'mx-1'],
+              icon: 'fa fa-close pg-alertify-button',
+              disabled: false,
+              visible: (!that.isNext) ? true : false,
+              register: function(btn) {
+                btn.on('click',() => {
+                  // Removing the action-mode
+                  panel.$container.removeAttr('action-mode');
+                  nextFunc.call(this, view, btn);
+                });
+              },
+            },
+            // {
+            //   label: gettext('previous'),
+            //   type: 'previous',
+            //   tooltip: gettext('Cancel changes to this object.'),
+            //   extraClasses: ['btn-secondary', 'mx-1'],
+            //   icon: 'fa fa-close pg-alertify-button',
+            //   disabled: false,
+            //   visible: (!that.isNext) ? true : false,
+            //   register: function(btn) {
+            //     btn.on('click',() => {
+            //       // Removing the action-mode
+            //       panel.$container.removeAttr('action-mode');
+            //       nextFunc.call(true);
+            //     });
+            //   },
+            // },
+            
+             {
               label: gettext('Save'),
               type: 'save',
               tooltip: gettext('Save this object.'),

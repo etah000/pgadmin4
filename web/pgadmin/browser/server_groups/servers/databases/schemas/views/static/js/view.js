@@ -151,7 +151,8 @@ define('pgadmin.node.view', [
         // },{
         //   id: 'acl', label: gettext('Privileges'),
         //   mode: ['properties'], type: 'text', group: gettext('Security'),
-        },{
+        },
+        {
           id: 'definition', label: gettext('Code'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Code'),
           tabPanelCodeClass: 'sql-code-control',
