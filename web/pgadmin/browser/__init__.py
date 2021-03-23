@@ -685,11 +685,14 @@ def utils():
 
     prefs = Preferences.module('paths')
 
-    pg_help_path_pref = prefs.preference('pg_help_path')
-    pg_help_path = pg_help_path_pref.get()
+    # pg_help_path_pref = prefs.preference('pg_help_path')
+    pg_help_path_pref = ''
+    # pg_help_path = pg_help_path_pref.get()
+    pg_help_path = ''
 
     edbas_help_path_pref = prefs.preference('edbas_help_path')
-    edbas_help_path = edbas_help_path_pref.get()
+    # edbas_help_path = edbas_help_path_pref.get()
+    edbas_help_path = ''
 
     # Get sqleditor options
     prefs = Preferences.module('sqleditor')

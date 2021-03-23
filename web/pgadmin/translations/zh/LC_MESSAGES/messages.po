@@ -9009,7 +9009,7 @@ msgstr ""
 #: pgadmin/browser/static/js/node.js:786
 #, python-format
 msgid "Are you sure you want to drop %s \"%s\"?"
-msgstr "你确定想要删除表  %s \"%s\"?"
+msgstr "你确定想要删除 %s \"%s\"?"
 
 #: pgadmin/browser/static/js/node.js:787
 #, python-format
@@ -11272,7 +11272,7 @@ msgstr " (Ctrl+.)"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:190
 msgid "Block Comment/Uncomment Selection"
-msgstr "块注释或取消注释所选(Shift+Ctrl+/)"
+msgstr "块注释或取消注释所选"
 
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:191
 msgid " (Shift+Cmd+/)"
@@ -12868,7 +12868,7 @@ msgstr "Tab 代表空格的数量，最小2，最大为8。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:185
 msgid "Use spaces?"
-msgstr "使用空间吗？"
+msgstr "使用空格吗？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:187
 msgid ""
@@ -12968,8 +12968,8 @@ msgstr "连接状态"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:315
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
-"and transaction status."
-msgstr "如果设置为 True, 查询工具将监视并显示连接和事务状态。"
+"and status."
+msgstr "如果设置为true，查询工具将监视和显示连接和状态。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:322
 msgid "Connection status refresh rate"
@@ -12989,7 +12989,7 @@ msgstr "保存数据更改"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:370
 msgid "EXPLAIN query"
-msgstr "解释查询"
+msgstr "查看执行查询"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:388
 msgid "EXPLAIN ANALYZE query"
