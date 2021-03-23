@@ -30,7 +30,7 @@ from pgadmin.utils import env, IS_WIN, fs_short_path
 ##########################################################################
 
 # Name of the application to display in the UI
-APP_NAME = 'SuperAdmin 1'
+APP_NAME = 'SuperAdmin' 
 APP_ICON = 'pg-icon'
 
 ##########################################################################
