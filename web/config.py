@@ -30,7 +30,7 @@ from pgadmin.utils import env, IS_WIN, fs_short_path
 ##########################################################################
 
 # Name of the application to display in the UI
-APP_NAME = 'SuperAdmin 1'
+APP_NAME = 'SuperAdmin' 
 APP_ICON = 'pg-icon'
 
 ##########################################################################
@@ -128,7 +128,7 @@ WTF_CSRF_HEADERS = ['X-pgA-CSRFToken']
 
 # User ID (email address) to use for the default user in desktop mode.
 # The default should be fine here, as it's not exposed in the app.
-DESKTOP_USER = 'pgadmin4@pgadmin.org'
+DESKTOP_USER = 'superadmin@superadmin.cn'
 
 # This option allows the user to host the application on a LAN
 # Default hosting is on localhost (DEFAULT_SERVER='localhost').
@@ -345,10 +345,10 @@ SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
 UPGRADE_CHECK_ENABLED = True
 
 # Where should we get the data from?
-UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
+UPGRADE_CHECK_URL = ''
 
 # What key should we look at in the upgrade data file?
-UPGRADE_CHECK_KEY = 'pgadmin4'
+UPGRADE_CHECK_KEY = 'superadmin'
 
 # Which CA file should we use?
 # Default to cacert.pem in the same directory as config.py et al.

@@ -362,7 +362,7 @@ def setup_db():
 
     app = create_app()
 
-    print(u"pgAdmin 4 - Application Initialisation")
+    print(u"SuperAdmin - Application Initialisation")
     print(u"======================================\n")
 
     with app.app_context():
