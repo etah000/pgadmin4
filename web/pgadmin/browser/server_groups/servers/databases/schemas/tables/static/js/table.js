@@ -777,7 +777,7 @@ define('pgadmin.node.table', [
             subnode: pgBrowser.Nodes['foreign_key'].model,
             editable: false, type: 'collection',
             group: gettext('Constraints'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
+            canEdit: false, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
             canAdd: function(m) {
               if (m.get('is_partitioned') && !_.isUndefined(m.top.node_info) && !_.isUndefined(m.top.node_info.server)
@@ -871,7 +871,7 @@ define('pgadmin.node.table', [
             subnode: pgBrowser.Nodes['exclusion_constraint'].model,
             editable: false, type: 'collection',
             group: gettext('Indexes'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
+            canEdit: false, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
             columns : ['name','expr','type','granularity'],
             canAdd: function(m) {
@@ -897,7 +897,7 @@ define('pgadmin.node.table', [
             subnode: pgBrowser.Nodes['unique_constraint'].model,
             editable: false, type: 'collection',
             group: gettext('Settings'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
+            canEdit: false, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
             canAdd: true,
             columns : ['label','value'],
