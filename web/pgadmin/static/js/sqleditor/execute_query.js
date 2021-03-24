@@ -60,17 +60,18 @@ class ExecuteQuery {
    console.log(databaseName);
     // If it is an empty query, do nothing.
     if (sqlStatement.length <= 0) return;
-    // if (sqlStatement.indexOf(';') >= 0) {
-    //   sqlStatement = sqlStatement.replace(';','');
-    // }
+    if (sqlStatement.indexOf(';') >= 0) {
+      sqlStatement = sqlStatement.replace(';','');
+    }
     // Ignore limit option, if user's sql had limit definition
     // var limitRex = "^(.|[ \\f\\n\\r\\t\\v])+\\s+limit\\s+\\d+(\\s*,\\s*(\\d+))?$";
     // if (sqlStatement.toLowerCase().search(limitRex) < 0 && sqlStatement.toLowerCase().indexOf('select') >= 0) {
-    //   var rowLimit = $('#btn-rows-limit option:selected').val();
-    //   if (rowLimit != -1) {
-    //     sqlStatement = sqlStatement + ' limit ' + rowLimit;
-    //   }
-    // }
+    if (sqlStatement.toLowerCase().indexOf('select') >= 0 && sqlStatement.toLowerCase().indexOf('create') < 0) {
+      var rowLimit = $('#btn-rows-limit option:selected').val();
+      if (rowLimit != -1) {
+        sqlStatement = sqlStatement + ' limit ' + rowLimit;
+      }
+    }
 
     const self = this;
     self.explainPlan = explainPlan;
