@@ -1428,7 +1428,7 @@ define('pgadmin.browser.node', [
           let default_databases=view.model.get('default_databases');
           let yandex='<yandex>';
           let remote_servers='<remote_servers>';
-          let cluster=name;
+          let cluster="<"+name+">";
           let shardBegin='<shard>';
           let internalBegin='<internal_replication>';
           let internalEnd='</internal_replication>';
@@ -1442,6 +1442,7 @@ define('pgadmin.browser.node', [
           console.log(host_name);
           console.log(shifted);
           console.log(default_databases);
+          view.model.set('data',textarea);
 
 
 

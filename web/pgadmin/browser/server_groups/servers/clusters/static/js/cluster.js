@@ -299,6 +299,7 @@ define('pgadmin.node.cluster', [
           privileges: [],
           securities: [],
           datacl: [],
+          data:'',
           deftblacl: [],
           deffuncacl: [],
           defseqacl: [],
