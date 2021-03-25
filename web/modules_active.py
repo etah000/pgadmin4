@@ -107,6 +107,7 @@ MODULES_ACTIVE = (
     'pgadmin.setup',
     'pgadmin.tools',
     'pgadmin.tools.backup',
+    'pgadmin.tools.backup.utils',
     'pgadmin.tools.datagrid',
     # 'pgadmin.tools.debugger',
     # 'pgadmin.tools.debugger.utils',

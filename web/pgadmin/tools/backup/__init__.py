@@ -13,6 +13,9 @@ from __future__ import unicode_literals
 import simplejson as json
 import os
 
+from functools import wraps
+
+
 from flask import render_template, request, current_app, \
     url_for, Response
 from flask_babelex import gettext as _
@@ -20,15 +23,20 @@ from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
     fs_short_path, document_dir, does_utility_exist
-from pgadmin.utils.ajax import make_json_response, bad_request
+from pgadmin.utils.ajax import make_json_response, bad_request, internal_server_error
+from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.model import Server
+from pgadmin.model import Server, User, ServerGroup
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
+from pgadmin.tools.backup.utils import tempalte_path, create_ir_tables
+
 
 # set template path for sql scripts
 MODULE_NAME = 'backup'
 server_info = {}
+UTILITY = '/opt/snowball-py3env/bin/python3.7'
+PYSCRIPT = '/home/heckler/snowball-py3env/snowball-backup/master.py'
 
 
 class BackupModule(PgAdminModule):
@@ -64,8 +72,15 @@ class BackupModule(PgAdminModule):
         Returns:
             list: URL endpoints for backup module
         """
-        return ['backup.create_server_job', 'backup.create_object_job',
-                'backup.utility_exists']
+        endpoints = [
+            'backup.utility_exists',
+            'backup.list_backups',
+            'backup.delete_backup',
+            'backup.create_backup',
+            'backup.restore_backup',
+        ]
+
+        return endpoints
 
 
 # Create blueprint for BackupModule class
@@ -81,6 +96,10 @@ class BACKUP(object):
     GLOBALS = 1
     SERVER = 2
     OBJECT = 3
+    LIST = 4
+    DELETE = 5
+    CREATE = 6
+    RESTORE = 7
 
 
 class BackupMessage(IProcessDesc):
@@ -126,14 +145,32 @@ class BackupMessage(IProcessDesc):
 
         return s.name, host, port
 
+    def get_server_group_details(self):
+        # Fetch the server_group details like id, name etc
+        s = Server.query.filter_by(
+            id=self.sid, user_id=current_user.id
+        ).first()
+
+        g = ServerGroup.query.filter_by(id=s.servergroup_id).first()
+
+        return g.id, g.name
+
     @property
     def type_desc(self):
         if self.backup_type == BACKUP.OBJECT:
             return _("Backing up an object on the server")
-        if self.backup_type == BACKUP.GLOBALS:
+        elif self.backup_type == BACKUP.GLOBALS:
             return _("Backing up the global objects")
         elif self.backup_type == BACKUP.SERVER:
             return _("Backing up the server")
+        elif self.backup_type == BACKUP.LIST:
+            return _("List backup on group")
+        elif self.backup_type == BACKUP.DELETE:
+            return _("Delete backup on group")
+        elif self.backup_type == BACKUP.CREATE:
+            return _("Create backup on group")
+        elif self.backup_type == BACKUP.RESTORE:
+            return _("Restore backup on group")
         else:
             # It should never reach here.
             return _("Unknown Backup")
@@ -144,6 +181,10 @@ class BackupMessage(IProcessDesc):
         name = html.safe_str(name)
         host = html.safe_str(host)
         port = html.safe_str(port)
+
+        gid, gname = self.get_server_group_details()
+        gid = html.safe_str(gid)
+        gname = html.safe_str(gname)
 
         if self.backup_type == BACKUP.OBJECT:
             return _(
@@ -168,12 +209,29 @@ class BackupMessage(IProcessDesc):
                     name, host, port
                 )
             )
+        elif self.backup_type == BACKUP.LIST:
+            return _("List backup on group '{0}'").format(
+                "{0}".format(gname)
+            )
+        elif self.backup_type == BACKUP.DELETE:
+            return _("Delete  backup on group '{0}'").format(
+                "{0}".format(gname)
+            )
+        elif self.backup_type == BACKUP.CREATE:
+            return _("Create  backup on group '{0}'").format(
+                "{0}".format(gname)
+            )
+        elif self.backup_type == BACKUP.RESTORE:
+            return _("Restore backup on group '{0}'").format(
+                "{0} ".format(gname)
+            )
         else:
             # It should never reach here.
             return "Unknown Backup"
 
     def details(self, cmd, args):
         name, host, port = self.get_server_details()
+        gid, gname = self.get_server_group_details()
 
         res = '<div>'
 
@@ -201,6 +259,26 @@ class BackupMessage(IProcessDesc):
                 "{0} ({1}:{2})".format(
                     name, host, port
                 )
+            )
+            res += html.safe_str(msg)
+        elif self.backup_type == BACKUP.LIST:
+            msg = _("List backup on group '{0}'...").format(
+                "{0} ".format(gname)
+            )
+            res += html.safe_str(msg)
+        elif self.backup_type == BACKUP.DELETE:
+            msg = _("Delete backup on group '{0}'...").format(
+                "{0} ".format(gname)
+            )
+            res += html.safe_str(msg)
+        elif self.backup_type == BACKUP.CREATE:
+            msg = _("Create backup on group '{0}'...").format(
+                "{0} ".format(gname)
+            )
+            res += html.safe_str(msg)
+        elif self.backup_type == BACKUP.RESTORE:
+            msg = _("Restore backup on group '{0}'...").format(
+                "{0} ".format(gname)
             )
             res += html.safe_str(msg)
         else:
@@ -270,209 +348,179 @@ def filename_with_file_manager_path(_file, create_file=True):
     return short_path
 
 
+def check_precondition(f):
+    """
+    This function will behave as a decorator which will checks
+    connection before running function, it will also attaches
+    manager,conn to function kwargs
+    """
+
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        # Here args will hold nothing & kwargs will hold gid
+
+        # snowball-tools must has been installed with pgAdmin on the same host
+        if not _check_utility_exists():
+            return make_json_response(
+                success=0,
+                errormsg=_("Could not find the snowball-tools.")
+            )
+
+        gid = kwargs.get('gid', None)
+        server = Server.query.filter_by(servergroup_id=gid).first()
+        sid = server.id if server is not None else None
+
+        if sid is None:
+            return make_json_response()
+
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+
+        conn = manager.connection()
+        already_connected = conn.connected()
+
+        if not already_connected:
+            status, errmsg = conn.connect()
+            if not status:
+                current_app.logger.error(
+                    "Could not connected server(#{0}).\nError: {1}"
+                    .format(
+                        sid, errmsg
+                    )
+                )
+                return internal_server_error(errmsg)
+            else:
+                current_app.logger.info(
+                    'Connection Established for server Id: \
+                    %s' % (sid)
+                )
+
+        # create maintenance tables in case of not exists
+        status, res = create_ir_tables(conn, sync=True)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        kwargs['conn'] = conn
+        kwargs['mamager'] = manager
+
+        return f(*args, **kwargs)
+
+    return wrap
+
+
+def _check_utility_exists(*args, **kwargs):
+    """
+    This function checks the utility file exist on the given path.
+    """
+    return os.path.exists(UTILITY)
+
+
 @blueprint.route(
-    '/job/<int:sid>', methods=['POST'], endpoint='create_server_job'
-)
-@blueprint.route(
-    '/job/<int:sid>/object', methods=['POST'], endpoint='create_object_job'
+    '/utility_exists/<int:gid>', endpoint='utility_exists'
 )
 @login_required
-def create_backup_objects_job(sid):
+def check_utility_exists(gid, ):
     """
+    This function checks the utility file exist on the given path.
+
     Args:
         sid: Server ID
-
-        Creates a new job for backup task
-        (Backup Database(s)/Schema(s)/Table(s))
-
+        backup_obj_type: Type of the object
     Returns:
         None
     """
-    if request.form:
-        data = json.loads(request.form['data'], encoding='utf-8')
+    if _check_utility_exists():
+        return make_json_response(success=1)
     else:
-        data = json.loads(request.data, encoding='utf-8')
-
-    backup_obj_type = 'objects'
-    if 'type' in data:
-        backup_obj_type = data['type']
-
-    try:
-        if 'format' in data and data['format'] == 'directory':
-            backup_file = filename_with_file_manager_path(data['file'], False)
-        else:
-            backup_file = filename_with_file_manager_path(data['file'])
-    except Exception as e:
-        return bad_request(errormsg=str(e))
-
-    # Fetch the server details like hostname, port, roles etc
-    server = Server.query.filter_by(
-        id=sid, user_id=current_user.id
-    ).first()
-
-    if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=_("Could not find the snowball-tools.")
         )
 
-    # To fetch MetaData for the server
-    from pgadmin.utils.driver import get_driver
-    driver = get_driver(PG_DEFAULT_DRIVER)
-    manager = driver.connection_manager(server.id)
-    conn = manager.connection()
-    connected = conn.connected()
 
-    if not connected:
+@blueprint.route(
+    '/job/<int:gid>', methods=['GET'], endpoint='list_backups'
+)
+@login_required
+@check_precondition
+def list_backups(gid, **kwargs):
+    """
+    Args:
+        gid: ServerGroup ID
+
+        Gets backups on ServerGroup: gid
+        (Backup Database(s)/Table(s))
+
+    """
+    conn = kwargs['conn']
+
+    # retrieve backups
+    SQL = render_template(tempalte_path('properties.sql'))
+    status, res = conn.execute_dict(SQL)
+    if not status:
+        return internal_server_error(errormsg=res)
+
+    return make_json_response(data=res['rows'])
+
+
+@blueprint.route(
+    '/job/<int:gid>', methods=['DELETE'], endpoint='delete_backup'
+)
+@login_required
+@check_precondition
+def delete_backup(gid, **kwargs):
+    """
+    Args:
+        gid: ServerGroup ID
+
+        Delete a backup on server group 
+    """
+    # if request.form:
+    #     data = json.loads(request.form['data'], encoding='utf-8')
+    # else:
+    #     data = json.loads(request.data, encoding='utf-8')
+
+    backup_name = request.args.get('backup', '').strip()
+    if not backup_name:
+        msg = 'required args backup format error'
         return make_json_response(
+            status=410,
             success=0,
-            errormsg=_("Please connect to the server first.")
-        )
-
-    utility = manager.utility('backup') if backup_obj_type == 'objects' \
-        else manager.utility('backup_server')
-
-    ret_val = does_utility_exist(utility)
-    if ret_val:
-        return make_json_response(
-            success=0,
-            errormsg=ret_val
+            errormsg=msg
         )
 
     args = [
-        '--file',
-        backup_file,
-        '--host',
-        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
-        '--port',
-        str(manager.local_bind_port) if manager.use_ssh_tunnel
-        else str(server.port),
-        '--username',
-        server.username,
-        '--no-password'
+        PYSCRIPT,
+        '--config',
+        'config.yml',
+        'delete',
+        backup_name,
     ]
-
-    if backup_obj_type != 'objects':
-        args.append('--database')
-        args.append(server.maintenance_db)
-
-    if backup_obj_type == 'globals':
-        args.append('--globals-only')
-
-    def set_param(key, param):
-        if key in data and data[key]:
-            args.append(param)
-
-    def set_value(key, param, default_value=None):
-        if key in data and data[key] is not None and data[key] != '':
-            args.append(param)
-            args.append(data[key])
-        elif default_value is not None:
-            args.append(param)
-            args.append(default_value)
-
-    set_param('verbose', '--verbose')
-    set_param('dqoute', '--quote-all-identifiers')
-    set_value('role', '--role')
-
-    if backup_obj_type == 'objects' and \
-            'format' in data and data['format'] is not None:
-        if data['format'] == 'custom':
-            args.extend(['--format=c'])
-            set_param('blobs', '--blobs')
-            set_value('ratio', '--compress')
-        elif data['format'] == 'tar':
-            args.extend(['--format=t'])
-            set_param('blobs', '--blobs')
-        elif data['format'] == 'plain':
-            args.extend(['--format=p'])
-            set_value('ratio', '--compress')
-        elif data['format'] == 'directory':
-            args.extend(['--format=d'])
-            set_value('ratio', '--compress')
-
-    if 'only_data' in data and data['only_data']:
-        set_param('only_data', '--data-only')
-        if 'format' in data and data['format'] == 'plain':
-            set_param('disable_trigger', '--disable-triggers')
-    elif 'only_schema' in data and data['only_schema']:
-        set_param('only_schema', '--schema-only')
-
-    set_param('dns_owner', '--no-owner')
-    set_param('include_create_database', '--create')
-    set_param('include_drop_database', '--clean')
-    set_param('pre_data', '--section=pre-data')
-    set_param('data', '--section=data')
-    set_param('post_data', '--section=post-data')
-    set_param('dns_privilege', '--no-privileges')
-    set_param('dns_tablespace', '--no-tablespaces')
-    set_param('dns_unlogged_tbl_data', '--no-unlogged-table-data')
-    set_param('use_insert_commands', '--inserts')
-    set_param('use_column_inserts', '--column-inserts')
-    set_param('disable_quoting', '--disable-dollar-quoting')
-    set_param('with_oids', '--oids')
-    set_param('use_set_session_auth', '--use-set-session-authorization')
-
-    if manager.version >= 110000:
-        set_param('no_comments', '--no-comments')
-        set_param('load_via_partition_root', '--load-via-partition-root')
-
-    set_value('encoding', '--encoding')
-    set_value('no_of_jobs', '--jobs')
-
-    if 'schemas' in data:
-        for s in data['schemas']:
-            args.extend(['--schema', r'{0}'.format(
-                driver.qtIdent(conn, s).replace('"', '\"'))])
-
-    if 'tables' in data:
-        for s, t in data['tables']:
-            args.extend([
-                '--table', r'{0}'.format(
-                    driver.qtIdent(conn, s, t).replace('"', '\"'))
-            ])
 
     escaped_args = [
         escape_dquotes_process_arg(arg) for arg in args
     ]
-    try:
-        if backup_obj_type == 'objects':
-            args.append(data['database'])
-            escaped_args.append(data['database'])
-            p = BatchProcess(
-                desc=BackupMessage(
-                    BACKUP.OBJECT, sid,
-                    data['file'].encode('utf-8') if hasattr(
-                        data['file'], 'encode'
-                    ) else data['file'],
-                    *args,
-                    database=data['database']
-                ),
-                cmd=utility, args=escaped_args
-            )
-        else:
-            p = BatchProcess(
-                desc=BackupMessage(
-                    BACKUP.SERVER if backup_obj_type != 'globals'
-                    else BACKUP.GLOBALS,
-                    sid,
-                    data['file'].encode('utf-8') if hasattr(
-                        data['file'], 'encode'
-                    ) else data['file'],
-                    *args
-                ),
-                cmd=utility, args=escaped_args
-            )
 
-        manager.export_password_env(p.id)
-        # Check for connection timeout and if it is greater than 0 then
-        # set the environment variable PGCONNECT_TIMEOUT.
-        if manager.connect_timeout > 0:
-            env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
-            p.set_env_variables(server, env=env)
-        else:
-            p.set_env_variables(server)
+    try:
+        p = BatchProcess(
+            desc=BackupMessage(
+                BACKUP.DELETE,
+                gid,
+                ''.encode('utf-8'),
+                *args
+            ),
+            cmd=UTILITY, args=escaped_args
+        )
+
+        # TODO: after full test, remove the following code
+        # manager.export_password_env(p.id)
+        # # Check for connection timeout and if it is greater than 0 then
+        # # set the environment variable PGCONNECT_TIMEOUT.
+        # if manager.connect_timeout > 0:
+        #     env = dict()
+        #     env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+        #     p.set_env_variables(server, env=env)
+        # else:
+        #     p.set_env_variables(server)
 
         p.start()
         jid = p.id
@@ -491,41 +539,195 @@ def create_backup_objects_job(sid):
 
 
 @blueprint.route(
-    '/utility_exists/<int:sid>/<backup_obj_type>', endpoint='utility_exists'
+    '/job/<int:gid>', methods=['POST'], endpoint='create_backup'
 )
 @login_required
-def check_utility_exists(sid, backup_obj_type):
+@check_precondition
+def create_backup(gid, **kwargs):
     """
-    This function checks the utility file exist on the given path.
-
     Args:
-        sid: Server ID
-        backup_obj_type: Type of the object
-    Returns:
-        None
+        gid: ServerGroup ID
+
+        Delete a backup on server group 
     """
-    server = Server.query.filter_by(
-        id=sid, user_id=current_user.id
-    ).first()
+    if request.form:
+        data = json.loads(request.form['data'], encoding='utf-8')
+    else:
+        data = json.loads(request.data, encoding='utf-8')
 
-    if server is None:
+    backup_name = data.get('backup', '').strip()
+    if not backup_name:
+        msg = 'required args backup format error'
+        # return gettext('-- definition incomplete')
+
         return make_json_response(
+            status=410,
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=msg
         )
 
-    from pgadmin.utils.driver import get_driver
-    driver = get_driver(PG_DEFAULT_DRIVER)
-    manager = driver.connection_manager(server.id)
+    args = [
+        PYSCRIPT,
+        '--config',
+        'config.yml',
+        'create',
+    ]
 
-    utility = manager.utility('backup') if backup_obj_type == 'objects' \
-        else manager.utility('backup_server')
+    def set_param(key, param):
+        if key in data and data[key]:
+            args.append(param)
 
-    ret_val = does_utility_exist(utility)
-    if ret_val:
-        return make_json_response(
-            success=0,
-            errormsg=ret_val
+    def set_value(key, param, default_value=None):
+        if key in data and data[key] is not None and data[key] != '':
+            args.append(param)
+            args.append(data[key])
+        elif default_value is not None:
+            args.append(param)
+            args.append(default_value)
+
+    set_param('increment', '--increment')
+    set_param('schema', '--schema')
+    set_value('tables', '--tables')
+    set_value('hosts', '--hosts')
+
+    # the last args
+    args.append(backup_name)
+
+    escaped_args = [
+        escape_dquotes_process_arg(arg) for arg in args
+    ]
+
+    try:
+        p = BatchProcess(
+            desc=BackupMessage(
+                BACKUP.CREATE,
+                gid,
+                ''.encode('utf-8'),
+                *args
+            ),
+            cmd=UTILITY, args=escaped_args
         )
 
-    return make_json_response(success=1)
+        # TODO: after full test, remove the following code
+        # manager.export_password_env(p.id)
+        # # Check for connection timeout and if it is greater than 0 then
+        # # set the environment variable PGCONNECT_TIMEOUT.
+        # if manager.connect_timeout > 0:
+        #     env = dict()
+        #     env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+        #     p.set_env_variables(server, env=env)
+        # else:
+        #     p.set_env_variables(server)
+
+        p.start()
+        jid = p.id
+    except Exception as e:
+        current_app.logger.exception(e)
+        return make_json_response(
+            status=410,
+            success=0,
+            errormsg=str(e)
+        )
+
+    # Return response
+    return make_json_response(
+        data={'job_id': jid, 'Success': 1}
+    )
+
+
+@blueprint.route(
+    '/job/<int:gid>', methods=['PUT'], endpoint='restore_backup'
+)
+@login_required
+@check_precondition
+def restore_backup(gid, **kwargs):
+    """
+    Args:
+        gid: ServerGroup ID
+
+        Delete a backup on server group 
+    """
+    if request.form:
+        data = json.loads(request.form['data'], encoding='utf-8')
+    else:
+        data = json.loads(request.data, encoding='utf-8')
+
+    backup_name = data.get('backup', '').strip()
+    if not backup_name:
+        msg = 'required args backup format error'
+        # return gettext('-- definition incomplete')
+
+        return make_json_response(
+            status=410,
+            success=0,
+            errormsg=msg
+        )
+
+    args = [
+        PYSCRIPT,
+        '--config',
+        'config.yml',
+        'restore',
+    ]
+
+    def set_param(key, param):
+        if key in data and data[key]:
+            args.append(param)
+
+    def set_value(key, param, default_value=None):
+        if key in data and data[key] is not None and data[key] != '':
+            args.append(param)
+            args.append(data[key])
+        elif default_value is not None:
+            args.append(param)
+            args.append(default_value)
+
+    set_param('data', '--data')
+    set_param('schema', '--schema')
+    set_param('attach', '--attach')
+    set_value('tables', '--tables')
+    set_value('hosts', '--hosts')
+
+    # the last args
+    args.append(backup_name)
+
+    escaped_args = [
+        escape_dquotes_process_arg(arg) for arg in args
+    ]
+
+    try:
+        p = BatchProcess(
+            desc=BackupMessage(
+                BACKUP.RESTORE,
+                gid,
+                ''.encode('utf-8'),
+                *args
+            ),
+            cmd=UTILITY, args=escaped_args
+        )
+
+        # TODO: after full test, remove the following code
+        # manager.export_password_env(p.id)
+        # # Check for connection timeout and if it is greater than 0 then
+        # # set the environment variable PGCONNECT_TIMEOUT.
+        # if manager.connect_timeout > 0:
+        #     env = dict()
+        #     env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+        #     p.set_env_variables(server, env=env)
+        # else:
+        #     p.set_env_variables(server)
+
+        p.start()
+        jid = p.id
+    except Exception as e:
+        current_app.logger.exception(e)
+        return make_json_response(
+            status=410,
+            success=0,
+            errormsg=str(e)
+        )
+
+    # Return response
+    return make_json_response(
+        data={'job_id': jid, 'Success': 1}
+    )
