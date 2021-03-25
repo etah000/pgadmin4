@@ -1418,33 +1418,65 @@ define('pgadmin.browser.node', [
         nextFunc = function(view, saveBtn){
           console.log("this is next");
           document.querySelector('.tab-pane .name').classList.add("d-none");
-          document.querySelector('.host_name').classList.add("d-none");
+          document.querySelector('.hosts').classList.add("d-none");
           document.querySelector('.shifted').classList.add("d-none");
           document.querySelector('.default_databases').classList.add("d-none");
-          document.querySelector('.data').classList.remove("d-none");
           let name=view.model.get('name');
-          let host_name=view.model.get('host_name');
+          let host_name=view.model.get('hosts');
           let shifted=view.model.get('shifted');
           let default_databases=view.model.get('default_databases');
           let yandex='<yandex>';
           let remote_servers='<remote_servers>';
-          let cluster="<"+name+">";
+          let clusterBegin="<"+name+">";
           let shardBegin='<shard>';
           let internalBegin='<internal_replication>';
           let internalEnd='</internal_replication>';
           let replicaBegin='<replica>';
           let replicaEnd='</replica>';
           let shardEnd='</shard>';
+          let clusterEnd="</"+name+">";
+
           
-          let textarea=yandex+remote_servers+cluster+shardBegin;
-          $('.data').find("textarea").val(textarea);
-          console.log(name);
-          console.log(host_name);
-          console.log(shifted);
-          console.log(default_databases);
-          view.model.set('data',textarea);
+          let textareaStr=yandex+remote_servers+clusterBegin;
+          // let shardStr=[];
+          //普通集群
+          if(shifted=='Average'){
+            for(let item in host_name){
+              let str=shardBegin+internalBegin+"true"+internalEnd+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>'+shardEnd;
+              textareaStr=textareaStr+str;
+            }
+          //循环复制集群
+          }else if(shifted=='Circular'){
+            for(let item in host_name){
+              let str='';
+              if((parseInt(item)+1)%2==0){
+                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+                str=str+shardEnd
+              }else{
+                str=str+shardBegin+internalBegin+"true"+internalEnd;
+                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+              }
+              textareaStr=textareaStr+str;
+            }
+           //单点复制集群
+          }else{
+            for(let item in host_name){
+              let str='';
+              if((parseInt(item)+1)%2==0){
+                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+                str=str+shardEnd
+              }else{
+                str=str+shardBegin+internalBegin+"true"+internalEnd;
+                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+              }
+              textareaStr=textareaStr+str;
+            }
+          }
+          textareaStr=textareaStr+clusterEnd+'</remote_servers>'+'</yandex>'
+          $('.data').find("textarea").val(textareaStr);
+          view.model.set('data',textareaStr);
 
-
+          document.querySelector('.tab-pane .data').classList.remove("d-none");
 
 
 
