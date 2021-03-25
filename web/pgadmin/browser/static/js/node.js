@@ -1447,14 +1447,20 @@ define('pgadmin.browser.node', [
             }
           //循环复制集群
           }else if(shifted=='Circular'){
-            for(let item in host_name){
+           let d_host_name=host_name.slice(1).concat(host_name.slice(0,1));
+           let concat_arry=[];
+           for(let h in host_name){
+            concat_arry.push(host_name[h]);
+            concat_arry.push(d_host_name[h]);
+           }
+            for(let item in concat_arry){
               let str='';
               if((parseInt(item)+1)%2==0){
-                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
-                str=str+shardEnd
+                str=str+"<replica>"+"<host>"+concat_arry[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+                str=str+shardEnd;
               }else{
                 str=str+shardBegin+internalBegin+"true"+internalEnd;
-                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+                str=str+"<replica>"+"<host>"+concat_arry[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
               }
               textareaStr=textareaStr+str;
             }
