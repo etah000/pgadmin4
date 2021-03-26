@@ -382,6 +382,7 @@ define('pgadmin.node.cluster', [
         {
           id: 'data', label: gettext('preview xml'),
           editable: false, type: 'multiline',visible:false,
+          rows:14,
         },
         // {
         //   id: 'definition', label: gettext('Code'), cell: 'string',
