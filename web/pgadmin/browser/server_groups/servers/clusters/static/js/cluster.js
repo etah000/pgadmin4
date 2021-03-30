@@ -556,6 +556,22 @@ define('pgadmin.node.cluster', [
           } else {
             this.errorModel.unset('name');
           }
+          var hosts=this.get('hosts');
+          var shifted=this.get('shifted');
+          console.log(hosts);
+          if (
+            _.isUndefined(hosts) || _.isNull(hosts) ||
+              String(hosts).replace(/^\s+|\s+$/g, '') == ''||(hosts.length<=0)
+          ) {
+            msg = gettext('host name cannot be empty.');
+            this.errorModel.set('hosts', msg);
+            return msg;
+          }else if ((shifted=='Single')&&(hosts.length%2!=0)) {
+            msg = gettext('host name must be even number');
+            this.errorModel.set('hosts', msg);
+            return msg;
+          }
+          this.errorModel.unset('hosts');
           return null;
         },
       }),

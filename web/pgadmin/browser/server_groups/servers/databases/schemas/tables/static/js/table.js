@@ -954,7 +954,7 @@ define('pgadmin.node.table', [
             subnode: pgBrowser.Nodes['unique_constraint'].model,
             editable: false, type: 'collection',
             group: gettext('Settings'), mode: ['edit', 'create'],
-            canEdit: true, canDelete: true, deps:['is_partitioned'],
+            canEdit: false, canDelete: true, deps:['is_partitioned'],
             control: 'unique-col-collection',
             canAdd: true,
             columns : ['label','value'],
