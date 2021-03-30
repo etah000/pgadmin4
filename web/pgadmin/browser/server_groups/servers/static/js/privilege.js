@@ -26,6 +26,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
       privilege_type: undefined,
       privilege: false,
       with_grant: false,
+      cluster: undefined,
     },
     validate: function() {
       return null;
@@ -47,131 +48,140 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
     defaults: {
       grantee: undefined,
       grantor: undefined,
+      cluster: undefined,
       privileges: undefined,
     },
-    keys: ['grantee', 'grantor'],
+    keys: ['grantee', 'grantor', 'cluster'],
     /*
      * Each of the database object needs to extend this model, which should
      * provide the type of privileges (it supports).
      */
     privileges:[],
-    schema: [{
-      id: 'grantee', label: gettext('Grantee'), type:'text', group: null,
-      editable: true, cellHeaderClasses: 'width_percent_40',
-      node: 'role', options_cached: false,
-      disabled : function(m) {
-        if (!(m instanceof Backbone.Model)) {
+    schema: [
+      {
+        id: 'grantee', label: gettext('Grantee'), type:'text', group: null,
+        editable: true, cellHeaderClasses: 'width_percent_20',
+        node: 'role', options_cached: false,
+        disabled : function(m) {
+          if (!(m instanceof Backbone.Model)) {
           // This has been called during generating the header cell
-          return false;
-        }
-        return !(
-          m.top && m.top.node_info &&
+            return false;
+          }
+          return !(
+            m.top && m.top.node_info &&
             m.top.node_info.server.user.name == m.get('grantor')
-        );
-      },
-      transform: function() {
-        var res =
+          );
+        },
+        transform: function() {
+          var res =
           Backgrid.Extension.NodeListByNameCell.prototype.defaults.transform.apply(
             this, arguments
           );
-        res.unshift({label: 'PUBLIC', value: 'PUBLIC'});
-        return res;
-      },
-      cell: Backgrid.Extension.NodeListByNameCell.extend({
-        initialize: function(opts) {
-          var self = this,
-            override_opts = true;
-
-          // We would like to override the original options, because - we
-          // should omit the existing role/user from the privilege cell.
-          // Because - the column is shared among all the cell, we can only
-          // override only once.
-          if (opts && opts.column &&
-            opts.column instanceof Backbone.Model &&
-              opts.column.get('options_cached')) {
-            override_opts = false;
-          }
-          Backgrid.Extension.NodeListByNameCell.prototype.initialize.apply(
-            self, arguments
-          );
-
-          // Let's override the options
-          if (override_opts) {
-            opts = self.column.get('options');
-            self.column.set(
-              'options', self.omit_selected_roles.bind(self, opts)
-            );
-          }
-
-          var rerender = function (m) {
-            var self = this;
-            if ('grantee' in m.changed && this.model.cid != m.cid) {
-              setTimeout(
-                function() {
-                  self.render();
-                }, 50
-              );
-            }
-          }.bind(this);
-
-          // We would like to rerender all the cells of this type for this
-          // collection, because - we need to omit the newly selected roles
-          // form the list. Also, the render will be automatically called for
-          // the model represented by this cell, we will not do that again.
-          this.listenTo(self.model.collection, 'change', rerender, this);
-          this.listenTo(self.model.collection, 'remove', rerender, this);
-        },
-        // Remove all the selected roles (though- not mine).
-        omit_selected_roles: function(opts, cell) {
-          var res = opts(cell),
-            selected = {},
-            model = cell.model,
-            cid = model.cid,
-            // We need to check node_info values in parent when object is nested.
-            // eg: column level privileges in table dialog
-            // In this case node_info will not be avilable to column node as
-            // it is not loaded yet
-            node_info = (_.has(model.top, 'node_info')
-              && !_.isUndefined(model.top.node_info)) ?
-              model.top.node_info :
-              model.handler.top.node_info,
-            curr_user = node_info.server.user.name;
-
-          model.collection.each(function(m) {
-            var grantee = m.get('grantee');
-
-            if (m.cid != cid && !_.isUndefined(grantee) &&
-              curr_user == m.get('grantor')) {
-              selected[grantee] = m.cid;
-            }
-          });
-
-          res = _.filter(res, function(o) {
-            return !(o.value in selected);
-          });
-
+          // res.unshift({label: 'PUBLIC', value: 'PUBLIC'});
           return res;
         },
-      }),
-    },{
-      id: 'privileges', label: gettext('Privileges'),
-      type: 'collection', model: PrivilegeModel, group: null,
-      cell: 'privilege', control: 'text', cellHeaderClasses: 'width_percent_40',
-      disabled : function(column) {
-        if (column instanceof Backbone.Collection) {
+        cell: Backgrid.Extension.NodeListByNameCell.extend({
+          initialize: function(opts) {
+            var self = this,
+              override_opts = true;
+
+            // We would like to override the original options, because - we
+            // should omit the existing role/user from the privilege cell.
+            // Because - the column is shared among all the cell, we can only
+            // override only once.
+            if (opts && opts.column &&
+            opts.column instanceof Backbone.Model &&
+              opts.column.get('options_cached')) {
+              override_opts = false;
+            }
+            Backgrid.Extension.NodeListByNameCell.prototype.initialize.apply(
+              self, arguments
+            );
+
+            // Let's override the options
+            if (override_opts) {
+              opts = self.column.get('options');
+              self.column.set(
+                'options', self.omit_selected_roles.bind(self, opts)
+              );
+            }
+
+            var rerender = function (m) {
+              var self = this;
+              if ('grantee' in m.changed && this.model.cid != m.cid) {
+                setTimeout(
+                  function() {
+                    self.render();
+                  }, 50
+                );
+              }
+            }.bind(this);
+
+            // We would like to rerender all the cells of this type for this
+            // collection, because - we need to omit the newly selected roles
+            // form the list. Also, the render will be automatically called for
+            // the model represented by this cell, we will not do that again.
+            this.listenTo(self.model.collection, 'change', rerender, this);
+            this.listenTo(self.model.collection, 'remove', rerender, this);
+          },
+          // Remove all the selected roles (though- not mine).
+          omit_selected_roles: function(opts, cell) {
+            var res = opts(cell),
+              selected = {},
+              model = cell.model,
+              cid = model.cid,
+              // We need to check node_info values in parent when object is nested.
+              // eg: column level privileges in table dialog
+              // In this case node_info will not be avilable to column node as
+              // it is not loaded yet
+              node_info = (_.has(model.top, 'node_info')
+              && !_.isUndefined(model.top.node_info)) ?
+                model.top.node_info :
+                model.handler.top.node_info,
+              curr_user = node_info.server.user.name;
+
+            model.collection.each(function(m) {
+              var grantee = m.get('grantee');
+
+              if (m.cid != cid && !_.isUndefined(grantee) &&
+              curr_user == m.get('grantor')) {
+                selected[grantee] = m.cid;
+              }
+            });
+
+            res = _.filter(res, function(o) {
+              return !(o.value in selected);
+            });
+
+            return res;
+          },
+        }),
+      },{
+        id: 'privileges', label: gettext('Privileges'),
+        type: 'collection', model: PrivilegeModel, group: null,
+        cell: 'privilege', control: 'text', cellHeaderClasses: 'width_percent_40',
+        disabled : function(column) {
+          if (column instanceof Backbone.Collection) {
           // This has been called during generating the header cell
-          return false;
-        }
-        return !(
-          this.node_info &&
+            return false;
+          }
+          return !(
+            this.node_info &&
             this.node_info.server.user.name == column.get('grantor') ||
             this.attributes.node_info.server.user.name == column.get('grantor')
-        );
+          );
+        },
       },
-    },{
-      id: 'grantor', label: gettext('Grantor'), type: 'text', readonly: true,
-      cell: 'node-list-by-name', node: 'role',
-    }],
+      {
+        id: 'cluster', label: gettext('Cluster'), type:'text', group: null,
+        editable: true, cellHeaderClasses: 'width_percent_20',
+        node: 'cluster', options_cached: false,cell: 'node-list-by-name',
+        select2: {allowClear: true},
+      },
+      {
+        id: 'grantor', label: gettext('Grantor'), type: 'text', readonly: true,
+        cell: 'node-list-by-name', node: 'role',
+      }],
 
     /*
      * Initialize the model, which will transform the privileges string to
@@ -263,6 +273,7 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         'grantee': this.get('grantee'),
         'grantor': this.get('grantor'),
         'privileges': privileges,
+        'cluster': this.get('cluster'),
       };
     },
 
@@ -317,12 +328,14 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
         'a': 'INSERT',
         'r': 'SELECT',
         'w': 'UPDATE',
-        'd': 'DELETE',
         'D': 'TRUNCATE',
         'x': 'REFERENCES',
         't': 'TRIGGER',
         'U': 'USAGE',
         'X': 'EXECUTE',
+        'A': 'ALTER',
+        'd': 'DROP',
+        's': 'SHOW',
       },
 
       template: _.template([
@@ -695,12 +708,14 @@ define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
       'INSERT' : 'a',
       'SELECT' : 'r',
       'UPDATE' : 'w',
-      'DELETE' : 'd',
       'TRUNCATE' : 'D',
       'REFERENCES' : 'x',
       'TRIGGER' : 't',
       'USAGE' : 'U',
       'EXECUTE' : 'X',
+      'ALTER' : 'A',
+      'DROP' : 'd',
+      'SHOW' : 's',
     },
     /**
      * Takes a raw value from a model and returns an optionally formatted

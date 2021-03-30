@@ -1,0 +1,14 @@
+{# List of allowed privileges of Schema, table sequence, function and view #}
+{#
+    Format for allowed privileges are:
+    "node_name": {
+        "type": "name",
+        "acl": [...]
+    }
+#}
+{
+    "table": {
+        "type": "TABLE",
+        "acl": ["a", "r", "D", "d", "A", "s"]
+    }
+}

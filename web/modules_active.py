@@ -111,7 +111,7 @@ MODULES_ACTIVE = (
     'pgadmin.tools.datagrid',
     # 'pgadmin.tools.debugger',
     # 'pgadmin.tools.debugger.utils',
-    # 'pgadmin.tools.grant_wizard',
+    'pgadmin.tools.grant_wizard',
     'pgadmin.tools.import_export',
     'pgadmin.tools.maintenance',
     'pgadmin.tools.restore',

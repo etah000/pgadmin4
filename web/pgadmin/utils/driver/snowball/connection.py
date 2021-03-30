@@ -505,7 +505,7 @@ class Connection(BaseConnection):
 #                                   default_roles_all as can_create_db
 #                                   from system.users
 #                                   where name=currentUser();""")
-        status = _execute(cur, """SELECT currentUser(), 1 as is_superuser, 1 as can_create_role;""")
+        status = _execute(cur, """SELECT currentUser() as name, 1 as is_superuser, 1 as can_create_role;""")
 
         if status is None:
             manager.user_info = dict()
