@@ -792,6 +792,7 @@ rolmembership:{
             rsp += "-- DROP {0} {1};\n".format('USER' if self.rolCanLogin else 'ROLE', rid)
         rsp += "\n"
         rsp += res
+        rsp += ";"
 
         return ajax_response(response=rsp.strip('\n'))
 

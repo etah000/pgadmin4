@@ -28,7 +28,8 @@ def parse_priv_from_db(db_privileges):
     acl = {
         'grantor': db_privileges['grantor'],
         'grantee': db_privileges['grantee'],
-        'privileges': []
+        'privileges': [],
+        'cluster': db_privileges['cluster'],
     }
 
     privileges = []
@@ -59,12 +60,14 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
         'a': 'INSERT',
         'r': 'SELECT',
         'w': 'UPDATE',
-        'd': 'DELETE',
         'D': 'TRUNCATE',
         'x': 'REFERENCES',
         't': 'TRIGGER',
         'U': 'USAGE',
-        'X': 'EXECUTE'
+        'X': 'EXECUTE',
+        'A': 'ALTER',
+        'd': 'DROP',
+        's': 'SHOW',
     }
 
     privileges = []
@@ -73,6 +76,7 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
     for priv in str_privileges:
         priv_with_grant = []
         priv_without_grant = []
+        cluster = []
 
         if isinstance(priv['privileges'], dict) \
                 and 'changed' in priv['privileges']:
@@ -109,6 +113,8 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
                 priv_without_grant.append(
                     db_privileges[privilege['privilege_type']]
                 )
+        cluster = priv.setdefault('cluster')
+
         # If we have all acl then just return all
         if len(priv_with_grant) == allowed_acls_len > 1:
             priv_with_grant = ['ALL']
@@ -119,7 +125,8 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
             'grantee': driver.qtIdent(None, priv['grantee'])
             if priv['grantee'] != 'PUBLIC' else 'PUBLIC',
             'with_grant': priv_with_grant,
-            'without_grant': priv_without_grant
+            'without_grant': priv_without_grant,
+            'cluster': cluster
         })
 
     return privileges

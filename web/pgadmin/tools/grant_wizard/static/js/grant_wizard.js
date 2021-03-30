@@ -195,7 +195,7 @@ define([
           ),
         });
       }
-      // pgBrowser.add_menus(menus);
+      pgBrowser.add_menus(menus);
 
       return this;
     },
@@ -831,7 +831,7 @@ define([
                             // privileges are selected based on node clicked
                             privileges: obj_priv,
                           }),
-                          uniqueCol: ['grantee', 'grantor'],
+                          uniqueCol: ['grantee', 'grantor', 'cluster'],
                           editable: true,
                           type: 'collection',
                           canAdd: true,
