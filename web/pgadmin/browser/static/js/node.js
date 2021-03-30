@@ -1553,31 +1553,33 @@ define('pgadmin.browser.node', [
             );
 
             // Create proper buttons
-            let btn_grp = createButtons([{
-              label: '',
-              type: 'help',
-              tooltip: gettext('SQL help for this object type.'),
-              extraClasses: ['btn-secondary', 'pull-left', 'mx-1'],
-              icon: 'fa fa-lg fa-info',
-              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onSqlHelp();
-                });
-              },
-            }, {
-              label: '',
-              type: 'help',
-              tooltip: gettext('Help for this dialog.'),
-              extraClasses: ['btn-secondary', 'pull-left', 'mx-1'],
-              icon: 'fa fa-lg fa-question',
-              disabled: (that.dialogHelp == '') ? true : false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onDialogHelp();
-                });
-              },
-            }, 
+            let btn_grp = createButtons([
+            //   {
+            //   label: '',
+            //   type: 'help',
+            //   tooltip: gettext('SQL help for this object type.'),
+            //   extraClasses: ['btn-secondary', 'pull-left', 'mx-1'],
+            //   icon: 'fa fa-lg fa-info',
+            //   disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
+            //   register: function(btn) {
+            //     btn.on('click',() => {
+            //       onSqlHelp();
+            //     });
+            //   },
+            // }, 
+            // {
+            //   label: '',
+            //   type: 'help',
+            //   tooltip: gettext('Help for this dialog.'),
+            //   extraClasses: ['btn-secondary', 'pull-left', 'mx-1'],
+            //   icon: 'fa fa-lg fa-question',
+            //   disabled: (that.dialogHelp == '') ? true : false,
+            //   register: function(btn) {
+            //     btn.on('click',() => {
+            //       onDialogHelp();
+            //     });
+            //   },
+            // }, 
             {
               label: gettext('Cancel'),
               type: 'cancel',
