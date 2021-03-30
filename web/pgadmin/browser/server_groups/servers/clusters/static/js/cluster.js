@@ -352,9 +352,9 @@ define('pgadmin.node.cluster', [
         {
           id: 'shifted', label: gettext('cluster type'), type: 'text', mode: ['create'],
           options: [
-            {label: gettext('Average cluster'), value: 'Average'},
-            {label: gettext('Circular replication cluster'), value: 'Circular'},
-            {label: gettext('Single point replication cluster'), value: 'Single'}
+            {label: gettext('Average'), value: 'Average'},
+            {label: gettext('Circular'), value: 'Circular'},
+            {label: gettext('Single'), value: 'Single'}
           ],
           control: Backform.SelectControl.extend({
 
