@@ -25,7 +25,9 @@ SELECT
     data_path,
     metadata_path
 FROM system.databases
-    {% if did %} WHERE name = '{{ did }}' {% endif %}
-    {% if name %} WHERE name = '{{ name }}' {% endif %}
+WHERE
+    name <>'_temporary_and_external_tables'
+{% if did %}    AND name = '{{ did }}' {% endif %}
+{% if name %}   AND name = '{{ name }}' {% endif %}
 ORDER BY
     name;
