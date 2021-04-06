@@ -93,7 +93,7 @@ define([
           gridSchema = Backform.generateGridColumnsFromModel(
             info, node.model, 'properties', that.columns
           ),
-          createButtons = function(buttons, location, extraClasses) {
+          createButtons = function (buttons, location, extraClasses) {
             // Arguments must be non-zero length array of type
             // object, which contains following attributes:
             // label, type, extraClasses, register
@@ -101,7 +101,7 @@ define([
               // All buttons will be created within a single
               // div area.
               var btnGroup =
-                $('<div class="pg-prop-btn-group"></div>'),
+                  $('<div class="pg-prop-btn-group"></div>'),
                 // Template used for creating a button
                 tmpl = _.template([
                   '<button tabindex="0" type="<%= type %>" ',
@@ -117,7 +117,7 @@ define([
               if (extraClasses) {
                 btnGroup.addClass(extraClasses);
               }
-              _.each(buttons, function(btn) {
+              _.each(buttons, function (btn) {
                 // Create the actual button, and append to
                 // the group div
 

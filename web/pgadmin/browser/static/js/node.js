@@ -292,7 +292,6 @@ define('pgadmin.browser.node', [
         // i.e. Create, Update in these cases
 
         var urlBase = this.generate_url(item, type, node, false, null, that.url_jump_after_node);
-        // console.log(urlBase);
 
         if (!urlBase)
           // Ashamed of myself, I don't know how to manipulate this
@@ -390,6 +389,56 @@ define('pgadmin.browser.node', [
               model: newModel,
               schema: fields,
             });
+          } else if (formType == 'grid'){
+            var gridModle = Backbone.Model.extend({});
+            var gridCollection = Backbone.Collection.extend({
+              model: gridModle,
+              url: urlBase+node._id,
+            });
+            var gridcollection = new gridCollection();
+            var columns = [
+              {name: 'did', label: 'did',cell: 'string'},
+              {name: 'oid', label: 'oid',cell: 'string'},
+              {name: 'name',label: 'name',cell: 'string'},
+              {name: 'spcoid', label: 'spcoid',cell: 'string'},
+              {name: 'spcname', label: 'spcname',cell: 'string'},
+              {name: 'datallowconn', label: 'datallowconn',cell: 'string'},
+              {name: 'encoding', label: 'encoding',cell: 'string'},
+              {name: 'datowner', label: 'datowner',cell: 'string'},
+              {name: 'datcollate', label: 'datcollate',cell: 'string'},
+              {name: 'datctype', label: 'datctype',cell: 'string'},
+              {name: 'datconnlimit', label: 'datconnlimit',cell: 'string'},
+              {name: 'cancreate', label: 'cancreate',cell: 'string'},
+              {name: 'default_tablespace', label: 'default_tablespace',cell: 'string'},
+              {name: 'comments', label: 'comments',cell: 'string'},
+              {name: 'is_template', label: 'is_template',cell: 'string'},
+              {name: 'tblacl', label: 'tblacl',cell: 'string'},
+              {name: 'seqacl', label: 'seqacl',cell: 'string'},
+              {name: 'funcacl', label: 'funcacl',cell: 'string'},
+              {name: 'acl', label: 'acl',cell: 'string'},
+              {name: 'cluster', label: 'cluster',cell: 'string'},
+              {name: 'shard_num', label: 'shard_num',cell: 'string'},
+              {name: 'shard_weight', label: 'shard_weight',cell: 'string'},
+              {name: 'replica_num', label: 'replica_num',cell: 'string'},
+              {name: 'host_name', label: 'host_name',cell: 'string'},
+              {name: 'host_address', label: 'host_address',cell: 'string'},
+              {name: 'port', label: 'port',cell: 'string'},
+              {name: 'is_local', label: 'is_local',cell: 'string'},
+              {name: 'user', label: 'user',cell: 'string'},
+              {name: 'default_database', label: 'default_database',cell: 'string'},
+              {name: 'errors_count', label: 'errors_count',cell: 'string'},
+              {name: 'estimated_recovery_time', label: 'estimated_recovery_time',cell: 'string'},
+            ];
+            view = new Backgrid.Grid({
+              emptyText: gettext('No data found'),
+              columns: columns,
+              collection: gridcollection,
+              className: 'backgrid table presentation table-bordered table-noouter-border table-hover',
+              //collection: newModel
+            });
+            el.append('<div class="pg-prop-coll-container"></div>');
+            el.find('.pg-prop-coll-container').append(view.render().$el);
+            gridcollection.fetch({reset: true});
           } else {
             // This generates a view to be used by the node dialog
             // (for create/edit operation).
@@ -571,6 +620,7 @@ define('pgadmin.browser.node', [
        *
        **/
       show_obj_properties: function(args, item) {
+        console.log('#show_obj_properties');
         var t = pgBrowser.tree,
           i = (args && args.item) || item || t.selected(),
           d = i && i.length == 1 ? t.itemData(i) : undefined,
@@ -620,7 +670,7 @@ define('pgadmin.browser.node', [
             } else {
               // console.log(self.type);
               h = pgAdmin.toPx(el, self.height || pgBrowser.stdH.default+'px', 'height', true);
-            //  console.log("h:"+h);
+              //  console.log("h:"+h);
 
               /* Fit to standard sizes */
               if(h <= pgBrowser.stdH.sm) {
@@ -1073,6 +1123,7 @@ define('pgadmin.browser.node', [
      * This has also been used for creating a node.
      **/
     showProperties: function(item, data, panel, action) {
+      console.log('#showProperties');
       var that = this,
         tree = pgAdmin.Browser.tree,
         j = panel.$container.find('.obj_properties').first(),
@@ -1217,10 +1268,15 @@ define('pgadmin.browser.node', [
           that.footer = $('<div></div>').addClass(
             'pg-prop-footer'
           ).appendTo(j);
-          // Create a view to show the properties in fieldsets
+          // Create a view to show the properties in fieldsets 属性视图
+          if (data._type == 'cluster'){
+            view = that.getView(item, 'properties', content, data, 'grid', undefined, j);
 
-          view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
+          }else {
+            view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
+          }
           console.log(view);
+
           if (view) {
             // Save it for release it later
             j.data('obj-view', view);
@@ -1416,73 +1472,73 @@ define('pgadmin.browser.node', [
         }.bind(panel),
         //下一步
         nextFunc = function(view, saveBtn){
-          console.log("this is next");
-          document.querySelector('.tab-pane .name').classList.add("d-none");
-          document.querySelector('.hosts').classList.add("d-none");
-          document.querySelector('.shifted').classList.add("d-none");
-          document.querySelector('.default_databases').classList.add("d-none");
+          console.log('this is next');
+          document.querySelector('.tab-pane .name').classList.add('d-none');
+          document.querySelector('.hosts').classList.add('d-none');
+          document.querySelector('.shifted').classList.add('d-none');
+          document.querySelector('.default_databases').classList.add('d-none');
           let name=view.model.get('name');
           let host_name=view.model.get('hosts');
           let shifted=view.model.get('shifted');
           let default_databases=view.model.get('default_databases');
           let yandex='<yandex>';
           let remote_servers='<remote_servers>';
-          let clusterBegin="<"+name+">";
+          let clusterBegin='<'+name+'>';
           let shardBegin='<shard>';
           let internalBegin='<internal_replication>';
           let internalEnd='</internal_replication>';
           let replicaBegin='<replica>';
           let replicaEnd='</replica>';
           let shardEnd='</shard>';
-          let clusterEnd="</"+name+">";
+          let clusterEnd='</'+name+'>';
 
-          
+
           let textareaStr=yandex+remote_servers+clusterBegin;
           // let shardStr=[];
           //普通集群
           if(shifted=='Average'){
             for(let item in host_name){
-              let str=shardBegin+internalBegin+"true"+internalEnd+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>'+shardEnd;
+              let str=shardBegin+internalBegin+'true'+internalEnd+'<replica>'+'<host>'+host_name[item]+'</host>'+'<port>'+'9000'+'</port>'+'</replica>'+shardEnd;
               textareaStr=textareaStr+str;
             }
           //循环复制集群
           }else if(shifted=='Circular'){
-           let d_host_name=host_name.slice(1).concat(host_name.slice(0,1));
-           let concat_arry=[];
-           for(let h in host_name){
-            concat_arry.push(host_name[h]);
-            concat_arry.push(d_host_name[h]);
-           }
+            let d_host_name=host_name.slice(1).concat(host_name.slice(0,1));
+            let concat_arry=[];
+            for(let h in host_name){
+              concat_arry.push(host_name[h]);
+              concat_arry.push(d_host_name[h]);
+            }
             for(let item in concat_arry){
               let str='';
               if((parseInt(item)+1)%2==0){
-                str=str+"<replica>"+"<host>"+concat_arry[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+                str=str+'<replica>'+'<host>'+concat_arry[item]+'</host>'+'<port>'+'9000'+'</port>'+'</replica>';
                 str=str+shardEnd;
               }else{
-                str=str+shardBegin+internalBegin+"true"+internalEnd;
-                str=str+"<replica>"+"<host>"+concat_arry[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+                str=str+shardBegin+internalBegin+'true'+internalEnd;
+                str=str+'<replica>'+'<host>'+concat_arry[item]+'</host>'+'<port>'+'9000'+'</port>'+'</replica>';
               }
               textareaStr=textareaStr+str;
             }
-           //单点复制集群
+            //单点复制集群
           }else{
             for(let item in host_name){
               let str='';
               if((parseInt(item)+1)%2==0){
-                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
-                str=str+shardEnd
+                str=str+'<replica>'+'<host>'+host_name[item]+'</host>'+'<port>'+'9000'+'</port>'+'</replica>';
+                str=str+shardEnd;
               }else{
-                str=str+shardBegin+internalBegin+"true"+internalEnd;
-                str=str+"<replica>"+"<host>"+host_name[item]+"</host>"+"<port>"+'9000'+"</port>"+'</replica>';
+                str=str+shardBegin+internalBegin+'true'+internalEnd;
+                str=str+'<replica>'+'<host>'+host_name[item]+'</host>'+'<port>'+'9000'+'</port>'+'</replica>';
               }
               textareaStr=textareaStr+str;
             }
           }
-          textareaStr=textareaStr+clusterEnd+'</remote_servers>'+'</yandex>'
-          $('.data').find("textarea").val(textareaStr);
+          textareaStr=textareaStr+clusterEnd+'</remote_servers>'+'</yandex>';
+          $('.data').find('textarea').val(textareaStr);
           view.model.set('data',textareaStr);
 
-          document.querySelector('.tab-pane .data').classList.remove("d-none");
+          document.querySelector('.tab-pane .data').classList.remove('d-none');
 
 
 
@@ -1566,7 +1622,7 @@ define('pgadmin.browser.node', [
             //       onSqlHelp();
             //     });
             //   },
-            // }, 
+            // },
             // {
             //   label: '',
             //   type: 'help',
@@ -1579,97 +1635,97 @@ define('pgadmin.browser.node', [
             //       onDialogHelp();
             //     });
             //   },
-            // }, 
-            {
-              label: gettext('Cancel'),
-              type: 'cancel',
-              tooltip: gettext('Cancel changes to this object.'),
-              extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-close pg-alertify-button',
-              disabled: false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  // Removing the action-mode
-                  panel.$container.removeAttr('action-mode');
-                  onCancelFunc.call(true);
-                });
-              },
-            },
-             {
-              label: gettext('Reset'),
-              type: 'reset',
-              tooltip: gettext('Reset the fields on this dialog.'),
-              extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-recycle pg-alertify-button',
-              disabled: true,
-              register: function(btn) {
-                btn.on('click',() => {
-                  warnBeforeChangesLost.call(
-                    panel,
-                    gettext('Changes will be lost. Are you sure you want to reset?'),
-                    function() {
-                      setTimeout(function() {
-                        editFunc.call();
-                      }, 0);
-                    }
-                  );
-                });
-              },
-            },
-            {
-              label: gettext('next'),
-              type: 'next',
-              tooltip: gettext('Cancel changes to this object.'),
-              extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-close pg-alertify-button',
-              disabled: false,
-              visible: (!that.isNext) ? true : false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  // Removing the action-mode
-                  panel.$container.removeAttr('action-mode');
-                  nextFunc.call(this, view, btn);
-                });
-              },
-            },
-            // {
-            //   label: gettext('previous'),
-            //   type: 'previous',
-            //   tooltip: gettext('Cancel changes to this object.'),
-            //   extraClasses: ['btn-secondary', 'mx-1'],
-            //   icon: 'fa fa-close pg-alertify-button',
-            //   disabled: false,
-            //   visible: (!that.isNext) ? true : false,
-            //   register: function(btn) {
-            //     btn.on('click',() => {
-            //       // Removing the action-mode
-            //       panel.$container.removeAttr('action-mode');
-            //       nextFunc.call(true);
-            //     });
-            //   },
             // },
-            
-             {
-              label: gettext('Save'),
-              type: 'save',
-              tooltip: gettext('Save this object.'),
-              extraClasses: ['btn-primary', 'mx-1'],
-              icon: 'fa fa-save pg-alertify-button',
-              disabled: true,
-              register: function(btn) {
-                // Save the changes
-                btn.on('click',() => {
-                  warnBeforeAttributeChange.call(
-                    panel,
-                    function() {
-                      setTimeout(function() {
-                        onSave.call(this, view, btn);
-                      }, 0);
-                    }
-                  );
-                });
+              {
+                label: gettext('Cancel'),
+                type: 'cancel',
+                tooltip: gettext('Cancel changes to this object.'),
+                extraClasses: ['btn-secondary', 'mx-1'],
+                icon: 'fa fa-close pg-alertify-button',
+                disabled: false,
+                register: function(btn) {
+                  btn.on('click',() => {
+                  // Removing the action-mode
+                    panel.$container.removeAttr('action-mode');
+                    onCancelFunc.call(true);
+                  });
+                },
               },
-            }], 'footer', 'pg-prop-btn-group-below');
+              {
+                label: gettext('Reset'),
+                type: 'reset',
+                tooltip: gettext('Reset the fields on this dialog.'),
+                extraClasses: ['btn-secondary', 'mx-1'],
+                icon: 'fa fa-recycle pg-alertify-button',
+                disabled: true,
+                register: function(btn) {
+                  btn.on('click',() => {
+                    warnBeforeChangesLost.call(
+                      panel,
+                      gettext('Changes will be lost. Are you sure you want to reset?'),
+                      function() {
+                        setTimeout(function() {
+                          editFunc.call();
+                        }, 0);
+                      }
+                    );
+                  });
+                },
+              },
+              {
+                label: gettext('next'),
+                type: 'next',
+                tooltip: gettext('Cancel changes to this object.'),
+                extraClasses: ['btn-secondary', 'mx-1'],
+                icon: 'fa fa-close pg-alertify-button',
+                disabled: false,
+                visible: (!that.isNext) ? true : false,
+                register: function(btn) {
+                  btn.on('click',() => {
+                  // Removing the action-mode
+                    panel.$container.removeAttr('action-mode');
+                    nextFunc.call(this, view, btn);
+                  });
+                },
+              },
+              // {
+              //   label: gettext('previous'),
+              //   type: 'previous',
+              //   tooltip: gettext('Cancel changes to this object.'),
+              //   extraClasses: ['btn-secondary', 'mx-1'],
+              //   icon: 'fa fa-close pg-alertify-button',
+              //   disabled: false,
+              //   visible: (!that.isNext) ? true : false,
+              //   register: function(btn) {
+              //     btn.on('click',() => {
+              //       // Removing the action-mode
+              //       panel.$container.removeAttr('action-mode');
+              //       nextFunc.call(true);
+              //     });
+              //   },
+              // },
+
+              {
+                label: gettext('Save'),
+                type: 'save',
+                tooltip: gettext('Save this object.'),
+                extraClasses: ['btn-primary', 'mx-1'],
+                icon: 'fa fa-save pg-alertify-button',
+                disabled: true,
+                register: function(btn) {
+                // Save the changes
+                  btn.on('click',() => {
+                    warnBeforeAttributeChange.call(
+                      panel,
+                      function() {
+                        setTimeout(function() {
+                          onSave.call(this, view, btn);
+                        }, 0);
+                      }
+                    );
+                  });
+                },
+              }], 'footer', 'pg-prop-btn-group-below');
 
             btn_grp.on('keydown', 'button', function(event) {
               if (!event.shiftKey && event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
