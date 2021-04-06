@@ -559,6 +559,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             SQL, nameOrError = self.getSQL(gid, sid, did, data)
             if SQL is None:
                 return nameOrError
+
+            # print(SQL)
+            # return make_json_response(data=SQL)
+
             SQL = SQL.strip('\n').strip(' ')
             status, res = self.conn.execute_scalar(SQL)
             if not status:
@@ -1792,6 +1796,9 @@ class MViewNode(ViewNode, VacuumSettings):
             #     SQL += "\n"
             #     SQL += render_template("/".join(
             #         [self.template_path, 'sql/grant.sql']), data=data)
+            SQL = re.sub('\n+,\n+', ',\n', SQL, flags=re.M)
+            SQL = re.sub('\n+', '\n', SQL, flags=re.M)
+
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     def _fetch_ddl(self, did, vid, scid=0):
