@@ -9,5 +9,6 @@ FROM
     system.clusters
 WHERE
     1
+{% if did %}    AND cluster = '{{ did }}' {% endif %}
 ORDER BY
     name;
