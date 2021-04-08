@@ -1,0 +1,9 @@
+{% macro INDEXES(data) %}
+{% set engine_name = data['engine'] %}
+{%- if engine_name != 'Memory' and data.indexes and data.indexes|length > 0 %},
+{% for idata in data.indexes %}
+    INDEX {{ idata.name }} ({{ idata.expr }}) TYPE {{ idata.type }} GRANULARITY {{ idata.granularity }}{% if not loop.last %},{% endif %}
+
+{% endfor %}
+{% endif %}
+{% endmacro %}

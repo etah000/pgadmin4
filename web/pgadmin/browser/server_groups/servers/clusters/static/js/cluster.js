@@ -22,23 +22,21 @@ define('pgadmin.node.cluster', [
         type: 'coll-cluster',
         columns: ['name', 'datowner', 'comments'],
         hasStatistics: false,
-        canDrop: false,
-        isNext: true,
+        canDrop: true,
         canDropCascade: false,
         statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
       });
   }
+
   if (!pgBrowser.Nodes['cluster']) {
     pgBrowser.Nodes['cluster'] = pgBrowser.Node.extend({
       parent_type: 'server_group',
-      // type: 'cluster',
       type: 'cluster',
-      // sqlAlterHelp: 'sql-altercluster.html',
-      // sqlCreateHelp: 'sql-createcluster.html',
-      // dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
+      sqlAlterHelp: 'sql-altercluster.html',
+      sqlCreateHelp: 'sql-createcluster.html',
+      dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
       hasSQL: false,
       canEdit:false,
-      isNext: true,
       hasDepends: true,
       hasStatistics: false,
       statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
@@ -47,7 +45,7 @@ define('pgadmin.node.cluster', [
       },
       label: gettext('Cluster'),
       node_image: function() {
-        return 'pg-icon-database';
+        return 'pg-icon-cluster';
       },
       Init: function() {
         /* Avoid mulitple registration of menus */
@@ -55,26 +53,25 @@ define('pgadmin.node.cluster', [
           return;
 
         this.initialized = true;
-
+        
         pgBrowser.add_menus([
-          // {
-          // name: 'create_cluster_on_server', node: 'server', module: this,
-          // applies: ['object', 'context'], callback: 'show_obj_properties',
-          // category: 'create', priority: 4, label: gettext('Cluster...'),
-          // icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
-          // enable: 'can_create_cluster',
-        // },
-           {
+          {
+          name: 'create_cluster_on_server', node: 'server', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 4, label: gettext('Cluster...'),
+          icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
+          enable: 'can_create_cluster',
+        },{
           name: 'create_cluster_on_coll', node: 'coll-cluster', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Cluster...'),
-          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
+          icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
           enable: 'can_create_cluster',
         },{
           name: 'create_cluster', node: 'cluster', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Cluster...'),
-          icon: 'wcTabIcon pg-icon-database', data: {action: 'create'},
+          icon: 'wcTabIcon pg-icon-cluster', data: {action: 'create'},
           enable: 'can_create_cluster',
         }
         // ,{
@@ -98,7 +95,7 @@ define('pgadmin.node.cluster', [
       can_create_cluster: function(node, item) {
         var treeData = this.getTreeNodeHierarchy(item),
           server = treeData['server'];
-          return true;
+          return false;
         // return server.connected && server.user.can_create_db;
       },
       is_not_connected: function(node) {
@@ -268,6 +265,7 @@ define('pgadmin.node.cluster', [
             connect_to_database(this, data, pgBrowser.tree, item, false);
             return false;
           }
+
           return pgBrowser.Node.callbacks.selected.apply(this, arguments);
         },
 
@@ -286,7 +284,6 @@ define('pgadmin.node.cluster', [
           name: undefined,
           owner: undefined,
           is_sys_obj: undefined,
-          shifted:'Average',
           comment: undefined,
           encoding: 'UTF8',
           template: undefined,
@@ -295,168 +292,91 @@ define('pgadmin.node.cluster', [
           char_type: undefined,
           datconnlimit: -1,
           datallowconn: undefined,
-          // variables: [],
-          // privileges: [],
-          // securities: [],
-          // datacl: [],
-          data:'',
-          // deftblacl: [],
-          // deffuncacl: [],
-          // defseqacl: [],
+          variables: [],
+          privileges: [],
+          securities: [],
+          datacl: [],
+          deftblacl: [],
+          deffuncacl: [],
+          defseqacl: [],
           is_template: false,
-          // deftypeacl: [],
+          deftypeacl: [],
         },
 
         // Default values!
         initialize: function(attrs, args) {
           var isNew = (_.size(attrs) === 0);
 
-          // if (isNew) {
-          //   var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-          //   this.set({'datowner': userInfo.name}, {silent: true});
-          // }
+          if (isNew) {
+            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            this.set({'datowner': userInfo.name}, {silent: true});
+          }
           pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
         },
 
         schema: [{
-          id: 'name', label: gettext('Cluster Name'), cell: 'string',
+          id: 'name', label: gettext('Database'), cell: 'string',
           editable: false, type: 'text',
-        },
-        // {
-        //   id: 'datowner', label: gettext('Owner'), cell: 'string',
-        //   editable: false, type: 'text',
-        // },
-        {
-          id: 'hosts', label: gettext('Host Name'), type: 'text', node: 'host',
-          mode: ['edit','create'], select2: {multiple: true, allowClear: true,},deps: ['host_name'],
-          control: 'node-ajax-options', url: 'get_hosts',
-          transform: function(d) {
-             for(let item of d){
-                 item.label=item.host_name;
-                 item.value=item.host_name;
-             }
-            return d;
-          },
-          // control: 'node-list-by-name',
-        },
-        // {
-        //   id: 'host_name', label: gettext('Host Name'), cell: 'string',
-        //   editable: false, type: 'text',
-        // },
-        //  {
-        //   id: 'shifted', label: gettext('shifted?'), type: 'switch',
-        //   mode: ['create'],'options': {
-        //     'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
-        //   },
-        // },
-        {
-          id: 'shifted', label: gettext('cluster type'), type: 'text', mode: ['create'],
-          options: [
-            {label: gettext('Average'), value: 'Average'},
-            {label: gettext('Circular'), value: 'Circular'},
-            {label: gettext('Single'), value: 'Single'}
-          ],
-          control: Backform.SelectControl.extend({
-
-            onChange: function() {
-              Backform.SelectControl.prototype.onChange.apply(this, arguments);
-              let shifted=this.model.get('shifted');
-              document.querySelector('.default_databases').classList.add("d-none");
-              if(shifted=='Circular'){
-                document.querySelector('.default_databases').classList.remove("d-none");
-              }else{
-                document.querySelector('.default_databases').classList.add("d-none");
-              }
-            },
-          }),
-        },
-        {
-          id: 'default_databases', label: gettext('Default Databases'),
+        },{
+          id: 'did', label: gettext('OID'), cell: 'string', mode: ['properties'],
           editable: false, type: 'text',
-        },
-        // {
-        //   id: 'preview', label: gettext('Privileges'), type: 'text',
-        //   group: gettext('Security'), mode: ['properties'],
-        // },
-
-        {
-          id: 'data', label: gettext('preview xml'),
-          editable: false, type: 'multiline',visible:false,
-          rows:14,
-        },
-        // {
-        //   id: 'definition', label: gettext('Code'), cell: 'string',
-        //   type: 'text', mode: ['create', 'edit'], group: gettext('Code'),
-        //   tabPanelCodeClass: 'sql-code-control',
-        //   disabled: false,
-        //   control: Backform.SqlCodeControl.extend({
-        //     onChange: function() {
-        //       Backform.SqlCodeControl.prototype.onChange.apply(this, arguments);
-
-        //     },
-        //   }),
-        // },
-        // {
-        //   id: 'shard_num', label: gettext('Shard Num'),
-        //   editable: false, type: 'text',
-        // },{
-        //   id: 'shard_weight', label: gettext('Shard Weight'),
-        //   editable: false, type: 'text',
-        // },
-        // {
-        //   id: 'acl', label: gettext('Privileges'), type: 'text',
-        //   group: gettext('Security'), mode: ['properties'],
-        // },
-        //{
-        //   id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
-        //   group: gettext('Security'), mode: ['properties'],
-        // },{
-        //   id: 'seqacl', label: gettext('Default SEQUENCE privileges'), type: 'text',
-        //   group: gettext('Security'), mode: ['properties'],
-        // },{
-        //   id: 'funcacl', label: gettext('Default FUNCTION privileges'), type: 'text',
-        //   group: gettext('Security'), mode: ['properties'],
-        // },{
-        //   id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
-        //   group: gettext('Security'), mode: ['properties'], min_version: 90200,
-        // },{
-        //   id: 'is_sys_obj', label: gettext('System database?'),
-        //   cell:'boolean', type: 'switch', mode: ['properties'],
-        // },{
-        //   id: 'comments', label: gettext('Comment'),
-        //   editable: false, type: 'multiline',
-        // }
+        },{
+          id: 'datowner', label: gettext('Owner'),
+          editable: false, type: 'text', node: 'role',
+          control: Backform.NodeListByNameControl, select2: { allowClear: false },
+        },{
+          id: 'acl', label: gettext('Privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'],
+        },{
+          id: 'tblacl', label: gettext('Default TABLE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'],
+        },{
+          id: 'seqacl', label: gettext('Default SEQUENCE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'],
+        },{
+          id: 'funcacl', label: gettext('Default FUNCTION privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'],
+        },{
+          id: 'typeacl', label: gettext('Default TYPE privileges'), type: 'text',
+          group: gettext('Security'), mode: ['properties'], min_version: 90200,
+        },{
+          id: 'is_sys_obj', label: gettext('System database?'),
+          cell:'boolean', type: 'switch', mode: ['properties'],
+        },{
+          id: 'comments', label: gettext('Comment'),
+          editable: false, type: 'multiline',
+        }
         // ,{
         //   id: 'encoding', label: gettext('Encoding'),
         //   editable: false, type: 'text', group: gettext('Definition'),
         //   readonly: function(m) { return !m.isNew(); }, url: 'get_encodings',
         //   control: 'node-ajax-options', cache_level: 'server_group',
         // }
-        // ,{
-        //   id: 'template', label: gettext('Template'),
-        //   editable: false, type: 'text', group: gettext('Definition'),
-        //   readonly: function(m) { return !m.isNew(); },
-        //   control: 'node-list-by-name', url: 'get_databases', cache_level: 'server_group',
-        //   select2: { allowClear: false }, mode: ['create'],
-        //   transform: function(data, cell) {
-        //     var res = [],
-        //       control = cell || this,
-        //       label = control.model.get('name');
-        //
-        //     if (!control.model.isNew()) {
-        //       res.push({label: label, value: label});
-        //     }
-        //     else {
-        //       if (data && _.isArray(data)) {
-        //         _.each(data, function(d) {
-        //           res.push({label: d, value: d,
-        //             image: 'pg-icon-database'});
-        //         });
-        //       }
-        //     }
-        //     return res;
-        //   },
-        // },
+        ,{
+          id: 'template', label: gettext('Template'),
+          editable: false, type: 'text', group: gettext('Definition'),
+          readonly: function(m) { return !m.isNew(); },
+          control: 'node-list-by-name', url: 'get_databases', cache_level: 'server_group',
+          select2: { allowClear: false }, mode: ['create'],
+          transform: function(data, cell) {
+            var res = [],
+              control = cell || this,
+              label = control.model.get('name');
+
+            if (!control.model.isNew()) {
+              res.push({label: label, value: label});
+            }
+            else {
+              if (data && _.isArray(data)) {
+                _.each(data, function(d) {
+                  res.push({label: d, value: d,
+                    image: 'pg-icon-database'});
+                });
+              }
+            }
+            return res;
+          },
+        },
         // {
         //   id: 'spcname', label: gettext('Tablespace'),
         //   editable: false, type: 'text', group: gettext('Definition'),
@@ -479,72 +399,72 @@ define('pgadmin.node.cluster', [
         //   readonly: function(m) { return !m.isNew(); }, url: 'get_ctypes',
         //   control: 'node-ajax-options', cache_level: 'server_group',
         // },
-        // {
-        //   id: 'datconnlimit', label: gettext('Connection limit'),
-        //   editable: false, type: 'int', group: gettext('Definition'), min: -1,
-        // },{
-        //   id: 'is_template', label: gettext('Template?'),
-        //   editable: false, type: 'switch', group: gettext('Definition'),
-        //   readonly: true,  mode: ['properties', 'edit'],
-        // },{
-        //   id: 'datallowconn', label: gettext('Allow connections?'),
-        //   editable: false, type: 'switch', group: gettext('Definition'),
-        //   mode: ['properties'],
-        // },{
-        //   id: 'datacl', label: gettext('Privileges'), type: 'collection',
-        //   model: pgBrowser.Node.PrivilegeRoleModel.extend({
-        //     privileges: ['C', 'T', 'c'],
-        //   }), uniqueCol : ['grantee', 'grantor'], editable: false,
-        //   group: gettext('Security'), mode: ['edit', 'create'],
-        //   canAdd: true, canDelete: true, control: 'unique-col-collection',
-        // },{
-        //   id: 'variables', label: '', type: 'collection',
-        //   model: pgBrowser.Node.VariableModel.extend({keys:['name', 'role']}), editable: false,
-        //   group: gettext('Parameters'), mode: ['edit', 'create'],
-        //   canAdd: true, canEdit: false, canDelete: true, hasRole: true,
-        //   control: Backform.VariableCollectionControl, node: 'role',
-        // },{
-        //   id: 'seclabels', label: gettext('Security labels'),
-        //   model: pgBrowser.SecLabelModel,
-        //   editable: false, type: 'collection', canEdit: false,
-        //   group: gettext('Security'), canDelete: true,
-        //   mode: ['edit', 'create'], canAdd: true,
-        //   control: 'unique-col-collection', uniqueCol : ['provider'],
-        //   min_version: 90200,
-        // },{
-        //   type: 'nested', control: 'tab', group: gettext('Default Privileges'),
-        //   mode: ['edit'],
-        //   schema:[{
-        //     id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-        //       {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: '',
-        //     editable: false, type: 'collection', group: gettext('Tables'),
-        //     mode: ['edit', 'create'], control: 'unique-col-collection',
-        //     canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-        //   },{
-        //     id: 'defseqacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-        //       {privileges: ['r', 'w', 'U']}), label: '',
-        //     editable: false, type: 'collection', group: gettext('Sequences'),
-        //     mode: ['edit', 'create'], control: 'unique-col-collection',
-        //     canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-        //   },{
-        //     id: 'deffuncacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-        //       {privileges: ['X']}), label: '',
-        //     editable: false, type: 'collection', group: gettext('Functions'),
-        //     mode: ['edit', 'create'], control: 'unique-col-collection',
-        //     canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-        //   },{
-        //     id: 'deftypeacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
-        //       {privileges: ['U']}),  label: '',
-        //     editable: false, type: 'collection', group: 'deftypesacl_group',
-        //     mode: ['edit', 'create'], control: 'unique-col-collection',
-        //     canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
-        //     min_version: 90200,
-        //   },{
-        //     id: 'deftypesacl_group', type: 'group', label: gettext('Types'),
-        //     mode: ['edit', 'create'], min_version: 90200,
-        //   },
-        //   ],
-        // },
+        {
+          id: 'datconnlimit', label: gettext('Connection limit'),
+          editable: false, type: 'int', group: gettext('Definition'), min: -1,
+        },{
+          id: 'is_template', label: gettext('Template?'),
+          editable: false, type: 'switch', group: gettext('Definition'),
+          readonly: true,  mode: ['properties', 'edit'],
+        },{
+          id: 'datallowconn', label: gettext('Allow connections?'),
+          editable: false, type: 'switch', group: gettext('Definition'),
+          mode: ['properties'],
+        },{
+          id: 'datacl', label: gettext('Privileges'), type: 'collection',
+          model: pgBrowser.Node.PrivilegeRoleModel.extend({
+            privileges: ['C', 'T', 'c'],
+          }), uniqueCol : ['grantee', 'grantor'], editable: false,
+          group: gettext('Security'), mode: ['edit', 'create'],
+          canAdd: true, canDelete: true, control: 'unique-col-collection',
+        },{
+          id: 'variables', label: '', type: 'collection',
+          model: pgBrowser.Node.VariableModel.extend({keys:['name', 'role']}), editable: false,
+          group: gettext('Parameters'), mode: ['edit', 'create'],
+          canAdd: true, canEdit: false, canDelete: true, hasRole: true,
+          control: Backform.VariableCollectionControl, node: 'role',
+        },{
+          id: 'seclabels', label: gettext('Security labels'),
+          model: pgBrowser.SecLabelModel,
+          editable: false, type: 'collection', canEdit: false,
+          group: gettext('Security'), canDelete: true,
+          mode: ['edit', 'create'], canAdd: true,
+          control: 'unique-col-collection', uniqueCol : ['provider'],
+          min_version: 90200,
+        },{
+          type: 'nested', control: 'tab', group: gettext('Default Privileges'),
+          mode: ['edit'],
+          schema:[{
+            id: 'deftblacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
+              {privileges: ['a', 'r', 'w', 'd', 'D', 'x', 't']}), label: '',
+            editable: false, type: 'collection', group: gettext('Tables'),
+            mode: ['edit', 'create'], control: 'unique-col-collection',
+            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
+          },{
+            id: 'defseqacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
+              {privileges: ['r', 'w', 'U']}), label: '',
+            editable: false, type: 'collection', group: gettext('Sequences'),
+            mode: ['edit', 'create'], control: 'unique-col-collection',
+            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
+          },{
+            id: 'deffuncacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
+              {privileges: ['X']}), label: '',
+            editable: false, type: 'collection', group: gettext('Functions'),
+            mode: ['edit', 'create'], control: 'unique-col-collection',
+            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
+          },{
+            id: 'deftypeacl', model: pgBrowser.Node.PrivilegeRoleModel.extend(
+              {privileges: ['U']}),  label: '',
+            editable: false, type: 'collection', group: 'deftypesacl_group',
+            mode: ['edit', 'create'], control: 'unique-col-collection',
+            canAdd: true, canDelete: true, uniqueCol : ['grantee', 'grantor'],
+            min_version: 90200,
+          },{
+            id: 'deftypesacl_group', type: 'group', label: gettext('Types'),
+            mode: ['edit', 'create'], min_version: 90200,
+          },
+          ],
+        },
         ],
         validate: function() {
           var name = this.get('name');
@@ -556,22 +476,6 @@ define('pgadmin.node.cluster', [
           } else {
             this.errorModel.unset('name');
           }
-          var hosts=this.get('hosts');
-          var shifted=this.get('shifted');
-          console.log(hosts);
-          if (
-            _.isUndefined(hosts) || _.isNull(hosts) ||
-              String(hosts).replace(/^\s+|\s+$/g, '') == ''||(hosts.length<=0)
-          ) {
-            msg = gettext('host name cannot be empty.');
-            this.errorModel.set('hosts', msg);
-            return msg;
-          }else if ((shifted=='Single')&&(hosts.length%2!=0)) {
-            msg = gettext('host name must be even number');
-            this.errorModel.set('hosts', msg);
-            return msg;
-          }
-          this.errorModel.unset('hosts');
           return null;
         },
       }),
@@ -635,21 +539,21 @@ define('pgadmin.node.cluster', [
                 data.icon = res.data.icon;
                 tree.addIcon(item, {icon: data.icon});
               }
-              // if(res.data.already_connected) {
-              //   res.info = gettext('Database already connected.');
-              // }
-              // if(res.data.info_prefix) {
-              //   res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
-              // }
-              // if(res.data.already_connected) {
-              //   Alertify.info(res.info);
-              // } else {
-              //   Alertify.success(res.info);
-              // }
-              // obj.trigger('connected', obj, item, data);
-              // pgBrowser.Events.trigger(
-              //   'pgadmin:database:connected', item, data
-              // );
+              if(res.data.already_connected) {
+                res.info = gettext('Database already connected.');
+              }
+              if(res.data.info_prefix) {
+                res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
+              }
+              if(res.data.already_connected) {
+                Alertify.info(res.info);
+              } else {
+                Alertify.success(res.info);
+              }
+              obj.trigger('connected', obj, item, data);
+              pgBrowser.Events.trigger(
+                'pgadmin:database:connected', item, data
+              );
 
               if (!connected) {
                 setTimeout(function() {

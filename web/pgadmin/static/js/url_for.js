@@ -20,14 +20,15 @@ define(['pgadmin.browser.endpoints'], function(endpoints) {
    * @param {String} text
    * @param {Object} substitutions
    */
+
   return function url_for(endpoint, substitutions) {
 
     var rawURL = endpoints[endpoint];
-
+    //console.log("ccccurl_for")
     // captures things of the form <path:substitutionName>
     var substitutionGroupsRegExp = /([<])([^:^>]*:)?([^>]+)([>])/g,
       interpolated = rawURL;
-
+    console.log(rawURL)
     if (!rawURL)
       return rawURL;
 

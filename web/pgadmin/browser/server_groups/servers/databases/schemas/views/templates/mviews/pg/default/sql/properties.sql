@@ -64,7 +64,7 @@ WHERE
 {% if did %}
     AND database = '{{did}}'
 {% endif %}
-{% if (vid and datlastsysoid) %}
+{% if vid %}
     AND name = '{{vid}}'
 {% endif %}
 ORDER BY

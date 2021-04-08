@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
+//import {getTreeNodeHierarchyFromIdentifier} from '../../../../static/js/tree/pgadmin_tree_node';
 define('tools.querytool', [
   'sources/gettext', 'sources/url_for', 'jquery', 'jquery.ui',
   'jqueryui.position', 'underscore', 'pgadmin.alertifyjs',
@@ -2722,6 +2722,7 @@ define('tools.querytool', [
 
         // Create columns required by slick grid to render
         _.each(colinfo, function(c) {
+          // eslint-disable-next-line no-unused-vars
           var is_primary_key = false,
             is_editable = self.can_edit && (!self.is_query_tool || c.is_editable);
 

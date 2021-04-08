@@ -43,13 +43,19 @@ SELECT
     '' AS seqacl,
     '' AS funcacl,
     '' AS acl,
-    toString(groupArray(host_name)) host_name,
-    toString(groupArray(host_address)) host_address,
-    toString(groupArray(port)) port,
-    toString(groupArray(shard_num)) shard_num,
-    toString(groupArray(shard_weight)) shard_weight
+    cluster,
+    shard_num,
+    shard_weight,
+    replica_num,
+    host_name,
+    host_address,
+    port,
+    is_local,
+    user,
+    default_database,
+    errors_count,
+    estimated_recovery_time
 FROM
-(SELECT DISTINCT cluster,user,host_name,host_address,port,shard_num,shard_weight FROM system.clusters)
+    system.clusters
 {% if did %} WHERE cluster = '{{ did }}' {% endif %}
- group  by cluster,user
-
+ORDER BY cluster;
