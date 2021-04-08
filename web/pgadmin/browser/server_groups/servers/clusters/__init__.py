@@ -222,7 +222,7 @@ class DatabaseView(PGClusterChildNodeView):
                         current_app.logger.info(
                             'Connection Established for server Id: \
                             %s' % (sid)
-                        )                    
+                        )
 
                 # set template path for sql scripts
                 self.template_path = 'clusters/sql/#{0}#'.format(
@@ -402,7 +402,7 @@ class DatabaseView(PGClusterChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
-            did=did, 
+            did=did,
             conn=self.conn,
         )
         status, res = self.conn.execute_dict(SQL)
@@ -414,11 +414,8 @@ class DatabaseView(PGClusterChildNodeView):
             return gone(
                 _("Could not find the virtual cluster on the server.")
             )
-
-        result = res['rows']
-
         return ajax_response(
-            response=result,
+            response=res['rows'],
             status=200
         )
 
