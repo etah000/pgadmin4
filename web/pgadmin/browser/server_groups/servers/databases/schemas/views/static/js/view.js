@@ -90,7 +90,7 @@ define('pgadmin.node.view', [
         //   enable: 'canCreate',
         // }
         // ,
-        {
+        { 
           name: 'create_view_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 8, label: gettext('View...'),

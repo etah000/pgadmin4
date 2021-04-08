@@ -980,8 +980,8 @@ define('pgadmin.browser.node', [
             console.log(b.panels['properties'].panel);
             console.log(item);
             console.log(d);
-            // console.log(this.node.model);
             console.log(this.columns);
+            console.log(this);
             // if(d._type=='cluster'){
             //   d._type=="coll-clusters"
             //   // pgBrowser.Collection.showPropertiesCluster(item, d, b.panels['properties'].panel,this);

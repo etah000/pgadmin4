@@ -257,7 +257,6 @@ define('pgadmin.node.database', [
           if(!data || data._type != 'database' || data.label == 'template0') {
             return false;
           }
-
           pgBrowser.tree.addIcon(item, {icon: data.icon});
           if (!data.connected && data.allowConn) {
             connect_to_database(this, data, pgBrowser.tree, item, true);
