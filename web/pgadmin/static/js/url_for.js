@@ -22,6 +22,9 @@ define(['pgadmin.browser.endpoints'], function(endpoints) {
    */
 
   return function url_for(endpoint, substitutions) {
+    console.log(endpoint);
+    console.log(substitutions);
+    console.log(endpoints);
 
     var rawURL = endpoints[endpoint];
     //console.log("ccccurl_for")

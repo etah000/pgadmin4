@@ -46,7 +46,8 @@ export class BackupDialogWrapper extends DialogWrapper {
           label: gettext('Backup'),
           'aria-label': gettext('Backup'),
         },
-      }, {
+      }, 
+      {
         text: '',
         key: 112,
         className: 'btn btn-secondary pull-left fa fa-question pg-alertify-icon-button',
@@ -59,14 +60,17 @@ export class BackupDialogWrapper extends DialogWrapper {
             'filename': get_help_file(this.typeOfDialog),
           }),
         },
-      }, {
+      }, 
+      {
         text: gettext('Cancel'),
         key: 27,
         className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
         'data-btn-name': 'cancel',
-      }, {
-        text: gettext('Backup'),
+      }, 
+      {
+        text: gettext('Backup2'),
         key: 13,
+        disabled: false,
         className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
         'data-btn-name': 'backup',
       }],
@@ -137,20 +141,38 @@ export class BackupDialogWrapper extends DialogWrapper {
       const serverIdentifier = this.retrieveServerIdentifier(node, selectedTreeNode);
 
       const dialog = this;
-      let urlShortcut = 'backup.create_server_job';
-      if (this.typeOfDialog === 'backup_objects') {
-        urlShortcut = 'backup.create_object_job';
-      }
+      let urlShortcut = 'backup.create_backup';
+      // if (this.typeOfDialog === 'backup_objects') {
+      //   urlShortcut = 'backup.create_object_job';
+      // }
       const baseUrl = url_for(urlShortcut, {
-        'sid': serverIdentifier,
+        'gid': serverIdentifier,
       });
+      // console.log("baseUrl"+baseUrl);
 
       const treeInfo = getTreeNodeHierarchyFromElement(
         this.pgBrowser,
         selectedTreeNode
       );
+      // let data=this.view.model.toJSON();
+    //   $.post(
+    //     this.generate_url('tt', 'backup', data, true)
+    //   ).done(function(res) {
+    //     if (res.success == 1) {
+    //       // return onSuccess(res, obj, data, tree, item, wasConnected);
+    //     }
+    //   }).fail(function(xhr, status, error) {
+    //     if (xhr.status === 410) {
+    //       error = gettext('Error: Object not found - %s.', error);
+    //     }
+    //     return onFailure(
+    //       xhr, status, error, obj, data, tree, item, wasConnected
+    //     );
+    //   });
+    // return;
 
-      this.setExtraParameters(selectedTreeNode, treeInfo);
+      // this.setExtraParameters(selectedTreeNode, treeInfo);
+      console.log(baseUrl);
 
       axios.post(
         baseUrl,
@@ -196,7 +218,7 @@ export class BackupDialogWrapper extends DialogWrapper {
   }
 
   disableBackupButton() {
-    this.__internal.buttons[3].element.disabled = true;
+    this.__internal.buttons[3].element.disabled = false;
   }
 
   enableBackupButton() {
@@ -228,7 +250,8 @@ export class BackupDialogWrapper extends DialogWrapper {
       this.pgBrowser,
       selectedTreeNode
     );
-    return treeInfo.server._id;
+    console.log(treeInfo);
+    return treeInfo.server_group._id;
   }
 
   setListenersForFilenameChanges() {

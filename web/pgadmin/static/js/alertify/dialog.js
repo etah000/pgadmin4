@@ -66,6 +66,7 @@ export class Dialog {
       } else {
         if (treeNode.anyFamilyMember(isServerNode))
           serverInformation = nodeData;
+          
       }
     }
 

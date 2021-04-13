@@ -10,7 +10,7 @@
 import {isValidTreeNodeData} from '../../../../static/js/tree/tree';
 
 export const backupSupportedNodes = [
-  'database', 'schema', 'table', 'partition',
+  'database', 'schema', 'table', 'partition','cluster','coll-cluster','coll-database'
 ];
 
 function isNodeAServerAndConnected(treeNodeData) {
