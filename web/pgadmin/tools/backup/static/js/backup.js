@@ -179,7 +179,7 @@ define([
       // },
     // },
     {
-      id: 'back', label: gettext('backName'), type: 'text',
+      id: 'backup', label: gettext('backName'), type: 'text',
     },
     {
       id: 'tables', label: gettext('tables'), type: 'text',

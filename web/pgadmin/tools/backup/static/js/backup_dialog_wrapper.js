@@ -68,7 +68,7 @@ export class BackupDialogWrapper extends DialogWrapper {
         'data-btn-name': 'cancel',
       }, 
       {
-        text: gettext('Backup2'),
+        text: gettext('Backup'),
         key: 13,
         disabled: false,
         className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
@@ -173,7 +173,7 @@ export class BackupDialogWrapper extends DialogWrapper {
 
       // this.setExtraParameters(selectedTreeNode, treeInfo);
       console.log(baseUrl);
-
+      console.log(this.view.model);
       axios.post(
         baseUrl,
         this.view.model.toJSON()

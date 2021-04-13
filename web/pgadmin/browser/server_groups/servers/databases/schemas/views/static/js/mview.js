@@ -98,10 +98,10 @@ define('pgadmin.node.mview', [
           label: gettext('Materialized View...'),
         },
         {
-          name: 'create_mview', node: 'mview', module: this,
+          name: 'create_mview', node: 'coll-mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
-          data: {action: 'create', check: true}, enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: false,
           label: gettext('Materialized View...'),
         },
       // {
@@ -185,7 +185,7 @@ define('pgadmin.node.mview', [
         //   ],select2: { allowClear: false, width: '100%' },
         // },
            {
-          id: 'populate', label: gettext('populate?'), type: 'switch',
+          id: 'populate', label: gettext('Populate?'), type: 'switch',
           mode: ['create'],'options': {
             'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
           },

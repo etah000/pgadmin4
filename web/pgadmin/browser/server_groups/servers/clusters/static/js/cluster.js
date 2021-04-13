@@ -350,7 +350,7 @@ define('pgadmin.node.cluster', [
         //   },
         // },
         {
-          id: 'shifted', label: gettext('cluster type'), type: 'text', mode: ['create'],
+          id: 'shifted', label: gettext('Cluster type'), type: 'text', mode: ['create'],
           options: [
             {label: gettext('Average'), value: 'Average'},
             {label: gettext('Circular'), value: 'Circular'},

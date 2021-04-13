@@ -82,14 +82,20 @@ define('pgadmin.node.view', [
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
           enable: 'canCreate',
         },
-        // {
-        //   name: 'create_view', node: 'view', module: this,
-        //   applies: ['object', 'context'], callback: 'show_obj_properties',
-        //   category: 'create', priority: 1, label: gettext('View...'),
-        //   icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
-        //   enable: 'canCreate',
-        // }
-        // ,
+        {
+          name: 'create_view', node: 'view', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, label: gettext('View...'),
+          icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
+          enable: 'canCreate',
+        },
+        {
+          name: 'create_view', node: 'coll-view', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, label: gettext('View...'),
+          icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
+          enable: false,
+        },
         { 
           name: 'create_view_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -153,8 +159,8 @@ define('pgadmin.node.view', [
         //   mode: ['properties'], type: 'text', group: gettext('Security'),
         },
         {
-          id: 'definition', label: gettext('Code'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: gettext('Code'),
+          id: 'definition', label: gettext('Definition'), cell: 'string',
+          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           tabPanelCodeClass: 'sql-code-control',
           disabled: 'notInSchema',
           control: Backform.SqlCodeControl.extend({
