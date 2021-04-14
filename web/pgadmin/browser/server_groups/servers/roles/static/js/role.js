@@ -436,6 +436,7 @@ define('pgadmin.node.role', [
           control: 'fieldset',
           label: gettext('Miscellaneous'),
           group: gettext('Definition(User)'),
+          mode: [ 'edit', 'create'],
           schema: [{
           /*
           id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
@@ -595,6 +596,7 @@ define('pgadmin.node.role', [
           control: 'fieldset',
           label: gettext('Host Info'),
           group: gettext('Definition(User)'),
+          mode: [ 'edit', 'create'],
           schema: [{
             id: 'host_type',
             label: gettext('Type'),
