@@ -163,19 +163,58 @@ define('pgadmin.node.mview', [
           autovacuum_enabled: 'x',
           warn_text: undefined,
         },
-        schema: [{
+        schema: [
+          {
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchema',
+        },
+        {
+          id: 'database', label: gettext('Database'), cell: 'string',
+          type: 'text', disabled: 'inSchema',
+        },
+        {
+          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+          mode: ['edit','create'], select2: {allowClear: true},
+          control: 'node-list-by-name',
         },
         {
           id: 'engine', label: gettext('Engine'),
           control: 'select2',
           type: 'text', mode: ['properties','create'],
           options: [
+            {label: gettext('请选择'), value: ''},
             {label: gettext('MergeTree'), value: 'MergeTree'},
-            {label: gettext('ReplicatedMergeTree'), value: 'ReplicatedMergeTree'},
-            {label: gettext('Distributed'), value: 'Distributed'}
-          ],select2: { allowClear: false, width: '100%' },
+            // {label: gettext('Distributed'), value: 'Distributed'}
+          ],
+          control: Backform.SelectControl.extend({
+            onChange: function() {
+              Backform.SelectControl.prototype.onChange.apply(this, arguments);
+              let engine=this.model.get('engine');
+              if(engine!=''){
+                document.querySelector('.to_database').classList.add("d-none"); 
+                document.querySelector('.to_table').classList.add("d-none");
+                document.querySelector('.engine_params').classList.remove("d-none");
+              }else{
+                document.querySelector('.to_database').classList.remove("d-none");
+                document.querySelector('.to_table').classList.remove("d-none");
+                document.querySelector('.engine_params').classList.add("d-none");
+              }
+              console.log(engine);
+            },
+          }),
+          select2: { allowClear: false, width: '100%' },
+        },
+        {
+          id: 'engine_params', label: gettext('Engine Params'), cell: 'string',
+          type: 'text', mode: ['properties','create', 'edit'],
+        },
+        {
+          id: 'to_database', label: gettext('To Database'), cell: 'string',
+          type: 'text', disabled: 'inSchema',
+        },
+        {
+          id: 'to_table', label: gettext('To Table'), cell: 'string',
+          type: 'text', disabled: 'inSchema',
         },
           // {
         //   id: 'shifted', label: gettext('shifted'), type: 'options', mode: ['create'],
@@ -190,21 +229,26 @@ define('pgadmin.node.mview', [
             'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
           },
         },
+        // {
+        //   id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+        //   mode: ['edit','create'], select2: {allowClear: true},
+        //   control: 'node-list-by-name',
+        // },
         {
-          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-          mode: ['edit','create'], select2: {allowClear: true},
-          control: 'node-list-by-name',
+          id: 'order_keys', label: gettext('Order Keys'), cell: 'string',
+          type: 'text', mode: ['properties','create', 'edit'],
         },
         {
-          id: 'database', label: gettext('Database'), cell: 'string',
+          id: 'partition_keys', label: gettext('Partition Keys'), cell: 'string',
           type: 'text', mode: ['properties','create', 'edit'],
-        // },{
+        },
+        //{
         //   id: 'system_view', label: gettext('System materialized view?'), cell: 'string',
         //   type: 'switch', mode: ['properties'],
         // }, pgBrowser.SecurityGroupSchema, {
         //   id: 'acl', label: gettext('Privileges'),
         //   mode: ['properties'], type: 'text', group: gettext('Security'),
-        },
+        // },
         {
           id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
