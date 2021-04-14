@@ -24,26 +24,33 @@ CREATE USER IF NOT EXISTS {{ conn|qtIdent(data.rolname) }}{% if data.cluster %} 
 
    SETTINGS {% for var in data.variables %}{{ var.name }}={{ var.value }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %}{% if data.profile %}
 
-   SETTINGS PROFILE {{ data.profile| qtLiteral(True) }}{% endif %} {% if data.read_write_mode=='WRITABLE' %}
+   SETTINGS PROFILE {{ data.profile| qtLiteral(True) }}{% endif %}
+
+;
+{#
+   % if data.read_write_mode=='WRITABLE' %}
 
    WRITABLE {% else %} {% if data.read_write_mode=='READONLY' %}
 
    READONLY {% endif %} {% endif %}
-
-
-;
+   #}
 {% endif %}
 
 {% if not data.is_user %}
 CREATE ROLE IF NOT EXISTS {{ conn|qtIdent(data.rolname) }}{% if data.variables %}
 
-   SETTINGS {% for var in data.variables %}{{ var.name }}={{ var.value }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %} {% if data.read_write_mode=='WRITABLE' %}
-
-   WRITABLE {% else %} {% if data.read_write_mode=='READONLY' %}
-
-   READONLY {% endif %} {% endif %} {% if data.profile %}
+   SETTINGS {% for var in data.variables %}{{ var.name }}={{ var.value }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %} {% if data.profile %}
 
    PROFILE {{ data.profile| qtLiteral(True) }}{% endif %}
 ;
+
+    {#
+    {% if data.read_write_mode=='WRITABLE' %}
+
+   WRITABLE {% else %} {% if data.read_write_mode=='READONLY' %}
+
+   READONLY {% endif %} {% endif %}
+    #}
+
 {% endif %}
 

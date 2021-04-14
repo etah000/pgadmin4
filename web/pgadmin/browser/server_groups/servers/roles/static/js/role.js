@@ -398,6 +398,7 @@ define('pgadmin.node.role', [
         schema: [{
           id: 'is_user',
           label: gettext('User/Role'),
+          mode: ['edit', 'create'],
           cell: 'switch',
           type: 'switch',
           options: {
