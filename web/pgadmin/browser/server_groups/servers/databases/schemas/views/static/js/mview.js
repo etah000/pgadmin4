@@ -12,6 +12,8 @@ define('pgadmin.node.mview', [
   'sources/pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser',
   'pgadmin.backform', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection', 'pgadmin.node.column',
+  'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils',
 ], function(
   gettext, url_for, $, _, pgAdmin, Alertify, pgBrowser, Backform,
   schemaChild, schemaChildTreeNode
@@ -159,8 +161,9 @@ define('pgadmin.node.mview', [
         },
         defaults: {
           spcname: undefined,
-          toast_autovacuum_enabled: 'x',
-          autovacuum_enabled: 'x',
+          // toast_autovacuum_enabled: 'x',
+          // autovacuum_enabled: 'x',
+          populate:false,
           warn_text: undefined,
         },
         schema: [
@@ -272,6 +275,25 @@ define('pgadmin.node.mview', [
               }
             },
           }),
+        },
+       {
+          // Here - we will create tab control for storage parameters
+          // (auto vacuum).
+          type: 'nested', control: 'tab', group: gettext('Settings'),
+          mode: ['edit', 'create'], deps: ['is_partitioned'],
+          schema: [
+            {
+              id: 'settings', label: '',
+              model: pgBrowser.Nodes['unique_constraint'].model,
+              subnode: pgBrowser.Nodes['unique_constraint'].model,
+              editable: false, type: 'collection',
+              group: gettext('Settings'), mode: ['edit', 'create'],
+              canEdit: false, canDelete: true, deps:['is_partitioned'],
+              control: 'unique-col-collection',
+              canAdd: true,
+              columns : ['label','value'],
+            },
+        ],
         },
         // {
         //   id: 'with_data', label: gettext('With data?'),
