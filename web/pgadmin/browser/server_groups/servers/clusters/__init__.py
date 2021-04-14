@@ -1104,16 +1104,21 @@ class DatabaseView(PGClusterChildNodeView):
             sid: Server ID
             did: Database ID
         """
-        SQL = render_template(
-            "/".join([self.template_path, 'get_hosts.sql']),
-            did=did, conn=self.conn,
-        )
-        status, rset = self.conn.execute_2darray(SQL)
+        # SQL = render_template(
+        #     "/".join([self.template_path, 'get_hosts.sql']),
+        #     did=did, conn=self.conn,
+        # )
+        # status, rset = self.conn.execute_2darray(SQL)
 
-        if not status:
-            return internal_server_error(errormsg=rset)
+        # if not status:
+        #     return internal_server_error(errormsg=rset)
 
-        return make_json_response(data=rset['rows'], status=200)
+        # return make_json_response(data=rset['rows'], status=200)
+
+        servers = Server.query.filter_by(servergroup_id=gid).all()
+        hosts = [{'host_name': s.host, 'port': s.port} for s in servers]
+
+        return make_json_response(data=hosts, status=200)
 
     def get_server_group_hosts(self, gid, ):
         """
