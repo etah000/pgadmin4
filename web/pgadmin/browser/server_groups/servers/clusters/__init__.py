@@ -35,7 +35,7 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from pgadmin.model import Server
+from pgadmin.model import Server, ServerGroup
 from pgadmin.browser.server_groups.servers.utils import get_ssh_client, get_ssh_info
 from pgadmin.tools.scripts.cluster_utils import check_xml
 
@@ -589,10 +589,8 @@ class DatabaseView(PGClusterChildNodeView):
             )
 
         did = data['name']
-        hosts = data['hosts']
-        # The below SQL will execute rest DMLs because we cannot execute
-        # CREATE with any other
 
+        # make sure cluster does not exists
         SQL = render_template(
             "/".join([self.template_path, 'get_hosts.sql']),
             did=did, conn=self.conn,
@@ -609,30 +607,12 @@ class DatabaseView(PGClusterChildNodeView):
                 errormsg=errmsg
             )
 
-        # get ssh connection info
-        ssh_info = get_ssh_info(gid, sid)
-        if not ssh_info:
-            errmsg = 'please submit ssh connection information in properties!'
+        status, msg = self.write_remote_file(gid, sid, did, data['data'])
+        if not status:
             return make_json_response(
                 success=0,
                 errormsg=errmsg
             )
-
-        fl = io.StringIO(data['data'])
-
-        remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(data['name']))
-
-        for host in hosts:
-            ssh_client = get_ssh_client(host,
-                user=ssh_info['ssh_username'],
-                port=ssh_info['ssh_port'],
-                password=ssh_info['ssh_password'],
-                pkey=ssh_info['private_key'],)
-
-            fl.seek(0, os.SEEK_SET)
-            ssh_client.execute_cmd('mkdir -p /etc/snowball-server/config.d')
-            ssh_client.putfo(fl, remote_path)
-            ssh_client.disconnect()
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -649,132 +629,110 @@ class DatabaseView(PGClusterChildNodeView):
             )
         )
 
+    def write_remote_file(self, gid, sid, did, data):
+        """Update the database.
+
+        Args:
+            gid: ServerGroup id
+            sid: Server id
+            did: Cluster id
+            data: xml str
+        """
+
+        # get ssh connection info
+        ssh_info = get_ssh_info(gid, sid)
+        if not ssh_info:
+            errmsg = 'please submit ssh connection information in properties!'
+            return None, errmsg
+
+        fl = io.StringIO(data)
+
+        remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(did))
+
+        hosts = self.get_server_group_hosts(gid)
+        for host in hosts:
+            ssh_client = get_ssh_client(host,
+                user=ssh_info['ssh_username'],
+                port=ssh_info['ssh_port'],
+                password=ssh_info['ssh_password'],
+                pkey=ssh_info['private_key'],)
+
+            fl.seek(0, os.SEEK_SET)
+            ssh_client.execute_cmd('mkdir -p /etc/snowball-server/config.d')
+            ssh_client.putfo(fl, remote_path)
+            ssh_client.disconnect()
+
+        return True,None
+
     @check_precondition(action='update')
     def update(self, gid, sid, did):
         """Update the database."""
+        required_args = [
+            u'data',
+        ]
 
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
 
-        # Generic connection for offline updates
-        conn = self.manager.connection(conn_id='db_offline_update')
-        status, errmsg = conn.connect()
+        for arg in required_args:
+            if arg not in data:
+                return make_json_response(
+                    status=410,
+                    success=0,
+                    errormsg=_(
+                        "Could not find the required parameter ({})."
+                    ).format(arg)
+                )
+
+        # check xml_str
+        status, msg = check_xml(data['data'])
         if not status:
-            current_app.logger.error(
-                "Could not create database connection for offline updates\n"
-                "Err: {0}".format(errmsg)
+            return make_json_response(
+                status=410,
+                success=0,
+                errormsg=_(
+                    "XMLSyntaxError ({})."
+                ).format(msg)
             )
-            return internal_server_error(errmsg)
 
-        if did is not None:
-            # Fetch the name of database for comparison
-            status, rset = self.conn.execute_dict(
-                render_template(
-                    "/".join([self.template_path, 'nodes.sql']),
-                    did=did, conn=self.conn, last_system_oid=0
-                )
-            )
-            if not status:
-                return internal_server_error(errormsg=rset)
-
-            if len(rset['rows']) == 0:
-                return gone(
-                    _('Could not find the database on the server.')
-                )
-
-            data['old_name'] = (rset['rows'][0])['name']
-            if 'name' not in data:
-                data['name'] = data['old_name']
-
-        # Release any existing connection from connection manager
-        # to perform offline operation
-        self.manager.release(did=did)
-
-        for action in ["rename_database", "tablespace"]:
-            SQL = self.get_offline_sql(gid, sid, data, did, action)
-            SQL = SQL.strip('\n').strip(' ')
-            if SQL and SQL != "":
-                status, msg = conn.execute_scalar(SQL)
-                if not status:
-                    # In case of error from server while rename it,
-                    # reconnect to the database with old name again.
-                    self.conn = self.manager.connection(
-                        database=data['old_name'], auto_reconnect=True
-                    )
-                    status, errmsg = self.conn.connect()
-                    if not status:
-                        current_app.logger.error(
-                            'Could not reconnected to database(#{0}).\n'
-                            'Error: {1}'.format(did, errmsg)
-                        )
-                    return internal_server_error(errormsg=msg)
-
-                QueryHistory.update_history_dbname(
-                    current_user.id, sid, data['old_name'], data['name'])
-        # Make connection for database again
-        if self._db['datallowconn']:
-            self.conn = self.manager.connection(
-                database=data['name'], auto_reconnect=True
-            )
-            status, errmsg = self.conn.connect()
-
-            if not status:
-                current_app.logger.error(
-                    'Could not connected to database(#{0}).\n'
-                    'Error: {1}'.format(did, errmsg)
-                )
-                return internal_server_error(errmsg)
-
-        SQL = self.get_online_sql(gid, sid, data, did)
-        SQL = SQL.strip('\n').strip(' ')
-        if SQL and SQL != "":
-            status, msg = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=msg)
-
-        # Release any existing connection from connection manager
-        # used for offline updates
-        self.manager.release(conn_id="db_offline_update")
-
-        # Fetch the new data again after update for proper node
-        # generation
-        status, rset = self.conn.execute_dict(
-            render_template(
-                "/".join([self.template_path, 'nodes.sql']),
-                did=did, conn=self.conn, last_system_oid=0
-            )
+        # make sure cluster already existed
+        SQL = render_template(
+            "/".join([self.template_path, 'get_hosts.sql']),
+            did=did, conn=self.conn,
         )
+        status, rset = self.conn.execute_2darray(SQL)
+
         if not status:
             return internal_server_error(errormsg=rset)
 
-        if len(rset['rows']) == 0:
-            return gone(
-                _("Could not find the database on the server.")
+        if not rset['rows']:
+            errmsg = 'cluster: {} does not exist, can not be updated!'.format(did)
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
             )
 
-        res = rset['rows'][0]
-
-        canDrop = canDisConn = True
-        if self.manager.db == res['name']:
-            canDrop = canDisConn = False
+        status, msg = self.write_remote_file(gid, sid, did, data['data'])
+        if not status:
+            return make_json_response(
+                success=0,
+                errormsg=errmsg
+            )
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 did,
-                sid,
-                res['name'],
-                icon="pg-icon-{0}".format(self.node_type) if
-                self._db['datallowconn'] and self.conn.connected() else
-                "icon-database-not-connected",
-                connected=self.conn.connected() if
-                self._db['datallowconn'] else False,
-                tablespace=res['spcname'],
-                allowConn=res['datallowconn'],
-                canCreate=res['cancreate'],
-                canDisconn=canDisConn,
-                canDrop=canDrop,
-                inode=True if res['datallowconn'] else False
+                gid,
+                did,
+                icon="pg-icon-database",
+                connected=False,
+                tablespace='public',
+                allowConn=True,
+                canCreate=True,
+                canDisconn=True,
+                canDrop=True,
+                inode=True
             )
         )
 
@@ -1138,17 +1096,41 @@ class DatabaseView(PGClusterChildNodeView):
 
     @check_precondition(action="get_hosts")
     def get_hosts(self, gid, sid, did=None):
-        SQL = render_template(
-            "/".join([self.template_path, 'get_hosts.sql']),
-            did=did, conn=self.conn,
-        )
-        status, rset = self.conn.execute_2darray(SQL)
+        """
+        This function get hosts from system.clusters.
 
-        if not status:
-            return internal_server_error(errormsg=rset)
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+        """
+        # SQL = render_template(
+        #     "/".join([self.template_path, 'get_hosts.sql']),
+        #     did=did, conn=self.conn,
+        # )
+        # status, rset = self.conn.execute_2darray(SQL)
 
-        return make_json_response(data=rset['rows'], status=200)
+        # if not status:
+        #     return internal_server_error(errormsg=rset)
 
+        # return make_json_response(data=rset['rows'], status=200)
+
+        servers = Server.query.filter_by(servergroup_id=gid).all()
+        hosts = [{'host_name': s.host, 'port': s.port} for s in servers]
+
+        return make_json_response(data=hosts, status=200)
+
+    def get_server_group_hosts(self, gid, ):
+        """
+        This function get hosts within the ServerGroup.
+
+        Args:
+            gid: Server Group ID
+        """
+        servers = Server.query.filter_by(servergroup_id=gid).all()
+        hosts = [s.host for s in servers]
+
+        return hosts
 
 SchemaDiffRegistry(blueprint.node_type, DatabaseView)
 DatabaseView.register_node_view(blueprint)

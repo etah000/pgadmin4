@@ -604,6 +604,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
+
+        data['database'] = did
+        data['name'] = vid
+
         try:
             SQL, name = self.getSQL(gid, sid, did, data, vid)
             if SQL is None:
@@ -613,27 +617,27 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             if not status:
                 return internal_server_error(errormsg=res)
 
-            SQL = render_template("/".join(
-                [self.template_path, 'sql/view_id.sql']), data=data)
-            status, res_data = self.conn.execute_dict(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            # SQL = render_template("/".join(
+            #     [self.template_path, 'sql/view_id.sql']), data=data)
+            # status, res_data = self.conn.execute_dict(SQL)
+            # if not status:
+            #     return internal_server_error(errormsg=res)
 
-            view_id = res_data['rows'][0]['oid']
-            new_view_name = res_data['rows'][0]['relname']
+            # view_id = res_data['rows'][0]['oid']
+            # new_view_name = res_data['rows'][0]['relname']
 
-            # Get updated schema oid
-            SQL = render_template("/".join(
-                [self.template_path, 'sql/get_oid.sql']), vid=view_id)
-            status, scid = self.conn.execute_scalar(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
+            # # Get updated schema oid
+            # SQL = render_template("/".join(
+            #     [self.template_path, 'sql/get_oid.sql']), vid=view_id)
+            # status, scid = self.conn.execute_scalar(SQL)
+            # if not status:
+            #     return internal_server_error(errormsg=res)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    view_id,
+                    vid,
                     scid,
-                    new_view_name,
+                    vid,
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
                 )
@@ -742,6 +746,11 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             except ValueError:
                 data[k] = v
 
+        # for update
+        if vid is not None:
+            data['database'] = did
+            data['name'] = vid
+
         sql, nameOrError = self.getSQL(gid, sid, did, data, vid)
         if sql is None:
             return nameOrError
@@ -760,7 +769,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         """
         This function will generate sql from model data
         """
-        if vid is not None:
+        if vid is not None and False:
             SQL = render_template("/".join(
                 [self.template_path, 'sql/properties.sql']),
                 vid=vid,
