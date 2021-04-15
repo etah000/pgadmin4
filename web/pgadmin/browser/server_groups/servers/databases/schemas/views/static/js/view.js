@@ -53,7 +53,7 @@ define('pgadmin.node.view', [
       dialogHelp: url_for('help.static', {'filename': 'view_dialog.html'}),
       label: gettext('View'),
       hasSQL:  true,
-      canEdit: false,
+      canEdit: true,
       canDrop: true,
       canDropCascade: false,
       hasDepends: true,
@@ -132,20 +132,20 @@ define('pgadmin.node.view', [
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
+          mode: ['create','properties'],
           type: 'text', disabled: 'notInSchema',
         },{
           id: 'engine', label: gettext('Engine'), cell: 'string',
           type: 'text', mode: ['properties'],
         },
         {
-          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-          mode: ['edit','create'], select2: {allowClear: true},
+          id: 'on_cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+          mode: ['edit','create','properties'], select2: {allowClear: true},
           control: 'node-list-by-name',
         },
-        
         {
           id: 'database', label: gettext('Database'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'],
+          type: 'text', mode: ['create', 'edit','properties'],
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',

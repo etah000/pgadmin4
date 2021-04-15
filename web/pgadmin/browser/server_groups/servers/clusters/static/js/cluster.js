@@ -42,9 +42,10 @@ define('pgadmin.node.cluster', [
       hasDepends: true,
       hasStatistics: false,
       statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
-      canDrop: function(node) {
-        return false;
-      },
+      // canDrop: function(node) {
+      //   return false;
+      // },
+      canDrop: true,
       label: gettext('Cluster'),
       node_image: function() {
         return 'pg-icon-database';

@@ -1285,19 +1285,19 @@ define('pgadmin.browser.node', [
 
             var buttons = [];
 
-            // buttons.push({
-            //   label: gettext('Edit'),
-            //   type: 'edit',
-            //   tooltip: gettext('Edit'),
-            //   extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
-            //   icon: 'fa fa-sm fa-pencil',
-            //   disabled: !that.canEdit,
-            //   register: function(btn) {
-            //     btn.on('click',() => {
-            //       onEdit();
-            //     });
-            //   },
-            // });
+            buttons.push({
+              label: gettext('Edit'),
+              type: 'edit',
+              tooltip: gettext('Edit'),
+              extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
+              icon: 'fa fa-sm fa-pencil',
+              disabled: !that.canEdit,
+              register: function(btn) {
+                btn.on('click',() => {
+                  onEdit();
+                });
+              },
+            });
 
             buttons.push({
               label: '',
@@ -1419,7 +1419,8 @@ define('pgadmin.browser.node', [
             timer = setTimeout(function() {
               $('.obj_properties').addClass('show_progress');
             }, 1000);
-
+          console.log("*********************88");
+          console.log(d);
           // Prevent subsequent save operation by disabling Save button
           if (saveBtn)
             $(saveBtn).prop('disabled', true);
