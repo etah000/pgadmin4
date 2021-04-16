@@ -559,7 +559,7 @@ define('pgadmin.node.cluster', [
           }
           var hosts=this.get('hosts');
           var shifted=this.get('shifted');
-          console.log(hosts);
+          // console.log(hosts);
           if (
             _.isUndefined(hosts) || _.isNull(hosts) ||
               String(hosts).replace(/^\s+|\s+$/g, '') == ''||(hosts.length<=0)

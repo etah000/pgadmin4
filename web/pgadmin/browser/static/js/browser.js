@@ -167,10 +167,10 @@ define('pgadmin.browser', [
     scripts: {},
     // Standard Widths and Height for dialogs in px
     stdW: {
-      sm: 500,
+      sm: 600,
       md: 700,
       lg: 900,
-      default: 500,
+      default: 600,
     },
     stdH: {
       sm: 200,
