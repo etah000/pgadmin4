@@ -572,6 +572,7 @@ def create_backup(gid, **kwargs):
         'config.yml',
         'create',
     ]
+    data['hosts'] = ','.join(data['hosts'])
 
     def set_param(key, param):
         if key in data and data[key]:

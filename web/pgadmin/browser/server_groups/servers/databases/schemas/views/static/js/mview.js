@@ -12,6 +12,8 @@ define('pgadmin.node.mview', [
   'sources/pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser',
   'pgadmin.backform', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection', 'pgadmin.node.column',
+  'pgadmin.node.constraints', 'pgadmin.browser.table.partition.utils',
 ], function(
   gettext, url_for, $, _, pgAdmin, Alertify, pgBrowser, Backform,
   schemaChild, schemaChildTreeNode
@@ -98,10 +100,10 @@ define('pgadmin.node.mview', [
           label: gettext('Materialized View...'),
         },
         {
-          name: 'create_mview', node: 'mview', module: this,
+          name: 'create_mview', node: 'coll-mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, icon: 'wcTabIcon icon-mview',
-          data: {action: 'create', check: true}, enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: false,
           label: gettext('Materialized View...'),
         },
       // {
@@ -159,23 +161,63 @@ define('pgadmin.node.mview', [
         },
         defaults: {
           spcname: undefined,
-          toast_autovacuum_enabled: 'x',
-          autovacuum_enabled: 'x',
+          // toast_autovacuum_enabled: 'x',
+          // autovacuum_enabled: 'x',
+          populate:false,
           warn_text: undefined,
         },
-        schema: [{
+        schema: [
+          {
           id: 'name', label: gettext('Name'), cell: 'string',
           type: 'text', disabled: 'inSchema',
+        },
+        {
+          id: 'database', label: gettext('Database'), cell: 'string',
+          type: 'text', disabled: 'inSchema',
+        },
+        {
+          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+          mode: ['edit','create'], select2: {allowClear: true},
+          control: 'node-list-by-name',
         },
         {
           id: 'engine', label: gettext('Engine'),
           control: 'select2',
           type: 'text', mode: ['properties','create'],
           options: [
+            {label: gettext('请选择'), value: ''},
             {label: gettext('MergeTree'), value: 'MergeTree'},
-            {label: gettext('ReplicatedMergeTree'), value: 'ReplicatedMergeTree'},
-            {label: gettext('Distributed'), value: 'Distributed'}
-          ],select2: { allowClear: false, width: '100%' },
+            // {label: gettext('Distributed'), value: 'Distributed'}
+          ],
+          control: Backform.SelectControl.extend({
+            onChange: function() {
+              Backform.SelectControl.prototype.onChange.apply(this, arguments);
+              let engine=this.model.get('engine');
+              if(engine!=''){
+                document.querySelector('.to_database').classList.add("d-none"); 
+                document.querySelector('.to_table').classList.add("d-none");
+                document.querySelector('.engine_params').classList.remove("d-none");
+              }else{
+                document.querySelector('.to_database').classList.remove("d-none");
+                document.querySelector('.to_table').classList.remove("d-none");
+                document.querySelector('.engine_params').classList.add("d-none");
+              }
+              console.log(engine);
+            },
+          }),
+          select2: { allowClear: false, width: '100%' },
+        },
+        {
+          id: 'engine_params', label: gettext('Engine Params'), cell: 'string',
+          type: 'text', mode: ['properties','create', 'edit'],
+        },
+        {
+          id: 'to_database', label: gettext('To Database'), cell: 'string',
+          type: 'text', disabled: 'inSchema',
+        },
+        {
+          id: 'to_table', label: gettext('To Table'), cell: 'string',
+          type: 'text', disabled: 'inSchema',
         },
           // {
         //   id: 'shifted', label: gettext('shifted'), type: 'options', mode: ['create'],
@@ -185,26 +227,31 @@ define('pgadmin.node.mview', [
         //   ],select2: { allowClear: false, width: '100%' },
         // },
            {
-          id: 'populate', label: gettext('populate?'), type: 'switch',
+          id: 'populate', label: gettext('Populate?'), type: 'switch',
           mode: ['create'],'options': {
             'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
           },
         },
+        // {
+        //   id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+        //   mode: ['edit','create'], select2: {allowClear: true},
+        //   control: 'node-list-by-name',
+        // },
         {
-          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-          mode: ['edit','create'], select2: {allowClear: true},
-          control: 'node-list-by-name',
+          id: 'order_keys', label: gettext('Order Keys'), cell: 'string',
+          type: 'text', mode: ['properties','create', 'edit'],
         },
         {
-          id: 'database', label: gettext('Database'), cell: 'string',
+          id: 'partition_keys', label: gettext('Partition Keys'), cell: 'string',
           type: 'text', mode: ['properties','create', 'edit'],
-        // },{
+        },
+        //{
         //   id: 'system_view', label: gettext('System materialized view?'), cell: 'string',
         //   type: 'switch', mode: ['properties'],
         // }, pgBrowser.SecurityGroupSchema, {
         //   id: 'acl', label: gettext('Privileges'),
         //   mode: ['properties'], type: 'text', group: gettext('Security'),
-        },
+        // },
         {
           id: 'definition', label: gettext('Definition'), cell: 'string',
           type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
@@ -228,6 +275,25 @@ define('pgadmin.node.mview', [
               }
             },
           }),
+        },
+       {
+          // Here - we will create tab control for storage parameters
+          // (auto vacuum).
+          type: 'nested', control: 'tab', group: gettext('Settings'),
+          mode: ['edit', 'create'], deps: ['is_partitioned'],
+          schema: [
+            {
+              id: 'settings', label: '',
+              model: pgBrowser.Nodes['unique_constraint'].model,
+              subnode: pgBrowser.Nodes['unique_constraint'].model,
+              editable: false, type: 'collection',
+              group: gettext('Settings'), mode: ['edit', 'create'],
+              canEdit: false, canDelete: true, deps:['is_partitioned'],
+              control: 'unique-col-collection',
+              canAdd: true,
+              columns : ['label','value'],
+            },
+        ],
         },
         // {
         //   id: 'with_data', label: gettext('With data?'),

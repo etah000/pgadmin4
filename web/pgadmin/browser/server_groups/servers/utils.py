@@ -29,7 +29,8 @@ def parse_priv_from_db(db_privileges):
         'grantor': db_privileges['grantor'],
         'grantee': db_privileges['grantee'],
         'privileges': [],
-        'cluster': db_privileges['cluster'],
+        # 'cluster': db_privileges['cluster'],
+        'cluster': db_privileges.setdefault('cluster', ''),
     }
 
     privileges = []

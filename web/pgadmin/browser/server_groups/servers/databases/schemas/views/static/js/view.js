@@ -53,7 +53,7 @@ define('pgadmin.node.view', [
       dialogHelp: url_for('help.static', {'filename': 'view_dialog.html'}),
       label: gettext('View'),
       hasSQL:  true,
-      canEdit: false,
+      canEdit: true,
       canDrop: true,
       canDropCascade: false,
       hasDepends: true,
@@ -82,14 +82,20 @@ define('pgadmin.node.view', [
           icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
           enable: 'canCreate',
         },
-        // {
-        //   name: 'create_view', node: 'view', module: this,
-        //   applies: ['object', 'context'], callback: 'show_obj_properties',
-        //   category: 'create', priority: 1, label: gettext('View...'),
-        //   icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
-        //   enable: 'canCreate',
-        // }
-        // ,
+        {
+          name: 'create_view', node: 'view', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, label: gettext('View...'),
+          icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
+          enable: 'canCreate',
+        },
+        {
+          name: 'create_view', node: 'coll-view', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 1, label: gettext('View...'),
+          icon: 'wcTabIcon icon-view', data: {action: 'create', check: true},
+          enable: false,
+        },
         { 
           name: 'create_view_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
@@ -126,20 +132,20 @@ define('pgadmin.node.view', [
         },
         schema: [{
           id: 'name', label: gettext('Name'), cell: 'string',
+          mode: ['create','properties'],
           type: 'text', disabled: 'notInSchema',
         },{
           id: 'engine', label: gettext('Engine'), cell: 'string',
           type: 'text', mode: ['properties'],
         },
         {
-          id: 'cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-          mode: ['edit','create'], select2: {allowClear: true},
+          id: 'on_cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
+          mode: ['edit','create','properties'], select2: {allowClear: true},
           control: 'node-list-by-name',
         },
-        
         {
           id: 'database', label: gettext('Database'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'],
+          type: 'text', mode: ['create', 'edit','properties'],
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
@@ -153,8 +159,8 @@ define('pgadmin.node.view', [
         //   mode: ['properties'], type: 'text', group: gettext('Security'),
         },
         {
-          id: 'definition', label: gettext('Code'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: gettext('Code'),
+          id: 'definition', label: gettext('Definition'), cell: 'string',
+          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
           tabPanelCodeClass: 'sql-code-control',
           disabled: 'notInSchema',
           control: Backform.SqlCodeControl.extend({

@@ -37,14 +37,15 @@ define('pgadmin.node.cluster', [
       // sqlCreateHelp: 'sql-createcluster.html',
       // dialogHelp: url_for('help.static', {'filename': 'cluster_dialog.html'}),
       hasSQL: false,
-      canEdit:false,
+      canEdit:true,
       isNext: true,
       hasDepends: true,
       hasStatistics: false,
       statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
-      canDrop: function(node) {
-        return false;
-      },
+      // canDrop: function(node) {
+      //   return false;
+      // },
+      canDrop: true,
       label: gettext('Cluster'),
       node_image: function() {
         return 'pg-icon-database';
@@ -350,7 +351,7 @@ define('pgadmin.node.cluster', [
         //   },
         // },
         {
-          id: 'shifted', label: gettext('cluster type'), type: 'text', mode: ['create'],
+          id: 'shifted', label: gettext('Cluster type'), type: 'text', mode: ['create'],
           options: [
             {label: gettext('Average'), value: 'Average'},
             {label: gettext('Circular'), value: 'Circular'},
@@ -558,7 +559,7 @@ define('pgadmin.node.cluster', [
           }
           var hosts=this.get('hosts');
           var shifted=this.get('shifted');
-          console.log(hosts);
+          // console.log(hosts);
           if (
             _.isUndefined(hosts) || _.isNull(hosts) ||
               String(hosts).replace(/^\s+|\s+$/g, '') == ''||(hosts.length<=0)

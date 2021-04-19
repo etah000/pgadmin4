@@ -6,7 +6,7 @@
 
 {% endif %}
 {% if data.name and data.definition %}
-CREATE OR REPLACE VIEW IF NOT EXISTS {% if data.database %}{{ data.database }}.{% endif %}{{ data.name }}{% if data.on_cluster %} ON CLUSTER {{ data.on_cluster }}{% endif %}
+CREATE OR REPLACE VIEW {% if data.database %}{{ data.database }}.{% endif %}{{ data.name }}{% if data.on_cluster %} ON CLUSTER {{ data.on_cluster }}{% endif %}
  AS
 {{ data.definition.rstrip(';') }};
 {% endif %}

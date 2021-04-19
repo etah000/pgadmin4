@@ -792,7 +792,8 @@ define('pgadmin.node.table', [
             },
           }),
           allowMultipleEmptyRow: false,
-        },{
+        },
+        {
           // Here we will create tab control for constraints
           type: 'nested', control: 'tab', group: gettext('Constraints'),
           mode: ['edit', 'create'],
