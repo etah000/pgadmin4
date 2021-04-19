@@ -227,7 +227,7 @@ define('pgadmin.node.mview', [
         //   ],select2: { allowClear: false, width: '100%' },
         // },
            {
-          id: 'populate', label: gettext('Populate?'), type: 'switch',
+          id: 'populate', label: gettext('Populate'), type: 'switch',
           mode: ['create'],'options': {
             'onText':  gettext('True'), 'offText':  gettext('False'), 'size': 'mini',
           },
