@@ -29,4 +29,6 @@ define('app', [
   initializeModules(pgAdmin.Tools);
   // create menus after all modules are initialized.
   pgAdmin.Browser.create_menus();
+  console.log("###pgAdmin.Browser.create_menus")
+
 });

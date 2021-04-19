@@ -1353,6 +1353,26 @@ msgstr ""
 msgid "No"
 msgstr ""
 
+msgid "shard_num"
+msgstr "分片序号"
+
+msgid "shard_weight"
+msgstr "分片权重"
+
+msgid "replica_num"
+msgstr "副本编号"
+
+msgid "host_name"
+msgstr "主机名称"
+
+msgid "host_address"
+msgstr "主机地址"
+
+msgid "port"
+msgstr "端口"
+
+msgid "default_database"
+msgstr "缺省数据库"
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/static/js/partition.utils.js:310
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:310
 msgid "From"

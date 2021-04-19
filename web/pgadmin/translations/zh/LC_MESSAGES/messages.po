@@ -1365,6 +1365,34 @@ msgstr "是"
 msgid "No"
 msgstr "否"
 
+#, fuzzy
+msgid "shard_num"
+msgstr "分片序号"
+
+#, fuzzy
+msgid "shard_weight"
+msgstr "分片权重"
+
+#, fuzzy
+msgid "replica_num"
+msgstr "应用程序"
+
+#, fuzzy
+msgid "host_name"
+msgstr "主机名称"
+
+#, fuzzy
+msgid "host_address"
+msgstr "主机地址"
+
+#, fuzzy
+msgid "port"
+msgstr "导入"
+
+#, fuzzy
+msgid "default_database"
+msgstr "要创建数据库吗？"
+
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/static/js/partition.utils.js:310
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.js:310
 msgid "From"
@@ -12966,9 +12994,10 @@ msgid "Connection status"
 msgstr "连接状态"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:315
+#, fuzzy
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
-"and status."
+"and transaction status."
 msgstr "如果设置为true，查询工具将监视和显示连接和状态。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:322
@@ -12976,7 +13005,8 @@ msgid "Connection status refresh rate"
 msgstr "连接状态刷新率"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:325
-msgid "The number of seconds between connection status polls."
+#, fuzzy
+msgid "The number of seconds between connection/transaction status polls."
 msgstr "连接状态轮询之间的秒数。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:334
@@ -14377,4 +14407,7 @@ msgstr ""
 
 #~ msgid "Notifications"
 #~ msgstr "通知"
+
+#~ msgid "Install..."
+#~ msgstr "安装..."
 
