@@ -20,7 +20,7 @@ $color-warning-fg: $black;
 $color-warning-light: #fce5c5;;
 $color-gray-dark: #848ea0;
 $color-gray: #bac1cd;
-$color-gray-light: #ebeef3;
+$color-gray-light: #fff;
 $color-gray-lighter: #f3f5f9;
 $color-brand: $color-primary;
 $border-color: #dde0e6;

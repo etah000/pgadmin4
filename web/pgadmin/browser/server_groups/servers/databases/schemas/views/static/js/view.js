@@ -134,18 +134,29 @@ define('pgadmin.node.view', [
           id: 'name', label: gettext('Name'), cell: 'string',
           mode: ['create','properties'],
           type: 'text', disabled: 'notInSchema',
-        },{
-          id: 'engine', label: gettext('Engine'), cell: 'string',
-          type: 'text', mode: ['properties'],
+          control: Backform.InputControl.extend({
+            onChange: function() {
+              Backform.InputControl.prototype.onChange.apply(this, arguments);
+            }
+          })
         },
+        // {
+        //   id: 'engine', label: gettext('Engine'), cell: 'string',
+        //   type: 'text', mode: ['properties'],
+        // },
         {
           id: 'on_cluster', label: gettext('On Cluster'), type: 'text', node: 'cluster',
-          mode: ['edit','create','properties'], select2: {allowClear: true},
+          mode: ['edit','create'], select2: {allowClear: true},
           control: 'node-list-by-name',
         },
         {
           id: 'database', label: gettext('Database'), cell: 'string',
           type: 'text', mode: ['create', 'edit','properties'],
+          control: Backform.InputControl.extend({
+            onChange: function() {
+              Backform.InputControl.prototype.onChange.apply(this, arguments);
+            }
+          })
         },{
           id: 'schema', label: gettext('Schema'), cell: 'string', first_empty: false,
           control: 'node-list-by-name', type: 'text', cache_level: 'database',
@@ -160,7 +171,7 @@ define('pgadmin.node.view', [
         },
         {
           id: 'definition', label: gettext('Definition'), cell: 'string',
-          type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
+          type: 'text', mode: ['create', 'edit','properties'], group: gettext('Definition'),
           tabPanelCodeClass: 'sql-code-control',
           disabled: 'notInSchema',
           control: Backform.SqlCodeControl.extend({

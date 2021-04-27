@@ -72,10 +72,14 @@
 <![endif]-->
 
 {% block body %}{% endblock %}
+<div id="app">
+    <p>{{ message }}</p>
+  </div>
 <script>
-            {% block init_script %}{% endblock %}
+  {% block init_script %}{% endblock %}
 
 </script>
+
 
 </body>
 </html>

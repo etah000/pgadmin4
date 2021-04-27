@@ -1261,16 +1261,31 @@ define('pgadmin.browser.node', [
 
             var buttons = [];
 
+            // buttons.push({
+            //   label: gettext('Edit'),
+            //   type: 'edit',
+            //   tooltip: gettext('Edit'),
+            //   extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
+            //   icon: 'fa fa-sm fa-pencil',
+            //   disabled: !that.canEdit,
+            //   register: function(btn) {
+            //     btn.on('click',() => {
+            //       onEdit();
+            //     });
+            //   },
+            // });
             buttons.push({
-              label: gettext('Edit'),
+              label: gettext('Save'),
               type: 'edit',
-              tooltip: gettext('Edit'),
+              tooltip: gettext('Save'),
               extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
               icon: 'fa fa-sm fa-pencil',
               disabled: !that.canEdit,
+              
               register: function(btn) {
                 btn.on('click',() => {
                   onEdit();
+                  // onSave.call(this, view, btn);
                 });
               },
             });
@@ -1395,8 +1410,6 @@ define('pgadmin.browser.node', [
             timer = setTimeout(function() {
               $('.obj_properties').addClass('show_progress');
             }, 1000);
-          console.log("*********************88");
-          console.log(d);
           // Prevent subsequent save operation by disabling Save button
           if (saveBtn)
             $(saveBtn).prop('disabled', true);
@@ -1404,6 +1417,63 @@ define('pgadmin.browser.node', [
           if (d && !_.isEmpty(d)) {
             m.save({}, {
               attrs: d,
+              validate: false,
+              cache: false,
+              wait: true,
+              success: function() {
+                onSaveFunc.call();
+                // Hide progress cursor
+                $('.obj_properties').removeClass('show_progress');
+                clearTimeout(timer);
+
+                // Removing the node-prop property of panel
+                // so that we show updated data on panel
+                var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
+                  pnlSql = pgBrowser.docker.findPanels('sql')[0],
+                  pnlStats = pgBrowser.docker.findPanels('statistics')[0],
+                  pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
+                  pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
+
+                if (pnlProperties)
+                  $(pnlProperties).removeData('node-prop');
+                if (pnlSql)
+                  $(pnlSql).removeData('node-prop');
+                if (pnlStats)
+                  $(pnlStats).removeData('node-prop');
+                if (pnlDependencies)
+                  $(pnlDependencies).removeData('node-prop');
+                if (pnlDependents)
+                  $(pnlDependents).removeData('node-prop');
+              },
+              error: function(m, jqxhr) {
+                Alertify.pgNotifier(
+                  'error', jqxhr,
+                  gettext('Error saving properties')
+                );
+
+                // Hide progress cursor
+                $('.obj_properties').removeClass('show_progress');
+                clearTimeout(timer);
+                if (saveBtn)
+                  $(saveBtn).prop('disabled', false);
+              },
+            });
+          }
+        }.bind(panel),
+        onSaveUpdate = function(view, saveBtn,newModel) {
+          var m = view.model,
+            d = newModel,
+            // Generate a timer for the request
+            timer = setTimeout(function() {
+              $('.obj_properties').addClass('show_progress');
+            }, 1000);
+          // Prevent subsequent save operation by disabling Save button
+          if (saveBtn)
+            $(saveBtn).prop('disabled', true);
+
+          if (d && !_.isEmpty(d)) {
+            m.save({}, {
+              attrs: newModel,
               validate: false,
               cache: false,
               wait: true,
@@ -1578,6 +1648,31 @@ define('pgadmin.browser.node', [
 
 
 
+        },
+        //属性界面点击保存按钮
+        editSaveFunc = function(btn){
+          var panel = this;
+          if (action && action == 'properties') {
+            action = 'edit';
+          }
+          panel.$container.attr('action-mode', action);
+          let j = panel.$container.find('.obj_properties').first();
+          let  view = j.data('obj-view');
+          console.log(view.model);
+          let fieldDataList=view.model.fieldData;
+          let attributes=view.model.attributes;
+          let newModel={};
+          // console.log(attributes);
+          for(let  key in fieldDataList){
+
+              newModel[key]=attributes[key];
+          }
+          newModel.oid=attributes.oid;
+          // console.log(view);
+          // console.log(view.model.toJSON(true));
+          // view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
+          // console.log(view);
+          onSaveUpdate.call(this, view, btn,newModel);
         },
         editFunc = function() {
           var panel = this;
@@ -1860,6 +1955,7 @@ define('pgadmin.browser.node', [
           closePanel(false);
         }.bind(panel, that),
         editInNewPanel = function() {
+
           // Open edit in separate panel
           setTimeout(function() {
             that.callbacks.show_obj_properties.apply(that, [{
@@ -1871,6 +1967,8 @@ define('pgadmin.browser.node', [
         onCancelFunc = closePanel,
         onSaveFunc = updateTreeItem.bind(panel, that),
         onEdit = editFunc.bind(panel);
+        
+        // onEdit = editSaveFunc.bind(panel);
 
       if (action) {
         if (action == 'create') {
@@ -1886,7 +1984,8 @@ define('pgadmin.browser.node', [
       } else {
         /* Show properties */
         properties();
-        onEdit = editInNewPanel.bind(panel);
+        // onEdit = editInNewPanel.bind(panel);
+         onEdit = editSaveFunc.bind(panel);
       }
       if (panel.closeable()) {
         panel.on(wcDocker.EVENT.CLOSING, warnBeforeChangesLost.bind(

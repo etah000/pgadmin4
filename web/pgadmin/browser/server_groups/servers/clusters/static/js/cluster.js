@@ -353,12 +353,12 @@ define('pgadmin.node.cluster', [
         {
           id: 'shifted', label: gettext('Cluster type'), type: 'text', mode: ['create'],
           options: [
-            {label: gettext('Average'), value: 'Average'},
-            {label: gettext('Circular'), value: 'Circular'},
-            {label: gettext('Single'), value: 'Single'}
+            {label: gettext('普通集群'), value: 'Average'},
+            {label: gettext('循环复制集群'), value: 'Circular'},
+            {label: gettext('单点复制集群'), value: 'Single'}
           ],
           control: Backform.SelectControl.extend({
-
+            
             onChange: function() {
               Backform.SelectControl.prototype.onChange.apply(this, arguments);
               let shifted=this.model.get('shifted');

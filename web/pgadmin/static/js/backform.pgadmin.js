@@ -234,7 +234,8 @@ define([
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
-        readonly: evalF(data.readonly, data, this.model),
+        // readonly: evalF(data.readonly, data, this.model),
+        readonly: false,
         visible: evalF(data.visible, data, this.model),
         required: evalF(data.required, data, this.model),
       });
@@ -651,7 +652,8 @@ define([
       // Evaluate the disabled, visible, and required option
       _.extend(data, {
         disabled: evalF(field.disabled, field, this.model),
-        readonly: evalF(field.readonly, field, this.model),
+        // readonly: evalF(field.readonly, field, this.model),
+        readonly: false,
         visible:  evalF(data.visible, field, this.model),
         required: evalF(data.required, field, this.model),
       });
@@ -1816,7 +1818,8 @@ define([
         (this.$el.find('textarea')[0]), {
           lineNumbers: true,
           mode: 'text/x-pgsql',
-          readOnly: true,
+          // readOnly: true,
+          readOnly: false,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
           screenReaderLabel: field.label,
         });
@@ -2246,7 +2249,8 @@ define([
       // disable for readonly also and later handle readonly programmatically.
       _.extend(data, {
         disabled: evalF(data.disabled, data, this.model),
-        readonly: evalF(data.readonly, data, this.model),
+        // readonly: evalF(data.readonly, data, this.model),
+        readonly: false,
         visible: evalF(data.visible, data, this.model),
         required: evalF(data.required, data, this.model),
       });
@@ -2568,7 +2572,8 @@ define([
       // Evaluate the disabled, visible option
       var isDisabled = evalF(data.disabled, data, this.model),
         isVisible = evalF(data.visible, data, this.model),
-        isReadonly = evalF(data.readonly, data, this.model),
+        // isReadonly = evalF(data.readonly, data, this.model),
+        isReadonly =false,
         self = this;
 
       self.sqlCtrl = CodeMirror.fromTextArea(
@@ -2977,7 +2982,8 @@ define([
         // Evaluate the disabled, visible, and required option
         _.extend(data, {
           disabled: evalF(data.disabled, this.model),
-          readonly: evalF(data.readonly, this.model),
+          // readonly: evalF(data.readonly, this.model),
+          readonly: false,
           visible: evalF(data.visible, this.model),
           required: evalF(data.required, this.model),
         });

@@ -7,7 +7,7 @@ $black: #000;
 $color-bg: $white !default;
 $color-fg: #222222 !default;
 
-$color-primary: #326690 !default;
+$color-primary: #313d54 !default;
 $color-primary-fg: $white !default;
 $color-primary-light: #d6effc !default;
 $color-primary-light-fg: $color-primary !default;
@@ -23,7 +23,7 @@ $color-danger-fg: $white !default;
 $color-danger-light: #F39999 !default;
 $color-danger-lighter: #FAECEC !default;
 
-$color-success: #26852B !default;
+$color-success: #313d54 !default;
 $color-success-fg: $black !default;
 $color-success-light: #D9ECDA !default;
 
@@ -33,7 +33,7 @@ $color-warning-light: #fce5c5 !default;;
 
 $color-gray-dark: #848ea0 !default;
 $color-gray: #bac1cd !default;
-$color-gray-light: #ebeef3 !default;
+$color-gray-light: #fff !default;
 $color-gray-lighter: #f3f5f9 !default;
 
 $color-brand: $color-primary !default;
@@ -67,7 +67,7 @@ $tree-font-size: 0.815rem;
 
 $navbar-bg: $color-primary;
 $navbar-font-size: 0.925rem;
-$navbar-height: 32px;
+$navbar-height: 52px;
 $navbar-dropdown-top: 100%;
 $navbar-dark-color: $color-primary-fg;
 $navbar-dark-hover-color: $color-primary-fg;
