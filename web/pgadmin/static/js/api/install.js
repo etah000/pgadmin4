@@ -1,0 +1,30 @@
+import request from './request'
+
+// 获取列表数据
+export function getInstallConf() {
+  return request({
+    url: '/install/getInstallConf',
+    method: 'get'
+  })
+}
+export function setInstallConf(params) {
+  return request({
+    url: '/install/setInstallConf',
+    method: 'post',
+    data: params
+  })
+}
+export function validateConf(params) {
+  return request({
+    url: '/install/validateConf',
+    method: 'post',
+    data: params
+  })
+}
+export function validateHost(params) {
+  return request({
+    url: '/install/validateHost',
+    method: 'post',
+    data: params
+  })
+}

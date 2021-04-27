@@ -9,7 +9,7 @@
 {% block init_script %}
 try {
 require(
-['sources/generated/app.bundle', 'sources/generated/codemirror', 'sources/generated/browser_nodes', 'sources/generated/slickgrid'],
+['sources/generated/main','sources/generated/app.bundle', 'sources/generated/codemirror', 'sources/generated/browser_nodes', 'sources/generated/slickgrid'],
 function() {
 },
 function() {
@@ -83,6 +83,9 @@ window.onload = function(e){
  }, 1000);
 };
 {% endif %}
+
+
+
 {% endblock %}
 
 {% block css_link %}
@@ -90,23 +93,26 @@ window.onload = function(e){
 {% endblock %}
 
 {% block body %}
+
+
 <div id="pg-spinner" class="pg-sp-container">
   <div class="pg-sp-content">
     <div class="row"><div class="col-12 pg-sp-icon"></div></div>
     <div class="row"><div class="col-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
   </div>
 </div>
+
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark pg-navbar">
     <a class="navbar-brand pgadmin_header_logo" onClick="return false;" href="{{ '#' }}"
-       title="{{ config.APP_NAME }} {{ _('logo') }}" aria-label="{ config.APP_NAME }} {{ _('logo') }}">
+       title="{{ config.APP_NAME }} {{ _('logo') }}" aria-label="{{ config.APP_NAME }} {{ _('logo') }}">
         <i class="app-icon {{ config.APP_ICON }}" aria-hidden="true"></i>
     </a>
+
     <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu">
         <span class="sr-only">{{ _('Toggle navigation') }}</span>
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbar-menu" role="navigation">
-
         <ul class="navbar-nav mr-auto">
             <li id="mnu_file" class="nav-item active dropdown d-none">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
@@ -126,7 +132,8 @@ window.onload = function(e){
             <li id="mnu_tools" class="nav-item active dropdown d-none">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
                     _('Tools') }}<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu"></ul>
+                <ul class="dropdown-menu" role="menu">
+                </ul>
             </li>
             <li id="mnu_help" class="nav-item active dropdown d-none">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
@@ -162,8 +169,12 @@ window.onload = function(e){
     </div>
 </nav>
 
-<div id="dockerContainer" class="pg-docker"></div>
+<div id="dockerContainer" class="pg-docker">
+    <div id="app">
+    </div>
+</div>
 
 {% include 'browser/messages.html' %}
 
 {% endblock %}
+

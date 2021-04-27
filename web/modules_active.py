@@ -113,6 +113,7 @@ MODULES_ACTIVE = (
     # 'pgadmin.tools.debugger.utils',
     'pgadmin.tools.grant_wizard',
     'pgadmin.tools.import_export',
+    'pgadmin.tools.install',
     'pgadmin.tools.maintenance',
     'pgadmin.tools.restore',
     # 'pgadmin.tools.schema_diff',

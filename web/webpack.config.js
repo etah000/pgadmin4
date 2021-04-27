@@ -29,6 +29,7 @@ const WebpackRequireFromPlugin = require('webpack-require-from');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
 const IconfontWebpackPlugin = require('iconfont-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 
 const envType = PRODUCTION ? 'production': 'development';
 const devToolVal = PRODUCTION ? false : 'eval';
@@ -351,6 +352,7 @@ module.exports = [{
   context: __dirname,
   // Specify entry points of application
   entry: {
+    'main': __dirname + '/pgadmin/main.js',
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
     slickgrid: sourceDir + '/bundle/slickgrid.js',
@@ -386,6 +388,10 @@ module.exports = [{
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
+      test: /\.vue$/,
+      loader: 'vue-loader'
+    },
+     {
       test: /\.js$/,
       exclude: [/node_modules/, /vendor/],
       use: {
@@ -497,6 +503,7 @@ module.exports = [{
         ',pgadmin.tools.backup' +
         ',pgadmin.tools.restore' +
         ',pgadmin.tools.grant_wizard' +
+        ',pgadmin.tools.install' +
         ',pgadmin.tools.maintenance' +
         ',pgadmin.tools.import_export' +
         ',pgadmin.tools.debugger.controller' +
@@ -628,11 +635,18 @@ module.exports = [{
     webpackRequireFrom,
     bundleAnalyzer,
     copyFiles,
+    new VueLoaderPlugin(),
   ]: [
     extractStyle,
     providePlugin,
     sourceMapDevToolPlugin,
     webpackRequireFrom,
     copyFiles,
+    new VueLoaderPlugin(),
   ],
+  devServer: {
+    contentBase: outputPath,
+    compress: true,
+    port: 9000,
+  },
 }].concat(pgadminThemesWebpack);

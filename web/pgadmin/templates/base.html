@@ -21,8 +21,10 @@
 
     <!-- Base template stylesheets -->
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/style.css')}}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/main.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/pgadmin.style.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename=('js/generated/'+get_theme_css())) }}"/>
+
 
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
@@ -63,6 +65,9 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
+
+
+
 
 </head>
 <body>
