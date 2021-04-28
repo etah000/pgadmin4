@@ -151,7 +151,7 @@
 .wcFloating .wcPanelTabActive {
   border-bottom: none;
   color: $color-fg;
-  font-weight: bold;
+  font-weight: 400;
 }
 
 .wcFloating .wcPanelTabActive:hover {
@@ -161,6 +161,7 @@
 .wcFloating .wcFrameTitleBar {
   height: $title-height;
   background-color: $header-bg;
+  
   // border-bottom: $panel-border;
 }
 

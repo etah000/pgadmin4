@@ -764,7 +764,7 @@ define('pgadmin.browser.node', [
         }
 
         p.title(l);
-        p.icon('icon-' + this.type);
+        p.icon('icon-' + this.type); 
 
         // Make sure the properties dialog is visible
         p.focus();
