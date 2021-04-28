@@ -5,9 +5,9 @@ $white: #fff;
 $black: #000;
 
 $color-bg: $white !default;
-$color-fg: #222222 !default;
+$color-fg: #606266 !default;
 
-$color-primary: #313d54 !default;
+$color-primary: #409eff !default;
 $color-primary-fg: $white !default;
 $color-primary-light: #d6effc !default;
 $color-primary-light-fg: $color-primary !default;
@@ -54,7 +54,7 @@ $shadow-base-color: $color-gray-dark !default;
 $font-family-monospace: $font-family-editor;
 $font-family-base:      $font-family-primary;
 $body-color: $color-fg;
-$font-size-base: 0.875rem;
+$font-size-base: 0.950rem;
 $line-height-base: 1.5;
 $text-height-calc: $line-height-base*$font-size-base/1rem;
 $grid-gutter-width: 15px;
@@ -63,10 +63,10 @@ $border-radius: 0.25rem;
 $text-muted: #667185 !default;
 $header-bg: $color-bg !default;
 
-$tree-font-size: 0.815rem;
+$tree-font-size: 0.925rem;
 
 $navbar-bg: $color-primary;
-$navbar-font-size: 0.925rem;
+$navbar-font-size: 0.995rem;
 $navbar-height: 52px;
 $navbar-dropdown-top: 100%;
 $navbar-dark-color: $color-primary-fg;
