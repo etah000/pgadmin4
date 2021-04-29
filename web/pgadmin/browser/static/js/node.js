@@ -1284,10 +1284,25 @@ define('pgadmin.browser.node', [
               
               register: function(btn) {
                 btn.on('click',() => {
+                  Alertify.confirm(
+                    gettext('Warning'),
+                    "Confirm to update?",
+                    function() {
+                      setTimeout(function(){
+                        onEdit();
+                      }.bind(self), 50);
+                      return true;
+                    },
+                    function() {
+                      return true;
+                    }
+                  ).set('labels', {
+                    ok: gettext('Yes'),
+                    cancel: gettext('No'),
+                  }).show();
                   // console.log(view);
                   // console.log(this);
-                  onEdit();
-                  // onSave.call(this, view, btn);
+                  // onEdit();
                 });
               },
             });
@@ -1820,6 +1835,7 @@ define('pgadmin.browser.node', [
                 icon: 'fa fa-recycle pg-alertify-button',
                 disabled: true,
                 register: function(btn) {
+                  console.log(panel);
                   btn.on('click',() => {
                     warnBeforeChangesLost.call(
                       panel,
@@ -1827,7 +1843,7 @@ define('pgadmin.browser.node', [
                       function() {
                         setTimeout(function() {
                           editFunc.call();
-                        }, 0);
+                        }, 0); 
                       }
                     );
                   });
