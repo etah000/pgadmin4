@@ -88,11 +88,11 @@ class Helper():
         executor = self.getExecuter(nodename)
         return executor.prepareDataDisk(node)
 
-    def copyInstallFile(self,nodename):
+    def copyInstallFile(self,nodename,spath):
 
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
-        return executor.copyInstallFile(node)
+        return executor.copyInstallFile(node,spath)
 
     def installSnowballServ(self, nodename):
 

@@ -3,8 +3,10 @@
 import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.tools.install.config import zookeeperConf
+from pgadmin.utils import get_storage_directory
+
 selfPath = GetSelfPath()
-softPath = selfPath + '/soft/'
+#softPath = selfPath + '/soft/'
 confPath = selfPath + '/config/'
 remoteSoftdir = '/app/soft/'
 remoteAppdir = '/app/zookeeper/'
@@ -41,7 +43,7 @@ class AbstractExecutor():
 
         softlist = self.getZookeeperFile();
         for soft, filename in softlist.items():
-            fullFilename = softPath + filename
+            fullFilename = get_storage_directory()+ '/soft/' + filename
             res = node.put(fullFilename, remoteSoftdir)
             print(res)
         self.unzipInstallFile(node)

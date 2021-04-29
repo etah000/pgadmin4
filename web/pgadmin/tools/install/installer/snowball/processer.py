@@ -8,13 +8,13 @@ nodes = conf.options('nodes')
 
 class Processer():
 
-    def install(self):
+    def install(self,spath):
         try:
-            self.installSnowball()
+            self.installSnowball(spath)
         except Exception as e:
             print(e)
 
-    def installSnowball(self):
+    def installSnowball(self,spath):
 
         print('\r\nStart Install Snowball ....... ')
 
@@ -22,7 +22,7 @@ class Processer():
         self.__checkNodesSystemInfo()
 
         print('\r\nStep-2: Prepare for node ....')
-        self.__prepareForNodes()
+        self.__prepareForNodes(spath)
 
         print('\r\nStep-3: Install snowball on Node ....')
         self.__installSnowballOnNodes()
@@ -89,7 +89,7 @@ class Processer():
             print('Exception:' +e)
             raise e
 
-    def __prepareForNodes(self):
+    def __prepareForNodes(self,spath):
 
         for nodename in nodes:
             # print('-- Prepare data disk ....')
@@ -102,7 +102,7 @@ class Processer():
             self.__prepareFirewalldRules(nodename)
             #
             print('-2.3 Prepare install file ....')
-            self.__copyInstallFileToNodes(nodename)
+            self.__copyInstallFileToNodes(nodename,spath)
 
 
 
@@ -118,9 +118,9 @@ class Processer():
 
         helper.prepareFirewalldRule(nodename)
 
-    def __copyInstallFileToNodes(self,nodename):
+    def __copyInstallFileToNodes(self,nodename,spath):
 
-        helper.copyInstallFile(nodename)
+        helper.copyInstallFile(nodename,spath)
 
     def __installSnowballOnNodes(self):
         for nodename in nodes:
