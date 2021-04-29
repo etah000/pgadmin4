@@ -398,10 +398,10 @@ define('pgadmin.browser.node', [
             var gridcollection = new gridCollection();
             var columns = [
               {name: 'shard_num', label: gettext('shard_num'),cell: 'string'},
-              {name: 'shard_weight', label: gettext('shard_weight'),cell: 'string'},
+              {name: 'shard_weight', label: gettext('shard_weight'),cell: 'string',editable: false},
               {name: 'replica_num', label: gettext('replica_num'),cell: 'string'},
               {name: 'host_name', label: gettext('host_name'),cell: 'string'},
-              {name: 'host_address', label: gettext('host_address'),cell: 'string'},
+              {name: 'host_address', label: gettext('host_address'),cell: 'string',editable: false},
               {name: 'port', label: gettext('port'),cell: 'string'},
               {name: 'default_database', label: gettext('default_database'),cell: 'string'}
             ];
@@ -1284,6 +1284,8 @@ define('pgadmin.browser.node', [
               
               register: function(btn) {
                 btn.on('click',() => {
+                  // console.log(view);
+                  // console.log(this);
                   onEdit();
                   // onSave.call(this, view, btn);
                 });
@@ -1658,13 +1660,40 @@ define('pgadmin.browser.node', [
           panel.$container.attr('action-mode', action);
           let j = panel.$container.find('.obj_properties').first();
           let  view = j.data('obj-view');
+          console.log(view.collection);
           console.log(view.model);
+
+          //属性为列表的时候
+          if(view.collection){
+              let oldModel=view.collection.models;
+              let collectionJson=[];
+              for(let item in oldModel){
+                console.log(oldModel[item]);
+                let newModel={};
+                let attributes=oldModel[item].attributes;
+                let shard_num=attributes.shard_num;
+                let replica_num=attributes.replica_num;
+                let host_name=attributes.host_name;
+                let port=attributes.port;
+                let default_database=attributes.default_database;
+                newModel.shard_num=shard_num;
+                newModel.replica_num=replica_num;
+                newModel.host_name=host_name;
+                newModel.port=port;
+                newModel.default_database=default_database;
+                collectionJson.push(newModel);
+              }
+             console.log(collectionJson);
+
+
+          }
+          //属性为输入表单的时候
+          if(view.model){
           let fieldDataList=view.model.fieldData;
           let attributes=view.model.attributes;
           let newModel={};
           // console.log(attributes);
           for(let  key in fieldDataList){
-
               newModel[key]=attributes[key];
           }
           newModel.oid=attributes.oid;
@@ -1673,6 +1702,7 @@ define('pgadmin.browser.node', [
           // view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
           // console.log(view);
           onSaveUpdate.call(this, view, btn,newModel);
+          }
         },
         editFunc = function() {
           var panel = this;
