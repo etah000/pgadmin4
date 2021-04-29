@@ -1307,19 +1307,19 @@ define('pgadmin.browser.node', [
               },
             });
 
-            buttons.push({
-              label: '',
-              type: 'help',
-              tooltip: gettext('SQL help for this object type.'),
-              extraClasses: ['btn-secondary', 'btn-secondary', 'm-1'],
-              icon: 'fa fa-lg fa-info',
-              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onSqlHelp();
-                });
-              },
-            });
+            // buttons.push({
+            //   label: '',
+            //   type: 'help',
+            //   tooltip: gettext('SQL help for this object type.'),
+            //   extraClasses: ['btn-secondary', 'btn-secondary', 'm-1'],
+            //   icon: 'fa fa-lg fa-info',
+            //   disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '') ? true : false,
+            //   register: function(btn) {
+            //     btn.on('click',() => {
+            //       onSqlHelp();
+            //     });
+            //   },
+            // });
             createButtons(buttons, 'header', 'pg-prop-btn-group-above');
           }
           j.append(content);
