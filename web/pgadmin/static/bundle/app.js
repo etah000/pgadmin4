@@ -5,7 +5,7 @@
 // Copyright (C) 2013 - 2020, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
 
 define('app', [
   'sources/pgadmin', 'bundled_browser', 'pgadmin.datagrid',
@@ -29,6 +29,6 @@ define('app', [
   initializeModules(pgAdmin.Tools);
   // create menus after all modules are initialized.
   pgAdmin.Browser.create_menus();
-  console.log("###pgAdmin.Browser.create_menus")
+
 
 });

@@ -20,5 +20,5 @@ setTimeout(function() {
   }).$mount('#install')
   // document.getElementById('install').appendChild(component.$el)
   // console.log("###document.getElementById('install').appendChild(component.$el)")
-}, 1000);
+}, 2000);
 

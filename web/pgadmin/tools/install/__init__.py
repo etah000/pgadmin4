@@ -1,3 +1,4 @@
+
 import sys, os, re
 import simplejson as json
 from flask import url_for, Response, render_template, request, current_app
@@ -93,6 +94,7 @@ def setInstallConf():
     data = json.loads(
         request.data, encoding='utf-8'
     )
+
     #修改配置文件 conf.zookeeper.install.ini
     zookeepercfgpath = os.path.join(selfPath+"/config/", "conf.zookeeper.install.ini")
     zookeeper = MyConfigParser()
@@ -145,8 +147,9 @@ def setInstallConf():
         conf.set ('sshs',host['name'],'1,'+host['user']+','+host['password']+','+host['port'])
     conf.write(open(cfgpath, "r+", encoding="utf-8")) # r+模式
     #安装
+    spath=data['config']['general']['path']
     zookeeperProcesser.install()
-    snowballProcesser.install()
+    snowballProcesser.install(spath)
 
     res = {
         'code': "0000",

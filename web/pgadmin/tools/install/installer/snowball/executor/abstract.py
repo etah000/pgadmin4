@@ -1,13 +1,17 @@
 # coding: utf-8
-
+import sys, os, re
 # import json
 import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
+from pgadmin.utils import get_storage_directory
 # from config import snowballConf as Confobj
 
 selfPath = GetSelfPath()
-softPath = selfPath + '/soft/'
+
+#softPath = selfPath + '/soft/'
+
 confPath = selfPath + '/config/'
+
 remoteAppdir = '/app/soft/'
 remoteConfDir = '/etc/snowball-server/'
 
@@ -56,7 +60,7 @@ class AbstractExecutor:
 
         for soft in softlist:
             filename = self.geDependencyFile(soft)
-            fullFilename = softPath + filename
+            fullFilename = get_storage_directory()+ '/soft/'+ filename
             node.put(fullFilename,remoteAppdir)
 
         return True
@@ -85,11 +89,11 @@ class AbstractExecutor:
         # print('check checkFirewalld ...', node)
         return True
 
-    def copyInstallFile(self, node):
+    def copyInstallFile(self, node,spath):
         node.call('mkdir -p ' + remoteAppdir)
         softlist = self.getSnowballFile();
         for soft, filename in softlist.items():
-            fullFilename = softPath + filename
+            fullFilename = get_storage_directory()+ spath+ filename
             node.put(fullFilename, remoteAppdir)
 
         return True

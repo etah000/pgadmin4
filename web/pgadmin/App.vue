@@ -1,7 +1,11 @@
 <template>
   <a id="install" href="#" data-toggle="pg-menu" role="menuitem" class="dropdown-item">
-    <span data-test="menu-item-text" @click="dialogFormVisible = true">  Install...</span>
-    <el-dialog width="65%" :close-on-click-modal="false" :append-to-body=true :modal-append-to-body=false
+    <span data-test="menu-item-text"  @click="dialogFormVisible = true">  Install...</span>
+    <el-dialog width="65%"
+               :modal="true"
+               :close-on-click-modal="false"
+               :append-to-body=true
+               :modal-append-to-body=true
                :visible.sync="dialogFormVisible">
         <form-wizard @on-complete="onComplete"
                      @on-validate="handleValidation"
@@ -14,6 +18,15 @@
                      shape="circle"
                      color="#20a0ff"
                      error-color="#fa0202">
+          <tab-content title="一般设置" icon="el-icon-coin" :before-change="validatePgk" >
+            <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
+              <el-form-item label="软件路径" :label-width="formLabelWidth" prop="path">
+                <el-input v-model="general.path" autocomplete="off"></el-input>
+                <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
+                </el-button>
+              </el-form-item>
+            </el-form>
+          </tab-content>
           <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
             <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加服务器
             </el-button>
@@ -152,7 +165,7 @@
                 </el-row>
               </el-form>
           </tab-content>
-          <tab-content title="snowball 设置" icon="el-icon-coin" :before-change="validateSnowball">
+          <tab-content title="snowball 设置" icon="el-icon-orange" :before-change="validateSnowball">
             <el-form :model="snowball" ref="snowballForm" :rules="rulesSnowball"  size="medium">
               <el-row>
                 <el-col :span="12">
@@ -234,6 +247,9 @@ export default {
       installres: false,
       dialogFormVisible: false,
       formLabelWidth: '90px',
+      general:{
+        path:'/soft/'
+      },
       hosts: [
         {name: 'node1', ip: '192.168.2.184', user: 'root', password: 'admin', port: '1023', status: 1},
         {name: 'node2', ip: '192.168.2.184', user: 'root', password: 'admin', port: '1024', status: 1},
@@ -257,6 +273,11 @@ export default {
         interserver_http_port: '9090',
         listen_host: '0.0.0.0',
         nodes: ['node1','node2','node3']
+      },
+      rulesGeneral:{
+        path: [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ]
       },
       rulesZk: {
         tickTime: [
@@ -307,9 +328,22 @@ export default {
     })*/
   },
   methods: {
+    fileSelectionDlg() {
+      let params = {
+        'dialog_title': 'Select file',
+        'dialog_type': 'select_file',
+      };
+
+      let show_dialog = pgAdmin.FileManager.show_dialog(params);
+      //Alertify.fileSelectionDlg(params).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
+      pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', this.storage_dlg_hander, this);
+      //console.log(show_dialog)
+    },
     forceClearError() {
     },
-
+    storage_dlg_hander: function(value) {
+      this.general.path=value
+    },
     setLoading: function(value) {
       this.loadingWizard = value
     },
@@ -318,6 +352,11 @@ export default {
     },
     handleValidation: function(isValid, tabIndex){
       console.log('Tab: '+tabIndex+ ' valid: '+isValid)
+    },
+    validatePgk:function (){
+      return new Promise((resolve, reject) => {
+        resolve(true)
+      })
     },
     validateSnowball: function () {
       return new Promise((resolve, reject) => {
@@ -425,6 +464,7 @@ export default {
       }, 5000);
       setInstallConf({
         config: {
+          general: this.general,
           hosts: this.hosts,
           zookeeper: this.zookeeper,
           snowball: this.snowball
@@ -443,6 +483,8 @@ export default {
 }
 </script>
 <style>
+.v-modal { z-index: 199 !important; }
+.el-dialog__wrapper { z-index: 200 !important; }
 .vue-form-wizard .wizard-header {
   padding: 15px;
   position: relative;
