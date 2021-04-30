@@ -16,7 +16,7 @@ define('misc.dependencies', [
   if (pgBrowser.NodeDependencies)
     return pgBrowser.NodeDependencies;
 
-  var wcDocker = window.wcDocker;
+  // var wcDocker = window.wcDocker;
 
   pgBrowser.NodeDependencies = pgBrowser.NodeDependencies || {};
 
@@ -118,7 +118,7 @@ define('misc.dependencies', [
     },
 
     // Fetch the actual data and update the collection
-    showDependencies: function(item, data, node) {
+    showDependencies: function() {
       // let self = this,
       //   msg = gettext('Please select an object in the tree view.'),
       //   panel = this.dependenciesPanel,

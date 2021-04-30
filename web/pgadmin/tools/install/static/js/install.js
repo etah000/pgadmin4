@@ -5,8 +5,7 @@ define([
   'sources/nodes/supported_database_node',
   'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser.node.ui',
 ], function(
-  gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,
-  Backform, commonUtils, supportedNodes
+  gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser
 ) {
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -36,7 +35,7 @@ define([
         icon: 'fa fa-shopping-cart',
       }]);
     },
-    createButtons: function(buttons, location, extraClasses) {
+    /*createButtons: function(buttons, location, extraClasses) {
       // Arguments must be non-zero length array of type
       // object, which contains following attributes:
       // label, type, extraClasses, register
@@ -110,17 +109,17 @@ define([
                   disabled: true,
                   register: function(btn) {},
                 }], 'footer', 'pg-prop-btn-group-below');
-            }
+            },
           }});
       }
       Alertify.installAlert("install").resizeTo(pgBrowser.stdW.lg,pgBrowser.stdH.lg);
       var newModel =new Backbone.Model.extend({});
       new Backform.Dialog({
-        /*el: $container,*/
+        /!*el: $container,*!/
         model: newModel,
-       /* schema: fields,*/
+       /!* schema: fields,*!/
       }).render();
-    },
+    },*/
   };
 
   return pgAdmin.Tools.install;

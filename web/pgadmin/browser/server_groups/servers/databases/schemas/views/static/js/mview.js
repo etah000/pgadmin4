@@ -182,7 +182,6 @@ define('pgadmin.node.mview', [
         },
         {
           id: 'engine', label: gettext('Engine'),
-          control: 'select2',
           type: 'text', mode: ['properties','create'],
           options: [
             {label: gettext('请选择'), value: ''},
@@ -194,7 +193,7 @@ define('pgadmin.node.mview', [
               Backform.SelectControl.prototype.onChange.apply(this, arguments);
               let engine=this.model.get('engine');
               if(engine!=''){
-                document.querySelector('.to_database').classList.add("d-none"); 
+                document.querySelector('.to_database').classList.add("d-none");
                 document.querySelector('.to_table').classList.add("d-none");
                 document.querySelector('.engine_params').classList.remove("d-none");
               }else{

@@ -680,7 +680,7 @@ define('pgadmin.node.table', [
           mode: ['create', 'edit'],
           disabled: function(m) {
             // In case of partitioned table remove inherited columns
-            if (m.isNew() && m.get('is_partitioned')) {partition_by
+            if (m.isNew() && m.get('is_partitioned')) {
               setTimeout(function() {
                 var coll = m.get('columns');
                 coll.remove(coll.filter(function(model) {

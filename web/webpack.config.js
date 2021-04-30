@@ -389,9 +389,8 @@ module.exports = [{
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
       test: /\.vue$/,
-      loader: 'vue-loader'
-    },
-     {
+      loader: 'vue-loader',
+    }, {
       test: /\.js$/,
       exclude: [/node_modules/, /vendor/],
       use: {

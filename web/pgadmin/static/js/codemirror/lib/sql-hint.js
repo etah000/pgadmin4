@@ -219,8 +219,8 @@
 
     var query = doc.getRange(validRange.start, validRange.end, false);
 
-    for (var i = 0; i < query.length; i++) {
-      var lineText = query[i];
+    for (var j = 0; j < query.length; j++) {
+      var lineText = query[j];
       eachWord(lineText, function(word) {
         var wordUpperCase = word.toUpperCase();
         if (wordUpperCase === aliasUpperCase && getTable(previousWord))

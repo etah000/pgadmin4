@@ -28,25 +28,33 @@ module.exports = {
     'module': true,
   },
   'rules': {
-    'indent': [
+    /*'indent': [
       'error',
       2
-    ],
+    ],*/
     'linebreak-style': 0,
-    'quotes': [
+    /*'quotes': [
       'error',
       'single'
-    ],
-    'semi': [
+    ],*/
+    'quotes': 'off',
+    /*'semi': [
       'error',
       'always'
-    ],
-    'comma-dangle': [
+    ],*/
+    'semi': 'off',
+    /*'comma-dangle': [
       'error',
       'always-multiline'
-    ],
-    'no-console': ["error", { allow: ["warn", "error"] }],
+    ],*/
+    'comma-dangle': 'off',
+    /*'no-console': ["error", { allow: ["warn", "error"] }],*/
+    'no-console': 'off',
     // We need to exclude below for RegEx case
     "no-useless-escape": 0,
+    'space-before-function-paren': 0,
+    'indent': 'off',
+    'no-unused-vars': 'off',
+    'no-constant-condition': 'off',
   },
 };
