@@ -96,7 +96,7 @@ class Processer():
             # self.__prepareDataDisk(nodename)
 
             print('-2.1 Prepare soft dependency for node : ' + nodename)
-            self.__prepareDependencyForNode(nodename)
+            self.__prepareDependencyForNode(nodename,spath)
 
             print('-2.2 Prepare firewalld rules node : ' + nodename)
             self.__prepareFirewalldRules(nodename)
@@ -110,9 +110,9 @@ class Processer():
 
         helper.prepareDataDisk(nodename)
 
-    def __prepareDependencyForNode(self,nodename):
+    def __prepareDependencyForNode(self,nodename,spath):
 
-        helper.prepareDependency(nodename)
+        helper.prepareDependency(nodename,spath)
 
     def __prepareFirewalldRules(self,nodename):
 

@@ -32,11 +32,11 @@ class AbstractExecutor:
         }
         return False
 
-    def prepareDependency(self, node):
+    def prepareDependency(self, node,spath):
         needInstallSoftlist = self.checkDependency(node)
         print(needInstallSoftlist)
 
-        self.uploadDependencyFile(node,needInstallSoftlist)
+        self.uploadDependencyFile(node,needInstallSoftlist,spath)
         self.installDependencyFile(node,needInstallSoftlist)
 
         return True
@@ -55,12 +55,12 @@ class AbstractExecutor:
 
         return needInstallSoftlist
 
-    def uploadDependencyFile(self,node, softlist):
+    def uploadDependencyFile(self,node, softlist,spath):
         node.call('mkdir -p '+remoteAppdir)
 
         for soft in softlist:
             filename = self.geDependencyFile(soft)
-            fullFilename = get_storage_directory()+ '/soft/'+ filename
+            fullFilename = get_storage_directory()+ spath+ filename
             node.put(fullFilename,remoteAppdir)
 
         return True

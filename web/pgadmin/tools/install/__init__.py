@@ -148,7 +148,7 @@ def setInstallConf():
     conf.write(open(cfgpath, "r+", encoding="utf-8")) # r+模式
     #安装
     spath=data['config']['general']['path']
-    zookeeperProcesser.install()
+    zookeeperProcesser.install(spath)
     snowballProcesser.install(spath)
 
     res = {

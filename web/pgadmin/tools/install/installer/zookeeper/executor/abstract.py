@@ -35,7 +35,7 @@ class AbstractExecutor():
         # print('check checkFirewalld ...', node)
         return True
 
-    def copyInstallFile(self, node):
+    def copyInstallFile(self, node,spath):
         cmd = ''
         cmd = cmd + 'mkdir -p /app && mkdir -p ' + remoteSoftdir + '&& '
         cmd = cmd + 'rm -rf /app/jdk && rm -rf /app/jdk1.8.0_201 && rm -rf /app/apache-zookeeper-3.5.7-bin && rm -rf /app/zookeeper'
@@ -43,7 +43,7 @@ class AbstractExecutor():
 
         softlist = self.getZookeeperFile();
         for soft, filename in softlist.items():
-            fullFilename = get_storage_directory()+ '/soft/' + filename
+            fullFilename = get_storage_directory()+ spath + filename
             res = node.put(fullFilename, remoteSoftdir)
             print(res)
         self.unzipInstallFile(node)
@@ -112,7 +112,6 @@ class AbstractExecutor():
         print(res)
 
     def startZookeeperServ(self, node):
-
         cmd = "source /etc/profile && /app/zookeeper/bin/zkServer.sh start"
         res = node.call(cmd)
         print(res)

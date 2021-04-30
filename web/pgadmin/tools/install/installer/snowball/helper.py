@@ -73,10 +73,10 @@ class Helper():
             return False
 
 
-    def prepareDependency(self,nodename):
+    def prepareDependency(self,nodename,spath):
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
-        return executor.prepareDependency(node)
+        return executor.prepareDependency(node,spath)
 
     def prepareFirewalldRule(self, nodename):
         node = self.getNode(nodename)

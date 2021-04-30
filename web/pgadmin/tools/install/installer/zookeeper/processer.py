@@ -8,20 +8,20 @@ nodes = conf.options('nodes')
 
 class Processer():
 
-    def install(self):
+    def install(self,spath):
         try:
-            self.installZookeeper()
+            self.installZookeeper(spath)
         except Exception as e:
             print(e)
 
-    def installZookeeper(self):
+    def installZookeeper(self,spath):
         print('Start Install Zookeeper ....... ')
 
         print('\r\nStep-1: Check node ssh connection .......')
         self.__checkNodesSystemInfo()
 
         print('\r\nStep-2: Prepare for node ....')
-        self.__prepareForNodes()
+        self.__prepareForNodes(spath)
         # #
         # print('\r\nStep-3: Install zookeeper on Node ....')
         # self.__installZookeeperOnNodes()
@@ -76,7 +76,7 @@ class Processer():
             raise e
         pass
 
-    def __prepareForNodes(self):
+    def __prepareForNodes(self,spath):
 
         for nodename in nodes:
 
@@ -84,7 +84,7 @@ class Processer():
             self.__prepareFirewalldRules(nodename)
             #
             print('-2.2 Prepare install file ....')
-            self.__copyInstallFileToNodes(nodename)
+            self.__copyInstallFileToNodes(nodename,spath)
 
     def __startZookeeperServ(self):
         for nodename in nodes:
@@ -100,9 +100,9 @@ class Processer():
 
         helper.prepareFirewalldRule(nodename)
 
-    def __copyInstallFileToNodes(self,nodename):
+    def __copyInstallFileToNodes(self,nodename,spath):
 
-        helper.copyInstallFile(nodename)
+        helper.copyInstallFile(nodename,spath)
 
 
 zookeeperProcesser = Processer()
