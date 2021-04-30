@@ -12,7 +12,8 @@ selfPath = GetSelfPath()
 
 confPath = selfPath + '/config/'
 
-remoteAppdir = '/app/soft/'
+#remoteAppdir = '/app/soft/'
+
 remoteConfDir = '/etc/snowball-server/'
 
 class AbstractExecutor:
@@ -24,6 +25,7 @@ class AbstractExecutor:
             'libicu':''
         }
         return False
+
     def getSnowballFile(self):
         files =  {
             'common':'',
@@ -32,12 +34,12 @@ class AbstractExecutor:
         }
         return False
 
-    def prepareDependency(self, node,spath):
+    def prepareDependency(self, node,spath,remoteSoftdir):
         needInstallSoftlist = self.checkDependency(node)
         print(needInstallSoftlist)
 
-        self.uploadDependencyFile(node,needInstallSoftlist,spath)
-        self.installDependencyFile(node,needInstallSoftlist)
+        self.uploadDependencyFile(node,needInstallSoftlist,spath,remoteSoftdir)
+        self.installDependencyFile(node,needInstallSoftlist,remoteSoftdir)
 
         return True
 
@@ -55,7 +57,7 @@ class AbstractExecutor:
 
         return needInstallSoftlist
 
-    def uploadDependencyFile(self,node, softlist,spath):
+    def uploadDependencyFile(self,node, softlist,spath,remoteAppdir):
         node.call('mkdir -p '+remoteAppdir)
 
         for soft in softlist:
@@ -65,7 +67,7 @@ class AbstractExecutor:
 
         return True
 
-    def installDependencyFile(self,node, softlist):
+    def installDependencyFile(self,node, softlist,remoteAppdir):
         for soft in softlist:
             filename = self.geDependencyFile(soft)
             cmd = 'rpm -ivh ' + remoteAppdir + filename
@@ -89,7 +91,7 @@ class AbstractExecutor:
         # print('check checkFirewalld ...', node)
         return True
 
-    def copyInstallFile(self, node,spath):
+    def copyInstallFile(self, node,spath,remoteAppdir):
         node.call('mkdir -p ' + remoteAppdir)
         softlist = self.getSnowballFile();
         for soft, filename in softlist.items():

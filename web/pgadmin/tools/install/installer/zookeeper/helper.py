@@ -84,11 +84,11 @@ class Helper():
         executor = self.getExecuter(nodename)
         return executor.prepareFirewalldRule(node)
 
-    def copyInstallFile(self,nodename,spath):
+    def copyInstallFile(self,nodename,spath,remoteSoftdir,remoteAppdir):
 
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
-        return executor.copyInstallFile(node,spath)
+        return executor.copyInstallFile(node,spath,remoteSoftdir,remoteAppdir)
 
     def installZookeeperServ(self, nodename):
 

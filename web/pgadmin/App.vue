@@ -24,6 +24,8 @@
                 <el-input v-model="general.path" autocomplete="off"></el-input>
                 <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
                 </el-button>
+                <el-input v-model="general.remoteSoftdir" autocomplete="off"></el-input>
+                <el-input v-model="general.remoteAppdir" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
           </tab-content>
@@ -248,7 +250,10 @@ export default {
       dialogFormVisible: false,
       formLabelWidth: '90px',
       general:{
-        path:'/soft/'
+        path:'/soft/',
+        remoteSoftdir:'/app/soft/',
+        remoteAppdir:'/app/zookeeper/',
+        remoteJdkdir:'/app/jdk/'
       },
       hosts: [
         {name: 'node1', ip: '192.168.2.184', user: 'root', password: 'admin', port: '1023', status: 1},

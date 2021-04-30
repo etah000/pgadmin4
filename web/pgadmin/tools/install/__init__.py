@@ -148,8 +148,9 @@ def setInstallConf():
     conf.write(open(cfgpath, "r+", encoding="utf-8")) # r+模式
     #安装
     spath=data['config']['general']['path']
-    zookeeperProcesser.install(spath)
-    snowballProcesser.install(spath)
+    remoteSoftdir=data['config']['general']['remoteSoftdir']
+    zookeeperProcesser.install(spath,remoteSoftdir)
+    snowballProcesser.install(spath,remoteSoftdir)
 
     res = {
         'code': "0000",

@@ -8,9 +8,9 @@ from pgadmin.utils import get_storage_directory
 selfPath = GetSelfPath()
 #softPath = selfPath + '/soft/'
 confPath = selfPath + '/config/'
-remoteSoftdir = '/app/soft/'
-remoteAppdir = '/app/zookeeper/'
-remoteJdkdir = '/app/jdk/'
+#remoteSoftdir = '/app/soft/'
+#remoteAppdir = '/app/zookeeper/'
+#remoteJdkdir = '/app/jdk/'
 
 class AbstractExecutor():
     def getZookeeperFile(self):
@@ -35,7 +35,7 @@ class AbstractExecutor():
         # print('check checkFirewalld ...', node)
         return True
 
-    def copyInstallFile(self, node,spath):
+    def copyInstallFile(self, node,spath,remoteSoftdir,remoteAppdir):
         cmd = ''
         cmd = cmd + 'mkdir -p /app && mkdir -p ' + remoteSoftdir + '&& '
         cmd = cmd + 'rm -rf /app/jdk && rm -rf /app/jdk1.8.0_201 && rm -rf /app/apache-zookeeper-3.5.7-bin && rm -rf /app/zookeeper'
@@ -46,12 +46,12 @@ class AbstractExecutor():
             fullFilename = get_storage_directory()+ spath + filename
             res = node.put(fullFilename, remoteSoftdir)
             print(res)
-        self.unzipInstallFile(node)
-        self.cpZookerCfgFile(node)
+        self.unzipInstallFile(node,remoteSoftdir)
+        self.cpZookerCfgFile(node,remoteAppdir)
         self.makeIdfile(node)
         return True
 
-    def cpZookerCfgFile(self, node):
+    def cpZookerCfgFile(self, node,remoteAppdir):
         confs = node.getConf()
         content = '#zookeeper cfg file'+ '\n'
         for k in confs:
@@ -70,8 +70,6 @@ class AbstractExecutor():
         return res
 
     def makeIdfile(self,node):
-
-
         confs = node.getConf()
         info = node.getInfo()
         servid = info['servid']
@@ -82,7 +80,7 @@ class AbstractExecutor():
         res = node.call(cmd)
         print(res)
 
-    def unzipInstallFile(self,node):
+    def unzipInstallFile(self,node,remoteSoftdir):
 
         softlist = self.getZookeeperFile();
 

@@ -8,13 +8,13 @@ nodes = conf.options('nodes')
 
 class Processer():
 
-    def install(self,spath):
+    def install(self,spath,remoteSoftdir):
         try:
-            self.installSnowball(spath)
+            self.installSnowball(spath,remoteSoftdir)
         except Exception as e:
             print(e)
 
-    def installSnowball(self,spath):
+    def installSnowball(self,spath,remoteSoftdir):
 
         print('\r\nStart Install Snowball ....... ')
 
@@ -22,7 +22,7 @@ class Processer():
         self.__checkNodesSystemInfo()
 
         print('\r\nStep-2: Prepare for node ....')
-        self.__prepareForNodes(spath)
+        self.__prepareForNodes(spath,remoteSoftdir)
 
         print('\r\nStep-3: Install snowball on Node ....')
         self.__installSnowballOnNodes()
@@ -89,20 +89,20 @@ class Processer():
             print('Exception:' +e)
             raise e
 
-    def __prepareForNodes(self,spath):
+    def __prepareForNodes(self,spath,remoteSoftdir):
 
         for nodename in nodes:
             # print('-- Prepare data disk ....')
             # self.__prepareDataDisk(nodename)
 
             print('-2.1 Prepare soft dependency for node : ' + nodename)
-            self.__prepareDependencyForNode(nodename,spath)
+            self.__prepareDependencyForNode(nodename,spath,remoteSoftdir)
 
             print('-2.2 Prepare firewalld rules node : ' + nodename)
             self.__prepareFirewalldRules(nodename)
             #
             print('-2.3 Prepare install file ....')
-            self.__copyInstallFileToNodes(nodename,spath)
+            self.__copyInstallFileToNodes(nodename,spath,remoteSoftdir)
 
 
 
@@ -110,9 +110,9 @@ class Processer():
 
         helper.prepareDataDisk(nodename)
 
-    def __prepareDependencyForNode(self,nodename,spath):
+    def __prepareDependencyForNode(self,nodename,spath,remoteSoftdir):
 
-        helper.prepareDependency(nodename,spath)
+        helper.prepareDependency(nodename,spath,remoteSoftdir)
 
     def __prepareFirewalldRules(self,nodename):
 
