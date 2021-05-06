@@ -90,12 +90,12 @@ class Helper():
         executor = self.getExecuter(nodename)
         return executor.copyInstallFile(node,spath,remoteSoftdir,remoteAppdir)
 
-    def installZookeeperServ(self, nodename):
+    def installZookeeperServ(self, nodename,remoteConfDir):
 
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
 
-        return executor.installSnowballServ(node)
+        return executor.installSnowballServ(node,remoteConfDir)
 
     def startZookeeperServ(self, nodename):
 

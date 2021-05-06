@@ -94,12 +94,12 @@ class Helper():
         executor = self.getExecuter(nodename)
         return executor.copyInstallFile(node,spath,remoteSoftdir)
 
-    def installSnowballServ(self, nodename):
+    def installSnowballServ(self, nodename,remoteSoftdir):
 
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
 
-        return executor.installSnowballServ(node)
+        return executor.installSnowballServ(node,remoteSoftdir)
 
     def startSnowballServ(self, nodename):
 
@@ -138,11 +138,11 @@ class Helper():
         node = self.getNode(nodename)
         return  node.createDatabase(databasename)
 
-    def createNewClusterXml(self, nodename):
+    def createNewClusterXml(self, nodename,remoteConfDir):
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
 
-        conf = executor.getRemoteConfigXml(node)
+        conf = executor.getRemoteConfigXml(node,remoteConfDir)
         snowballconf = xmltodict.parse(conf)
 
         cluster = snowballconf['yandex']['remote_servers'];
@@ -157,11 +157,11 @@ class Helper():
 
         return executor.updateRomoteConfigXml(node,snowballconf)
 
-    def deleteSnowballCluster(self, nodename, clustername):
+    def deleteSnowballCluster(self, nodename, clustername,remoteConfDir):
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
 
-        conf = executor.getRemoteConfigXml(node)
+        conf = executor.getRemoteConfigXml(node,remoteConfDir)
         snowballconf = xmltodict.parse(conf)
 
         clusters = snowballconf['yandex']['remote_servers'];

@@ -14,7 +14,7 @@ confPath = selfPath + '/config/'
 
 #remoteAppdir = '/app/soft/'
 
-remoteConfDir = '/etc/snowball-server/'
+#remoteConfDir = '/etc/snowball-server/'
 
 class AbstractExecutor:
 
@@ -54,7 +54,6 @@ class AbstractExecutor:
             needInstallSoftlist.append('openssl-libs')
         if res.find('openssl-1') == -1:
             needInstallSoftlist.append('openssl')
-
         return needInstallSoftlist
 
     def uploadDependencyFile(self,node, softlist,spath,remoteAppdir):
@@ -64,7 +63,6 @@ class AbstractExecutor:
             filename = self.geDependencyFile(soft)
             fullFilename = get_storage_directory()+ spath+ filename
             node.put(fullFilename,remoteAppdir)
-
         return True
 
     def installDependencyFile(self,node, softlist,remoteAppdir):
@@ -100,7 +98,7 @@ class AbstractExecutor:
 
         return True
 
-    def installSnowballServ(self, node):
+    def installSnowballServ(self, node,remoteConfDir):
         print(node.ssh)
         conf = node.getSnowballConf()
         path = conf['yandex']['path']
@@ -110,11 +108,10 @@ class AbstractExecutor:
         res = node.call(cmd)
         print(res)
 
-        self.updateRomoteConfigXml(node,conf)
+        self.updateRomoteConfigXml(node,conf,remoteConfDir)
 
         res = node.put(confPath+'snowball.license.xml.tpl', remoteConfDir+'config.d/license.xml')
         res = node.call('chown -R snowball:snowball '+path)
-
 
     def startSnowballServ(self, node):
         cmd = 'service snowball-server start'
@@ -131,20 +128,18 @@ class AbstractExecutor:
         res = node.call(cmd)
         print(res)
 
-
-    def replaceLicence(self, node, filename):
+    def replaceLicence(self, node, filename,remoteConfDir):
         res = node.call('cp '+ remoteConfDir +'config.d/license.xml  ' + remoteConfDir +'config.d/license.xml.backup')
         print (res)
         res = node.put(filename, remoteConfDir+'config.d/license.xml')
         print (res)
 
-
-    def getRemoteConfigXml(self, node):
+    def getRemoteConfigXml(self, node,remoteConfDir):
         filename = remoteConfDir+'/config.xml'
         res = node.get(filename)
         return res.strip()
 
-    def updateRomoteConfigXml(self, node, config):
+    def updateRomoteConfigXml(self, node, config,remoteConfDir):
         xmlfile = xmltodict.unparse(config, pretty=True);
         filename = remoteConfDir + '/config.xml'
         res = node.write(xmlfile, filename)

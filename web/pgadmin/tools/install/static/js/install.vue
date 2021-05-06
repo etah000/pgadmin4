@@ -31,6 +31,9 @@
               <el-form-item label="remoteAppdir" label-width="100px" prop="remoteAppdir">
                 <el-input v-model="general.remoteAppdir" autocomplete="off"></el-input>
               </el-form-item>
+              <el-form-item label="remoteConfDir" label-width="100px" prop="remoteConfDir">
+                <el-input v-model="general.remoteConfDir" autocomplete="off"></el-input>
+              </el-form-item>
             </el-form>
           </tab-content>
           <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
@@ -266,6 +269,7 @@ export default {
         path:'/soft/',
         remoteSoftdir:'/app/soft/',
         remoteAppdir:'/app/zookeeper/',
+        remoteConfDir:'/etc/snowball-server/',
         remoteJdkdir:'/app/jdk/'
       },
       softlist:{

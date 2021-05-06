@@ -5,12 +5,7 @@ from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.tools.install.config import zookeeperConf
 from pgadmin.utils import get_storage_directory
 
-#selfPath = GetSelfPath()
-#softPath = selfPath + '/soft/'
-#confPath = selfPath + '/config/'
-#remoteSoftdir = '/app/soft/'
-#remoteAppdir = '/app/zookeeper/'
-#remoteJdkdir = '/app/jdk/'
+
 
 class AbstractExecutor():
     def getZookeeperFile(self):

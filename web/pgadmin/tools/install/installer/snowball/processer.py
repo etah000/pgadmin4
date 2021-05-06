@@ -8,13 +8,13 @@ nodes = conf.options('nodes')
 
 class Processer():
 
-    def install(self,spath,remoteSoftdir):
+    def install(self,spath,remoteSoftdir,remoteConfDir):
         try:
-            self.installSnowball(spath,remoteSoftdir)
+            self.installSnowball(spath,remoteSoftdir,remoteConfDir)
         except Exception as e:
             print(e)
 
-    def installSnowball(self,spath,remoteSoftdir):
+    def installSnowball(self,spath,remoteSoftdir,remoteConfDir):
 
         print('\r\nStart Install Snowball ....... ')
 
@@ -25,7 +25,7 @@ class Processer():
         self.__prepareForNodes(spath,remoteSoftdir)
 
         print('\r\nStep-3: Install snowball on Node ....')
-        self.__installSnowballOnNodes()
+        self.__installSnowballOnNodes(remoteConfDir)
         #
         print("\r\nStep-4: Start snowball server ....")
         self.__startSnowballServ()
@@ -122,9 +122,9 @@ class Processer():
 
         helper.copyInstallFile(nodename,spath,remoteSoftdir)
 
-    def __installSnowballOnNodes(self):
+    def __installSnowballOnNodes(self,remoteConfDir):
         for nodename in nodes:
-            helper.installSnowballServ(nodename)
+            helper.installSnowballServ(nodename,remoteConfDir)
 
 
     def __startSnowballServ(self):
