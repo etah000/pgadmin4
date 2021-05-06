@@ -8,17 +8,17 @@ import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
 Vue.use(ElementUI, { locale })
 Vue.use(FormWizard);
 
-import App from './App.vue'
+//export default Vue;
 
-
-
+//import App from './App.vue'
+import install from 'tools/install/static/js/install.vue'
 setTimeout(function() {
   var component = new Vue({
     render: function (createElement) {
-      return createElement(App);
+      return createElement(install);
     }
   }).$mount('#install')
   // document.getElementById('install').appendChild(component.$el)
   // console.log("###document.getElementById('install').appendChild(component.$el)")
-}, 2000);
+}, 3000);
 

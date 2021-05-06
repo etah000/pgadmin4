@@ -22,8 +22,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const extractStyle = new MiniCssExtractPlugin({
   filename: '[name].css',
-  chunkFilename: '[name].css',
-  allChunks: true,
+  chunkFilename: '[name].css'
 });
 const WebpackRequireFromPlugin = require('webpack-require-from');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -203,8 +202,8 @@ var themeCssRules = function(theme_name) {
           optimizationLevel: 7,
         },
         pngquant: {
-          quality: '75-90',
-          speed: 3,
+          quality: [0.65, 0.90],
+          speed: 4,
         },
       },
     }],
@@ -259,6 +258,7 @@ var themeCssRules = function(theme_name) {
   }, {
     test: /\.css$/,
     use: [
+      'vue-style-loader',
       MiniCssExtractPlugin.loader,
       'css-loader',
       {
@@ -389,8 +389,8 @@ module.exports = [{
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
       test: /\.vue$/,
-      loader: 'vue-loader',
-    }, {
+      loader: 'vue-loader'
+    },{
       test: /\.js$/,
       exclude: [/node_modules/, /vendor/],
       use: {

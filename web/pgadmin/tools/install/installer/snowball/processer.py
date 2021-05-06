@@ -118,9 +118,9 @@ class Processer():
 
         helper.prepareFirewalldRule(nodename)
 
-    def __copyInstallFileToNodes(self,nodename,spath):
+    def __copyInstallFileToNodes(self,nodename,spath,remoteSoftdir):
 
-        helper.copyInstallFile(nodename,spath)
+        helper.copyInstallFile(nodename,spath,remoteSoftdir)
 
     def __installSnowballOnNodes(self):
         for nodename in nodes:

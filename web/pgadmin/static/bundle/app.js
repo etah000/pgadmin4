@@ -15,20 +15,24 @@ define('app', [
       var module = Object[key];
       if (module.init && typeof module.init == 'function') {
         module.init();
-      }
-      else if (module.Init && typeof module.Init == 'function') {
+      }else if (module.Init && typeof module.Init == 'function') {
         module.Init();
       }
     }
   };
-
-
+  var initializeModulesVue = function(Object) {
+    for (var key in Object) {
+      var module = Object[key];
+      if (module.initVue && typeof module.initVue == 'function') {
+        module.initVue();
+      }
+    }
+  };
   // Initialize modules registered to pgAdmin, pgAdmin.Browser and Tools object.
   initializeModules(pgAdmin);
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);
   // create menus after all modules are initialized.
   pgAdmin.Browser.create_menus();
-
-
+  initializeModulesVue(pgAdmin.Tools);
 });
