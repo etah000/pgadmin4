@@ -151,7 +151,7 @@ def setInstallConf():
     remoteSoftdir=data['config']['general']['remoteSoftdir']
     remoteAppdir=data['config']['general']['remoteAppdir']
     remoteConfDir=data['config']['general']['remoteConfDir']
-    #zookeeperProcesser.install(spath,remoteSoftdir,remoteAppdir)
+    zookeeperProcesser.install(spath,remoteSoftdir,remoteAppdir)
     snowballProcesser.install(spath,remoteSoftdir,remoteConfDir)
 
     res = {

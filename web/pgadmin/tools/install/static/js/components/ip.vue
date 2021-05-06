@@ -85,15 +85,15 @@ export default {
 .ipAdress {
   display: flex;
   align-items: center;
-  border: 1px solid #0190FE;
-  width: 248px;
+  border: 1px solid #DCDFE6;
+  width: 200px;
   margin-right: 10px;
   padding: 0;
 }
 
 .ipAdress li {
   position: relative;
-  height: 23px;
+  height: 30px;
   margin: 0;
   list-style: none;
 }
@@ -101,7 +101,7 @@ export default {
 ul[class="ipAdress"] input[type="text"] {
   border: none;
   width: 100%;
-  height: 23px;
+  height: 30px;
   text-align: center;
   background: transparent;
   color: #000;

@@ -1,6 +1,6 @@
 <template>
   <a id="install" href="#" data-toggle="pg-menu" role="menuitem" class="dropdown-item">
-    <span data-test="menu-item-text"  @click="dialogFormVisible = true">{{ title }} </span>
+    <span data-test="menu-item-text"  @click="dialogFormVisible = true">{{ gettext('Install') }} </span>
     <el-dialog width="65%"
                :modal="true"
                :close-on-click-modal="false"
@@ -20,18 +20,18 @@
                      error-color="#fa0202">
           <tab-content title="一般设置" icon="el-icon-coin" :before-change="validatePgk" >
             <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
-              <el-form-item label="软件路径" label-width="100px" prop="path">
+              <el-form-item label="软件路径" label-width="110px" prop="path">
                 <el-input v-model="general.path" autocomplete="off"></el-input>
                 <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
                 </el-button>
               </el-form-item>
-              <el-form-item label="remoteSoftdir" label-width="100px" prop="remoteSoftdir">
+              <el-form-item label="remoteSoftdir" label-width="110px" prop="remoteSoftdir">
                 <el-input v-model="general.remoteSoftdir" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="remoteAppdir" label-width="100px" prop="remoteAppdir">
+              <el-form-item label="remoteAppdir" label-width="110px" prop="remoteAppdir">
                 <el-input v-model="general.remoteAppdir" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="remoteConfDir" label-width="100px" prop="remoteConfDir">
+              <el-form-item label="remoteConfDir" label-width="110px" prop="remoteConfDir">
                 <el-input v-model="general.remoteConfDir" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
@@ -52,8 +52,8 @@
               </el-table-column>
               <el-table-column
                   prop="ip"
-                  label="ip地址：ssh端口"
-                  width = "300"
+                  label="ip地址"
+                  width = "240"
                   >
                 <template slot-scope="scope">
 <!--                  <vue-ip :index="scope.$index" :ip="scope.row.ip" :port="scope.row.port" @change="handleChange(scope.row.ip,scope.row.port,scope.$index)"></vue-ip>-->
@@ -250,7 +250,6 @@ export default {
   name: 'install',
   data: function () {
     return {
-      title: gettext('Install'),
       loadingWizard: false,
       errorMsg: null,
       count: 0,
@@ -368,6 +367,10 @@ export default {
     })*/
   },
   methods: {
+    gettext: function (text) {
+      return gettext(text);
+    },
+
     handleChange(index,ip) {
       this.hosts[index].ip = ip
     },
