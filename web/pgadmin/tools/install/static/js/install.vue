@@ -18,7 +18,7 @@
                      shape="circle"
                      color="#20a0ff"
                      error-color="#fa0202">
-          <tab-content title="一般设置" icon="el-icon-coin" :before-change="validatePgk" >
+          <tab-content title="软件源" icon="el-icon-coin" :before-change="validatePgk" >
             <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
               <el-form-item label="软件路径" label-width="110px" prop="path">
                 <el-input v-model="general.path" autocomplete="off"></el-input>
@@ -35,6 +35,9 @@
                 <el-input v-model="general.remoteConfDir" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
+          </tab-content>
+          <tab-content title="组件选择" icon="el-icon-coin" :before-change="validatePgk" >
+
           </tab-content>
           <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
             <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加服务器
