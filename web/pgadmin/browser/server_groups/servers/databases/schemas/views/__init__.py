@@ -435,7 +435,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
-            scid,
+            did,
             rset['rows'][0]['name'],
             icon="icon-view" if self.node_type == 'view'
             else "icon-mview"
@@ -462,7 +462,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
-                    scid,
+                    did,
                     row['name'],
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
@@ -686,7 +686,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     name or vid,
-                    did,
+                    (database or did),
                     name or vid,
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
