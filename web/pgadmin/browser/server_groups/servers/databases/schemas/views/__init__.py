@@ -483,15 +483,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         if not status:
             return res
 
-        ddl = res['definition']
-        ddl = re.sub('\s+', ' ', ddl)
-        match = re.search('(CREATE VIEW)(.+)(AS )(?P<definition>SELECT .+)', ddl, re.MULTILINE | re.DOTALL)
-
-        def_ = match.group('definition') if match else ''
-        def_ = def_.strip().strip(';').strip()
-
-        res['definition'] = def_
-
         return ajax_response(
             response=res,
             status=200
@@ -514,16 +505,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         if len(res['rows']) == 0:
             return False, gone(gettext("""Could not find the view."""))
 
-        SQL = render_template("/".join(
-            [self.template_path, 'sql/acl.sql']), vid=vid)
-        status, dataclres = self.conn.execute_dict(SQL)
-        if not status:
-            return False, internal_server_error(errormsg=res)
-
-        for row in dataclres['rows']:
-            priv = parse_priv_from_db(row)
-            res['rows'][0].setdefault(row['deftype'], []).append(priv)
-
         result = res['rows'][0]
 
         # sending result to formtter
@@ -531,6 +512,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
         # merging formated result with main result again
         result.update(frmtd_reslt)
+
+        ddl = result['definition']
+        ddl = re.sub('\s+', ' ', ddl)
+        match = re.search('(CREATE VIEW)(.+)(AS )(?P<definition>SELECT .+)', ddl, re.MULTILINE | re.DOTALL)
+
+        def_ = match.group('definition') if match else ''
+        def_ = def_.strip().strip(';').strip()
+
+        result['definition'] = def_
 
         return True, result
 
@@ -658,7 +648,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         flag_rename = to_rename()
 
         old_def = extract_def(old_ddl)
-        new_def = extract_def(new_ddl)
+        new_def = new_ddl.strip().strip(';').strip()
         flag_redef = (old_def and new_def and old_def != new_def)
 
         try:
@@ -670,7 +660,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
                     'name': vid,
                     'definition': new_def
                 }
-                SQL, name = self.getSQL(gid, sid, did, _data, vid)
+                SQL, _ = self.getSQL(gid, sid, did, _data, vid)
                 SQL = SQL.strip('\n').strip(' ')
 
                 status, res = self.conn.execute_void(SQL)
@@ -696,7 +686,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     name or vid,
-                    scid,
+                    did,
                     name or vid,
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
