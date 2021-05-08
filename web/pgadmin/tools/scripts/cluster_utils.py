@@ -4,6 +4,9 @@
 
 This will be a module of pgAdmin.
 """
+from collections import defaultdict
+from operator import itemgetter
+
 
 from lxml import etree as ET
 
@@ -76,6 +79,69 @@ class Cluster(object):
         # that is instances has different ports
         et_port = ET.SubElement(replica, 'port')
         et_port.text = '9000'
+
+        return replica
+
+    def to_str(self, ):
+        yandex = ET.Element('yandex')
+        remote_servers = ET.SubElement(yandex, 'remote_servers')
+        remote_servers.append(self.etree)
+
+        xml_str = ET.tostring(yandex,
+                              encoding='UTF-8',
+                              xml_declaration=True,
+                              pretty_print=True, )
+        xml_str = xml_str.decode()
+
+        return xml_str
+
+
+class ClusterUpdater(object):
+    def __init__(self, cluster, data, ):
+        self.cluster = cluster
+        self.data = data
+
+        self.etree = None
+        self._create_cluster()
+
+    def _create_cluster(self, ):
+        self.etree = ET.Element(self.cluster)
+
+        cate_data = defaultdict(list)
+
+        for replica in self.data:
+            shard_num = replica.get('shard_num')
+            replica_num = replica.get('replica_num')
+            cate_data[shard_num].append(replica)
+
+        for shard_num in sorted(cate_data):
+            shard_info = cate_data[shard_num]
+            shard = self._get_shard(shard_info)
+            self.etree.append(shard)
+
+    def _get_shard(self, shard_info):
+        shard = ET.Element('shard')
+
+        internal_replication = ET.SubElement(shard, 'internal_replication')
+        internal_replication.text = 'true'
+
+        for replica_info in sorted(shard_info, key=itemgetter('replica_num')):
+            replica = self._get_replica(replica_info)
+            shard.append(replica)
+
+        return shard
+
+    def _get_replica(self, replica_info):
+        replica = ET.Element('replica')
+
+        default_database = ET.SubElement(replica, 'default_database')
+        default_database.text = replica_info['default_database']
+
+        et_host = ET.SubElement(replica, 'host')
+        et_host.text = replica_info['host_name']
+
+        et_port = ET.SubElement(replica, 'port')
+        et_port.text = str(replica_info['port'])
 
         return replica
 
