@@ -20,24 +20,40 @@
                      error-color="#fa0202">
           <tab-content title="软件源" icon="el-icon-coin" :before-change="validatePgk" >
             <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
-              <el-form-item label="软件路径" label-width="110px" prop="path">
+              <el-form-item label="软件目录" label-width="110px" prop="path">
                 <el-input v-model="general.path" autocomplete="off"></el-input>
                 <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
                 </el-button>
               </el-form-item>
-              <el-form-item label="remoteSoftdir" label-width="110px" prop="remoteSoftdir">
-                <el-input v-model="general.remoteSoftdir" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="remoteAppdir" label-width="110px" prop="remoteAppdir">
-                <el-input v-model="general.remoteAppdir" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="remoteConfDir" label-width="110px" prop="remoteConfDir">
-                <el-input v-model="general.remoteConfDir" autocomplete="off"></el-input>
-              </el-form-item>
             </el-form>
           </tab-content>
           <tab-content title="组件选择" icon="el-icon-coin" :before-change="validatePgk" >
-
+            <el-table
+                ref="multipleTable"
+                :data="softlists"
+                tooltip-effect="dark"
+                style="width: 100%"
+                @selection-change="handleSelectionChange">
+              <el-table-column
+                  type="selection"
+                  width="55">
+              </el-table-column>
+              <el-table-column
+                  prop="service"
+                  label="service"
+                  width="120">
+              </el-table-column>
+              <el-table-column
+                  prop="version"
+                  label="version"
+                  width="120">
+              </el-table-column>
+              <el-table-column
+                  prop="description"
+                  label="description"
+                  show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
           </tab-content>
           <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
             <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加服务器
@@ -202,7 +218,7 @@
                     <el-input v-model="snowball.http_port" autocomplete="off"></el-input>
                   </el-form-item>
                   <el-form-item label="listen_host" :label-width="formLabelWidth" prop="listen_host">
-                    <vue-ip  size="small" :ip="snowball.listen_host"  autocomplete="off">></vue-ip>
+                    <ip  :index=0 :ip="snowball.listen_host"></ip>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -253,6 +269,58 @@ export default {
   name: 'install',
   data: function () {
     return {
+      softlists: [{
+        service: 'zookeeper',
+        version: '3.5.7',
+        description: 'apache-zookeeper-3.5.7-bin.tar.gz'
+      },{
+        service: 'jdk',
+        version: '8u201',
+        description: 'jdk-8u201-linux-x64.tar.gz'
+      },{
+        service: 'snowball-common-static',
+        version: '2.8.13',
+        description: 'snowball-common-static-2.8.13-2.el7.x86_64.rpm'
+      },{
+        service: 'snowball-server',
+        version: '2.8.13',
+        description: 'snowball-server-2.8.13-2.el7.x86_64.rpm'
+      },{
+        service: 'snowball-client',
+        version: '2.8.13',
+        description: 'snowball-client-2.8.13-2.el7.x86_64.rpm'
+      },{
+        service: 'openssl-libs',
+        version: '1.0.2k',
+        description: 'openssl-libs-1.0.2k-19.el7.x86_64.rpm'
+      },{
+        service: 'openssl',
+        version: '1.0.2k',
+        description: 'openssl-1.0.2k-19.el7.x86_64.rpm'
+      },{
+        service: 'libicu',
+        version: '50.2',
+        description: 'libicu-50.2-3.el7.x86_64.rpm'
+      }],
+      multipleSelection: [],
+      softlist:{
+        'snowball':{
+          'common':'snowball-common-static-2.8.13-2.el7.x86_64.rpm',
+          'server':'snowball-server-2.8.13-2.el7.x86_64.rpm',
+          'client':'snowball-client-2.8.13-2.el7.x86_64.rpm',
+          'dependencies':{
+            'openssl-libs':'openssl-libs-1.0.2k-19.el7.x86_64.rpm',
+            'openssl':'openssl-1.0.2k-19.el7.x86_64.rpm',
+            'libicu':'libicu-50.2-3.el7.x86_64.rpm'
+          }
+        },
+        'zookeeper':{
+          'zookeeper':'apache-zookeeper-3.5.7-bin.tar.gz',
+          'dependencies':{
+            'jdk':'jdk-8u201-linux-x64.tar.gz'
+          }
+        }
+      },
       loadingWizard: false,
       errorMsg: null,
       count: 0,
@@ -274,28 +342,11 @@ export default {
         remoteConfDir:'/etc/snowball-server/',
         remoteJdkdir:'/app/jdk/'
       },
-      softlist:{
-        'snowball':{
-          'common':'snowball-common-static-2.8.13-2.el7.x86_64.rpm',
-          'server':'snowball-server-2.8.13-2.el7.x86_64.rpm',
-          'client':'snowball-client-2.8.13-2.el7.x86_64.rpm',
-          'dependencies':{
-            'openssl-libs':'openssl-libs-1.0.2k-19.el7.x86_64.rpm',
-            'openssl':'openssl-1.0.2k-19.el7.x86_64.rpm',
-            'libicu':'libicu-50.2-3.el7.x86_64.rpm'
-          }
-        },
-        'zookeeper':{
-          'zookeeper':'apache-zookeeper-3.5.7-bin.tar.gz',
-          'dependencies':{
-            'jdk':'jdk-8u201-linux-x64.tar.gz'
-          }
-        }
-      },
       hosts: [
         {name: 'node1', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1023', status: 1},
         {name: 'node2', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1024', status: 1},
-        {name: 'node3', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1025', status: 1}],
+        {name: 'node3', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1025', status: 1}
+      ],
       zookeeper: {
         tickTime: '2000',
         initLimit: '10',
@@ -373,30 +424,28 @@ export default {
     gettext: function (text) {
       return gettext(text);
     },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
 
     handleChange(index,ip) {
       this.hosts[index].ip = ip
     },
-
-    handleChange1(ip,inddex) {
-      console.log(ip)
-      console.log(inddex)
-    },
     fileSelectionDlg() {
       let params = {
-        'dialog_title': 'Select file',
-        'dialog_type': 'select_file',
+        'dialog_title': 'Select Folder',
+        'dialog_type': 'storage_dialog_folder',
       };
-
       let show_dialog = pgAdmin.FileManager.show_dialog(params);
       //Alertify.fileSelectionDlg(params).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
-      pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', this.storage_dlg_hander, this);
+      //pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', this.storage_dlg_hander, this);
+      pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:storage_dialog_folder', this.storage_dlg_hander, this);
       //console.log(show_dialog)
     },
     forceClearError() {
     },
     storage_dlg_hander: function(value) {
-      this.general.path=value
+      this.general.path=value.substring(0, value.lastIndexOf("/"))+'/'
     },
     setLoading: function(value) {
       this.loadingWizard = value

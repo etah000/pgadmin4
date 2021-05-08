@@ -382,6 +382,12 @@ class Filemanager(object):
             files_only = True
             folders_only = False
             title = gettext("Storage Manager")
+        elif fm_type == 'storage_dialog_folder':
+            capabilities = ['select_folder', 'select_file', 'download',
+                            'rename', 'delete', 'upload', 'create']
+            files_only = False
+            folders_only = True
+            title = gettext("Storage Manager")
 
         # Using os.path.join to make sure we have trailing '/' or '\'
         homedir = '/' if (config.SERVER_MODE) \
