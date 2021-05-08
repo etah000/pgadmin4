@@ -8962,39 +8962,32 @@ msgid "Scripts"
 msgstr "脚本"
 
 #: pgadmin/browser/static/js/node.js:402
-#, fuzzy
 msgid "shard_num"
 msgstr "分片序号"
 
 #: pgadmin/browser/static/js/node.js:403
-#, fuzzy
 msgid "shard_weight"
 msgstr "分片权重"
 
 #: pgadmin/browser/static/js/node.js:404
-#, fuzzy
 msgid "replica_num"
-msgstr "应用程序"
+msgstr "副本编号"
 
 #: pgadmin/browser/static/js/node.js:405
-#, fuzzy
 msgid "host_name"
 msgstr "主机名称"
 
 #: pgadmin/browser/static/js/node.js:406
-#, fuzzy
 msgid "host_address"
 msgstr "主机地址"
 
 #: pgadmin/browser/static/js/node.js:407
-#, fuzzy
 msgid "port"
-msgstr "导入"
+msgstr "端口"
 
 #: pgadmin/browser/static/js/node.js:408
-#, fuzzy
 msgid "default_database"
-msgstr "要创建数据库吗？"
+msgstr "缺省数据库"
 
 #: pgadmin/browser/static/js/node.js:541
 msgid "Please wait while we fetch information about the node from the server..."
