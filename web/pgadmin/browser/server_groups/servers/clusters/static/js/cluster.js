@@ -185,6 +185,7 @@ define('pgadmin.node.cluster', [
           connect_to_database(obj, d, t, i, true);
           return false;
         },
+
         /* Disconnect the database */
         disconnect_database: function(args) {
           var input = args || {},
@@ -353,9 +354,9 @@ define('pgadmin.node.cluster', [
         {
           id: 'shifted', label: gettext('Cluster type'), type: 'text', mode: ['create'],
           options: [
-            {label: gettext('普通集群'), value: 'Average'},
+            {label: gettext('非复制集群'), value: 'Average'},
             {label: gettext('循环复制集群'), value: 'Circular'},
-            {label: gettext('单点复制集群'), value: 'Single'}
+            {label: gettext('1对1复制集群'), value: 'Single'}
           ],
           control: Backform.SelectControl.extend({
             

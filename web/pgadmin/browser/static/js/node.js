@@ -1478,12 +1478,18 @@ define('pgadmin.browser.node', [
           }
         }.bind(panel),
         onSaveUpdate = function(view, saveBtn,newModel) {
+          console.log(view.model);
           var m = view.model,
             d = newModel,
             // Generate a timer for the request
             timer = setTimeout(function() {
               $('.obj_properties').addClass('show_progress');
             }, 1000);
+          if(!view.model){
+             m = view.collection.models[0];
+             console.log("%%%%%%%%");
+             
+          }
           // Prevent subsequent save operation by disabling Save button
           if (saveBtn)
             $(saveBtn).prop('disabled', true);
@@ -1493,6 +1499,7 @@ define('pgadmin.browser.node', [
               attrs: newModel,
               validate: false,
               cache: false,
+              method:'put',
               wait: true,
               success: function() {
                 onSaveFunc.call();
@@ -1698,9 +1705,9 @@ define('pgadmin.browser.node', [
                 newModel.default_database=default_database;
                 collectionJson.push(newModel);
               }
-             console.log(collectionJson);
-
-
+              // view.model=view.collection;
+              console.log(collectionJson);
+              onSaveUpdate.call(this, view, btn,collectionJson);
           }
           //属性为输入表单的时候
           if(view.model){
@@ -1712,7 +1719,6 @@ define('pgadmin.browser.node', [
               newModel[key]=attributes[key];
           }
           newModel.oid=attributes.oid;
-          // console.log(view);
           // console.log(view.model.toJSON(true));
           // view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
           // console.log(view);
