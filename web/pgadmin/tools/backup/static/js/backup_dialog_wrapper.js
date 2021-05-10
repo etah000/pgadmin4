@@ -46,7 +46,7 @@ export class BackupDialogWrapper extends DialogWrapper {
           label: gettext('Backup'),
           'aria-label': gettext('Backup'),
         },
-      }, 
+      },
       {
         text: '',
         key: 112,
@@ -60,13 +60,13 @@ export class BackupDialogWrapper extends DialogWrapper {
             'filename': get_help_file(this.typeOfDialog),
           }),
         },
-      }, 
+      },
       {
         text: gettext('Cancel'),
         key: 27,
         className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
         'data-btn-name': 'cancel',
-      }, 
+      },
       {
         text: gettext('Backup'),
         key: 13,
@@ -150,10 +150,10 @@ export class BackupDialogWrapper extends DialogWrapper {
       });
       // console.log("baseUrl"+baseUrl);
 
-      const treeInfo = getTreeNodeHierarchyFromElement(
+      /*const treeInfo = getTreeNodeHierarchyFromElement(
         this.pgBrowser,
         selectedTreeNode
-      );
+      );*/
       // let data=this.view.model.toJSON();
     //   $.post(
     //     this.generate_url('tt', 'backup', data, true)

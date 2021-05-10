@@ -37,7 +37,8 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.model import Server, ServerGroup
 from pgadmin.browser.server_groups.servers.utils import get_ssh_client, get_ssh_info
-from pgadmin.tools.scripts.cluster_utils import check_xml
+from pgadmin.tools.scripts.cluster_utils import check_xml, ClusterUpdater
+
 
 class DatabaseModule(CollectionNodeModule):
     NODE_TYPE = 'cluster'
@@ -422,11 +423,10 @@ class DatabaseView(PGClusterChildNodeView):
                 _("Could not find the virtual cluster on the server.")
             )
 
-
         return ajax_response(
             response=res['rows'],
             status=200
-)
+        )
 
     @staticmethod
     def formatdbacl(res, dbacl):
@@ -583,9 +583,7 @@ class DatabaseView(PGClusterChildNodeView):
             return make_json_response(
                 status=410,
                 success=0,
-                errormsg=_(
-                    "XMLSyntaxError ({})."
-                ).format(msg)
+                errormsg=_("XMLSyntaxError ({}).").format(msg)
             )
 
         did = data['name']
@@ -652,49 +650,25 @@ class DatabaseView(PGClusterChildNodeView):
         hosts = self.get_server_group_hosts(gid)
         for host in hosts:
             ssh_client = get_ssh_client(host,
-                user=ssh_info['ssh_username'],
-                port=ssh_info['ssh_port'],
-                password=ssh_info['ssh_password'],
-                pkey=ssh_info['private_key'],)
+                                        user=ssh_info['ssh_username'],
+                                        port=ssh_info['ssh_port'],
+                                        password=ssh_info['ssh_password'],
+                                        pkey=ssh_info['private_key'],)
 
             fl.seek(0, os.SEEK_SET)
             ssh_client.execute_cmd('mkdir -p /etc/snowball-server/config.d')
             ssh_client.putfo(fl, remote_path)
             ssh_client.disconnect()
 
-        return True,None
+        return True, None
 
     @check_precondition(action='update')
     def update(self, gid, sid, did):
         """Update the database."""
-        required_args = [
-            u'data',
-        ]
 
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-
-        for arg in required_args:
-            if arg not in data:
-                return make_json_response(
-                    status=410,
-                    success=0,
-                    errormsg=_(
-                        "Could not find the required parameter ({})."
-                    ).format(arg)
-                )
-
-        # check xml_str
-        status, msg = check_xml(data['data'])
-        if not status:
-            return make_json_response(
-                status=410,
-                success=0,
-                errormsg=_(
-                    "XMLSyntaxError ({})."
-                ).format(msg)
-            )
 
         # make sure cluster already existed
         SQL = render_template(
@@ -713,7 +687,9 @@ class DatabaseView(PGClusterChildNodeView):
                 errormsg=errmsg
             )
 
-        status, msg = self.write_remote_file(gid, sid, did, data['data'])
+        cluster_str = ClusterUpdater(did, data).to_str()
+
+        status, msg = self.write_remote_file(gid, sid, did, cluster_str)
         if not status:
             return make_json_response(
                 success=0,
@@ -775,10 +751,10 @@ class DatabaseView(PGClusterChildNodeView):
 
         for host in hosts:
             ssh_client = get_ssh_client(host,
-                user=ssh_info['ssh_username'],
-                port=ssh_info['ssh_port'],
-                password=ssh_info['ssh_password'],
-                pkey=ssh_info['private_key'],)
+                                        user=ssh_info['ssh_username'],
+                                        port=ssh_info['ssh_port'],
+                                        password=ssh_info['ssh_password'],
+                                        pkey=ssh_info['private_key'],)
 
             ssh_client.execute_cmd('rm -f {}'.format(remote_path))
             ssh_client.disconnect()
@@ -1131,6 +1107,7 @@ class DatabaseView(PGClusterChildNodeView):
         hosts = [s.host for s in servers]
 
         return hosts
+
 
 SchemaDiffRegistry(blueprint.node_type, DatabaseView)
 DatabaseView.register_node_view(blueprint)

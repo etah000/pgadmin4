@@ -3,12 +3,9 @@
 import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.tools.install.config import zookeeperConf
-selfPath = GetSelfPath()
-softPath = selfPath + '/soft/'
-confPath = selfPath + '/config/'
-remoteSoftdir = '/app/soft/'
-remoteAppdir = '/app/zookeeper/'
-remoteJdkdir = '/app/jdk/'
+from pgadmin.utils import get_storage_directory
+
+
 
 class AbstractExecutor():
     def getZookeeperFile(self):
@@ -33,7 +30,7 @@ class AbstractExecutor():
         # print('check checkFirewalld ...', node)
         return True
 
-    def copyInstallFile(self, node):
+    def copyInstallFile(self, node,spath,remoteSoftdir,remoteAppdir):
         cmd = ''
         cmd = cmd + 'mkdir -p /app && mkdir -p ' + remoteSoftdir + '&& '
         cmd = cmd + 'rm -rf /app/jdk && rm -rf /app/jdk1.8.0_201 && rm -rf /app/apache-zookeeper-3.5.7-bin && rm -rf /app/zookeeper'
@@ -41,15 +38,15 @@ class AbstractExecutor():
 
         softlist = self.getZookeeperFile();
         for soft, filename in softlist.items():
-            fullFilename = softPath + filename
+            fullFilename = get_storage_directory()+ spath + filename
             res = node.put(fullFilename, remoteSoftdir)
             print(res)
-        self.unzipInstallFile(node)
-        self.cpZookerCfgFile(node)
+        self.unzipInstallFile(node,remoteSoftdir)
+        self.cpZookerCfgFile(node,remoteAppdir)
         self.makeIdfile(node)
         return True
 
-    def cpZookerCfgFile(self, node):
+    def cpZookerCfgFile(self, node,remoteAppdir):
         confs = node.getConf()
         content = '#zookeeper cfg file'+ '\n'
         for k in confs:
@@ -68,8 +65,6 @@ class AbstractExecutor():
         return res
 
     def makeIdfile(self,node):
-
-
         confs = node.getConf()
         info = node.getInfo()
         servid = info['servid']
@@ -80,7 +75,7 @@ class AbstractExecutor():
         res = node.call(cmd)
         print(res)
 
-    def unzipInstallFile(self,node):
+    def unzipInstallFile(self,node,remoteSoftdir):
 
         softlist = self.getZookeeperFile();
 
@@ -110,7 +105,6 @@ class AbstractExecutor():
         print(res)
 
     def startZookeeperServ(self, node):
-
         cmd = "source /etc/profile && /app/zookeeper/bin/zkServer.sh start"
         res = node.call(cmd)
         print(res)

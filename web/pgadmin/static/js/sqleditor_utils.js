@@ -76,7 +76,7 @@ define(['jquery', 'underscore', 'sources/gettext', 'sources/url_for'],
         if($status_el.hasClass('obtaining-conn')){
           return;
         }
-        let sqleditor_obj = target;
+        // let sqleditor_obj = target;
 
         // Start polling..
         $.ajax({

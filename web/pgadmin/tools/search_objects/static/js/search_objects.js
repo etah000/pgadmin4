@@ -72,8 +72,8 @@ define([
     //     }
     //   })();
 
-      // toolBar.enable(gettext('Search objects'), isEnabled);
-      // return isEnabled;
+    // toolBar.enable(gettext('Search objects'), isEnabled);
+    // return isEnabled;
     // },
 
     // Callback to show the dialog

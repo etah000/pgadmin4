@@ -8,12 +8,14 @@
 //////////////////////////////////////////////////////////////
 
 define('pgadmin.browser.node', [
+  'pgadmin.backgrid',
   'sources/tree/pgadmin_tree_node', 'sources/url_for',
   'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
   'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
   'backform', 'sources/browser/generate_url', 'pgadmin.help', 'sources/utils',
   'pgadmin.browser.utils', 'pgadmin.backform',
 ], function(
+  Backgrid,
   pgadminTreeNode, url_for,
   gettext, $, _, pgAdmin,
   Menu, Backbone, Alertify, pgBrowser,
@@ -764,7 +766,7 @@ define('pgadmin.browser.node', [
         }
 
         p.title(l);
-        p.icon('icon-' + this.type); 
+        p.icon('icon-' + this.type);
 
         // Make sure the properties dialog is visible
         p.focus();
@@ -1281,7 +1283,7 @@ define('pgadmin.browser.node', [
               extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
               icon: 'fa fa-sm fa-pencil',
               disabled: !that.canEdit,
-              
+
               register: function(btn) {
                 btn.on('click',() => {
                   Alertify.confirm(
@@ -1652,7 +1654,7 @@ define('pgadmin.browser.node', [
             outputText= outputText.replace(/\s+$/g,'').replace(/\r/g,'\r\n');
             return outputText;
         }
-         
+
         //计算头函数 用来缩进
         function setPrefix(prefixIndex) {
             var result = '';
@@ -1849,7 +1851,7 @@ define('pgadmin.browser.node', [
                       function() {
                         setTimeout(function() {
                           editFunc.call();
-                        }, 0); 
+                        }, 0);
                       }
                     );
                   });
@@ -2019,7 +2021,7 @@ define('pgadmin.browser.node', [
         onCancelFunc = closePanel,
         onSaveFunc = updateTreeItem.bind(panel, that),
         onEdit = editFunc.bind(panel);
-        
+
         // onEdit = editSaveFunc.bind(panel);
 
       if (action) {

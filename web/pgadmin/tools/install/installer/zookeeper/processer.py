@@ -8,20 +8,20 @@ nodes = conf.options('nodes')
 
 class Processer():
 
-    def install(self):
+    def install(self,spath,remoteSoftdir,remoteAppdir):
         try:
-            self.installZookeeper()
+            self.installZookeeper(spath,remoteSoftdir,remoteAppdir)
         except Exception as e:
             print(e)
 
-    def installZookeeper(self):
+    def installZookeeper(self,spath,remoteSoftdir,remoteAppdir):
         print('Start Install Zookeeper ....... ')
 
         print('\r\nStep-1: Check node ssh connection .......')
         self.__checkNodesSystemInfo()
 
         print('\r\nStep-2: Prepare for node ....')
-        self.__prepareForNodes()
+        self.__prepareForNodes(spath,remoteSoftdir,remoteAppdir)
         # #
         # print('\r\nStep-3: Install zookeeper on Node ....')
         # self.__installZookeeperOnNodes()
@@ -76,7 +76,7 @@ class Processer():
             raise e
         pass
 
-    def __prepareForNodes(self):
+    def __prepareForNodes(self,spath,remoteSoftdir,remoteAppdir):
 
         for nodename in nodes:
 
@@ -84,7 +84,7 @@ class Processer():
             self.__prepareFirewalldRules(nodename)
             #
             print('-2.2 Prepare install file ....')
-            self.__copyInstallFileToNodes(nodename)
+            self.__copyInstallFileToNodes(nodename,spath,remoteSoftdir,remoteAppdir)
 
     def __startZookeeperServ(self):
         for nodename in nodes:
@@ -100,9 +100,9 @@ class Processer():
 
         helper.prepareFirewalldRule(nodename)
 
-    def __copyInstallFileToNodes(self,nodename):
+    def __copyInstallFileToNodes(self,nodename,spath,remoteSoftdir,remoteAppdir):
 
-        helper.copyInstallFile(nodename)
+        helper.copyInstallFile(nodename,spath,remoteSoftdir,remoteAppdir)
 
 
 zookeeperProcesser = Processer()

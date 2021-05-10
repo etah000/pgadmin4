@@ -31,7 +31,7 @@ define('pgadmin.schemadiff', [
 
 
       // Define the nodes on which the menus to be appear
-      var menus = [{
+      /*var menus = [{
         name: 'schema_diff',
         module: this,
         applies: ['tools'],
@@ -39,7 +39,7 @@ define('pgadmin.schemadiff', [
         priority: 1,
         label: gettext('Schema Diff (Beta)'),
         enable: true,
-      }];
+      }];*/
 
       //pgBrowser.add_menus(menus);
 

@@ -84,18 +84,18 @@ class Helper():
         executor = self.getExecuter(nodename)
         return executor.prepareFirewalldRule(node)
 
-    def copyInstallFile(self,nodename):
+    def copyInstallFile(self,nodename,spath,remoteSoftdir,remoteAppdir):
 
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
-        return executor.copyInstallFile(node)
+        return executor.copyInstallFile(node,spath,remoteSoftdir,remoteAppdir)
 
-    def installZookeeperServ(self, nodename):
+    def installZookeeperServ(self, nodename,remoteConfDir):
 
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
 
-        return executor.installSnowballServ(node)
+        return executor.installSnowballServ(node,remoteConfDir)
 
     def startZookeeperServ(self, nodename):
 

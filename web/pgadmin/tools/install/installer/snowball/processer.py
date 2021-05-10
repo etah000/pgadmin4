@@ -8,13 +8,13 @@ nodes = conf.options('nodes')
 
 class Processer():
 
-    def install(self):
+    def install(self,spath,remoteSoftdir,remoteConfDir):
         try:
-            self.installSnowball()
+            self.installSnowball(spath,remoteSoftdir,remoteConfDir)
         except Exception as e:
             print(e)
 
-    def installSnowball(self):
+    def installSnowball(self,spath,remoteSoftdir,remoteConfDir):
 
         print('\r\nStart Install Snowball ....... ')
 
@@ -22,10 +22,10 @@ class Processer():
         self.__checkNodesSystemInfo()
 
         print('\r\nStep-2: Prepare for node ....')
-        self.__prepareForNodes()
+        self.__prepareForNodes(spath,remoteSoftdir)
 
         print('\r\nStep-3: Install snowball on Node ....')
-        self.__installSnowballOnNodes()
+        self.__installSnowballOnNodes(remoteConfDir)
         #
         print("\r\nStep-4: Start snowball server ....")
         self.__startSnowballServ()
@@ -89,20 +89,20 @@ class Processer():
             print('Exception:' +e)
             raise e
 
-    def __prepareForNodes(self):
+    def __prepareForNodes(self,spath,remoteSoftdir):
 
         for nodename in nodes:
             # print('-- Prepare data disk ....')
             # self.__prepareDataDisk(nodename)
 
             print('-2.1 Prepare soft dependency for node : ' + nodename)
-            self.__prepareDependencyForNode(nodename)
+            self.__prepareDependencyForNode(nodename,spath,remoteSoftdir)
 
             print('-2.2 Prepare firewalld rules node : ' + nodename)
             self.__prepareFirewalldRules(nodename)
             #
             print('-2.3 Prepare install file ....')
-            self.__copyInstallFileToNodes(nodename)
+            self.__copyInstallFileToNodes(nodename,spath,remoteSoftdir)
 
 
 
@@ -110,21 +110,21 @@ class Processer():
 
         helper.prepareDataDisk(nodename)
 
-    def __prepareDependencyForNode(self,nodename):
+    def __prepareDependencyForNode(self,nodename,spath,remoteSoftdir):
 
-        helper.prepareDependency(nodename)
+        helper.prepareDependency(nodename,spath,remoteSoftdir)
 
     def __prepareFirewalldRules(self,nodename):
 
         helper.prepareFirewalldRule(nodename)
 
-    def __copyInstallFileToNodes(self,nodename):
+    def __copyInstallFileToNodes(self,nodename,spath,remoteSoftdir):
 
-        helper.copyInstallFile(nodename)
+        helper.copyInstallFile(nodename,spath,remoteSoftdir)
 
-    def __installSnowballOnNodes(self):
+    def __installSnowballOnNodes(self,remoteConfDir):
         for nodename in nodes:
-            helper.installSnowballServ(nodename)
+            helper.installSnowballServ(nodename,remoteConfDir)
 
 
     def __startSnowballServ(self):

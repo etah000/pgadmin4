@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
 define('pgadmin.browser', [
   'sources/tree/tree',
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',

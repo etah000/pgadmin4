@@ -1,6 +1,6 @@
 <template>
   <a id="install" href="#" data-toggle="pg-menu" role="menuitem" class="dropdown-item">
-    <span data-test="menu-item-text"  @click="dialogFormVisible = true">  Install...</span>
+    <span data-test="menu-item-text"  @click="dialogFormVisible = true">{{ gettext('Install') }} </span>
     <el-dialog width="65%"
                :modal="true"
                :close-on-click-modal="false"
@@ -18,16 +18,26 @@
                      shape="circle"
                      color="#20a0ff"
                      error-color="#fa0202">
-          <tab-content title="一般设置" icon="el-icon-coin" :before-change="validatePgk" >
+          <tab-content title="软件源" icon="el-icon-coin" :before-change="validatePgk" >
             <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
-              <el-form-item label="软件路径" :label-width="formLabelWidth" prop="path">
+              <el-form-item label="软件路径" label-width="110px" prop="path">
                 <el-input v-model="general.path" autocomplete="off"></el-input>
                 <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
                 </el-button>
+              </el-form-item>
+              <el-form-item label="remoteSoftdir" label-width="110px" prop="remoteSoftdir">
                 <el-input v-model="general.remoteSoftdir" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="remoteAppdir" label-width="110px" prop="remoteAppdir">
                 <el-input v-model="general.remoteAppdir" autocomplete="off"></el-input>
               </el-form-item>
+              <el-form-item label="remoteConfDir" label-width="110px" prop="remoteConfDir">
+                <el-input v-model="general.remoteConfDir" autocomplete="off"></el-input>
+              </el-form-item>
             </el-form>
+          </tab-content>
+          <tab-content title="组件选择" icon="el-icon-coin" :before-change="validatePgk" >
+
           </tab-content>
           <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
             <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加服务器
@@ -40,16 +50,25 @@
                   label="服务器名"
                   >
                 <template slot-scope="scope">
-                  <el-input  size="small" v-model="scope.row.name"></el-input>
+                  <el-input  size="small" v-model="scope.row.name" ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
                   prop="ip"
-                  label="ip地址：ssh端口"
-                  width = "300"
+                  label="ip地址"
+                  width = "240"
                   >
                 <template slot-scope="scope">
-                  <vue-ip  size="small" :ip="scope.row.ip" :port="scope.row.port"></vue-ip>
+<!--                  <vue-ip :index="scope.$index" :ip="scope.row.ip" :port="scope.row.port" @change="handleChange(scope.row.ip,scope.row.port,scope.$index)"></vue-ip>-->
+                  <ip :index="scope.$index" :ip="scope.row.ip"  @change="handleChange"></ip>
+                </template>
+              </el-table-column>
+              <el-table-column
+                  prop="port"
+                  label="ssh端口"
+              >
+                <template slot-scope="scope">
+                  <el-input  size="small" v-model="scope.row.port" ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
@@ -198,7 +217,7 @@
                 <el-col :span="24">
                   <el-form-item label="nodes" :label-width="formLabelWidth" prop="nodes">
                     <el-checkbox-group v-model="snowball.nodes">
-                      <el-checkbox v-for="host in hosts" :label="host.name" :key="host.name">{{host.name}}</el-checkbox>
+                      <el-checkbox v-for="host in hosts" :label="host.name"  />
                     </el-checkbox-group>
                   </el-form-item>
                 </el-col>
@@ -223,14 +242,13 @@
   </a>
 </template>
 <script>
-import {getInstallConf, setInstallConf,validateConf,validateHost} from './static/js/api/install.js'
-import VueIp from 'Vue-Ip';
-import VueIpInput from 'vue-ip-input'
+import {getInstallConf, setInstallConf,validateConf,validateHost} from 'top/static/js/api/install.js'
+import Ip from 'top/tools/install/static/js/components/ip.vue';
+import gettext from 'sources/gettext'
 
 export default {
   components: {
-    VueIp,
-    VueIpInput
+    Ip
   },
   name: 'install',
   data: function () {
@@ -253,7 +271,26 @@ export default {
         path:'/soft/',
         remoteSoftdir:'/app/soft/',
         remoteAppdir:'/app/zookeeper/',
+        remoteConfDir:'/etc/snowball-server/',
         remoteJdkdir:'/app/jdk/'
+      },
+      softlist:{
+        'snowball':{
+          'common':'snowball-common-static-2.8.13-2.el7.x86_64.rpm',
+          'server':'snowball-server-2.8.13-2.el7.x86_64.rpm',
+          'client':'snowball-client-2.8.13-2.el7.x86_64.rpm',
+          'dependencies':{
+            'openssl-libs':'openssl-libs-1.0.2k-19.el7.x86_64.rpm',
+            'openssl':'openssl-1.0.2k-19.el7.x86_64.rpm',
+            'libicu':'libicu-50.2-3.el7.x86_64.rpm'
+          }
+        },
+        'zookeeper':{
+          'zookeeper':'apache-zookeeper-3.5.7-bin.tar.gz',
+          'dependencies':{
+            'jdk':'jdk-8u201-linux-x64.tar.gz'
+          }
+        }
       },
       hosts: [
         {name: 'node1', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1023', status: 1},
@@ -277,7 +314,7 @@ export default {
         http_port: '8123',
         interserver_http_port: '9090',
         listen_host: '0.0.0.0',
-        nodes: ['node1','node2','node3']
+        nodes: []
       },
       rulesGeneral:{
         path: [
@@ -333,6 +370,18 @@ export default {
     })*/
   },
   methods: {
+    gettext: function (text) {
+      return gettext(text);
+    },
+
+    handleChange(index,ip) {
+      this.hosts[index].ip = ip
+    },
+
+    handleChange1(ip,inddex) {
+      console.log(ip)
+      console.log(inddex)
+    },
     fileSelectionDlg() {
       let params = {
         'dialog_title': 'Select file',
@@ -488,6 +537,7 @@ export default {
 }
 </script>
 <style>
+.wizard-header{ background-color : #ffffff !important;}
 .v-modal { z-index: 199 !important; }
 .el-dialog__wrapper { z-index: 200 !important; }
 .vue-form-wizard .wizard-header {

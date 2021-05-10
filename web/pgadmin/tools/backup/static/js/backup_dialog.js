@@ -11,7 +11,7 @@ import gettext from '../../../../static/js/gettext';
 import Backform from '../../../../static/js/backform.pgadmin';
 import {Dialog} from '../../../../static/js/alertify/dialog';
 import url_for from 'sources/url_for';
-import axios from 'axios/index';
+
 
 export class BackupDialog extends Dialog {
   constructor(pgBrowser, $, alertify, BackupModel, backform = Backform) {

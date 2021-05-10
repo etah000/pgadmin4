@@ -402,6 +402,17 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        for row in res['rows']:
+            ddl = row['definition']
+            ddl = re.sub('\s+', ' ', ddl)
+            match = re.search('(CREATE VIEW)(.+)(AS )(?P<definition>SELECT .+)', ddl, re.MULTILINE | re.DOTALL)
+
+            def_ = match.group('definition') if match else ''
+            def_ = def_.strip().strip(';').strip()
+
+            row['definition'] = def_
+
         return ajax_response(
             response=res['rows'],
             status=200
@@ -424,7 +435,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
-            scid,
+            did,
             rset['rows'][0]['name'],
             icon="icon-view" if self.node_type == 'view'
             else "icon-mview"
@@ -451,7 +462,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
-                    scid,
+                    did,
                     row['name'],
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
@@ -494,16 +505,6 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         if len(res['rows']) == 0:
             return False, gone(gettext("""Could not find the view."""))
 
-        SQL = render_template("/".join(
-            [self.template_path, 'sql/acl.sql']), vid=vid)
-        status, dataclres = self.conn.execute_dict(SQL)
-        if not status:
-            return False, internal_server_error(errormsg=res)
-
-        for row in dataclres['rows']:
-            priv = parse_priv_from_db(row)
-            res['rows'][0].setdefault(row['deftype'], []).append(priv)
-
         result = res['rows'][0]
 
         # sending result to formtter
@@ -511,6 +512,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
         # merging formated result with main result again
         result.update(frmtd_reslt)
+
+        ddl = result['definition']
+        ddl = re.sub('\s+', ' ', ddl)
+        match = re.search('(CREATE VIEW)(.+)(AS )(?P<definition>SELECT .+)', ddl, re.MULTILINE | re.DOTALL)
+
+        def_ = match.group('definition') if match else ''
+        def_ = def_.strip().strip(';').strip()
+
+        result['definition'] = def_
 
         return True, result
 
@@ -605,39 +615,79 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             request.data, encoding='utf-8'
         )
 
-        data['database'] = did
-        data['name'] = vid
+        database = data.get('database', '')
+        name = data.get('name', '')
+        new_ddl = data.get('definition', '')  # create_table_query from system.tables
+
+        status, res = self._fetch_ddl(did, vid)
+        if not status:
+            return internal_server_error(errormsg=res)
+        elif len(res['rows']) == 0:
+            return gone(gettext("The specified table could not be found."))
+
+        old_ddl = res['rows'][0]['create_table_query']
+
+        def extract_def(ddl):
+            ddl = re.sub('\s+', ' ', ddl)
+            match = re.search('(CREATE VIEW)(.+)(AS )(?P<definition>SELECT .+)', ddl, re.MULTILINE | re.DOTALL)
+            if not match:
+                return ''
+
+            def_ = match.group('definition')
+            def_ = def_.strip().strip(';').strip()
+
+            return def_
+
+        def to_rename():
+            if (database and database != did) \
+                    or (name and name != vid):
+                return True
+
+            return False
+
+        flag_rename = to_rename()
+
+        old_def = extract_def(old_ddl)
+        new_def = new_ddl.strip().strip(';').strip()
+        flag_redef = (old_def and new_def and old_def != new_def)
 
         try:
-            SQL, name = self.getSQL(gid, sid, did, data, vid)
-            if SQL is None:
-                return name
-            SQL = SQL.strip('\n').strip(' ')
-            status, res = self.conn.execute_void(SQL)
-            if not status:
-                return internal_server_error(errormsg=res)
 
-            # SQL = render_template("/".join(
-            #     [self.template_path, 'sql/view_id.sql']), data=data)
-            # status, res_data = self.conn.execute_dict(SQL)
-            # if not status:
-            #     return internal_server_error(errormsg=res)
+            # step 1: create or replace view first
+            if flag_redef:
+                _data = {
+                    'database': did,
+                    'name': vid,
+                    'definition': new_def
+                }
+                SQL, _ = self.getSQL(gid, sid, did, _data, vid)
+                SQL = SQL.strip('\n').strip(' ')
 
-            # view_id = res_data['rows'][0]['oid']
-            # new_view_name = res_data['rows'][0]['relname']
+                status, res = self.conn.execute_void(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
-            # # Get updated schema oid
-            # SQL = render_template("/".join(
-            #     [self.template_path, 'sql/get_oid.sql']), vid=view_id)
-            # status, scid = self.conn.execute_scalar(SQL)
-            # if not status:
-            #     return internal_server_error(errormsg=res)
+            # step 2: rename view if view name changed
+            if flag_rename:
+                _data = {
+                    'did': did,
+                    'vid': vid,
+                    'database': (database or did),
+                    'name': (name or vid),
+                }
+
+                SQL = render_template("/".join(
+                    [self.template_path, 'sql/rename.sql']), data=_data)
+
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    return internal_server_error(errormsg=res)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
-                    vid,
-                    scid,
-                    vid,
+                    name or vid,
+                    (database or did),
+                    name or vid,
                     icon="icon-view" if self.node_type == 'view'
                     else "icon-mview"
                 )
@@ -784,31 +834,31 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
                 )
             old_data = res['rows'][0]
 
-            if 'name' not in data:
-                data['name'] = res['rows'][0]['name']
-            if 'schema' not in data:
-                data['schema'] = res['rows'][0]['schema']
+            # if 'name' not in data:
+            #     data['name'] = res['rows'][0]['name']
+            # if 'schema' not in data:
+            #     data['schema'] = res['rows'][0]['schema']
 
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, 'sql/allowed_privs.json'])
-                )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
+            # try:
+            #     acls = render_template(
+            #         "/".join([self.template_path, 'sql/allowed_privs.json'])
+            #     )
+            #     acls = json.loads(acls, encoding='utf-8')
+            # except Exception as e:
+            #     current_app.logger.exception(e)
 
             # Privileges
-            for aclcol in acls:
-                if aclcol in data:
-                    allowedacl = acls[aclcol]
+            # for aclcol in acls:
+            #     if aclcol in data:
+            #         allowedacl = acls[aclcol]
 
-                    for key in ['added', 'changed', 'deleted']:
-                        if key in data[aclcol]:
-                            data[aclcol][key] = parse_priv_to_db(
-                                data[aclcol][key], allowedacl['acl']
-                            )
-            data['del_sql'] = False
-            old_data['acl_sql'] = ''
+            #         for key in ['added', 'changed', 'deleted']:
+            #             if key in data[aclcol]:
+            #                 data[aclcol][key] = parse_priv_to_db(
+            #                     data[aclcol][key], allowedacl['acl']
+            #                 )
+            # data['del_sql'] = False
+            # old_data['acl_sql'] = ''
 
             if 'definition' in data and self.manager.server_type == 'pg':
                 new_def = re.sub(r"\W", "", data['definition']).split('FROM')
@@ -826,25 +876,25 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
                     # privileges must be restored
 
                     # Fetch all privileges for view
-                    sql_acl = render_template("/".join(
-                        [self.template_path, 'sql/acl.sql']), vid=vid)
-                    status, dataclres = self.conn.execute_dict(sql_acl)
-                    if not status:
-                        return internal_server_error(errormsg=res)
+                    # sql_acl = render_template("/".join(
+                    #     [self.template_path, 'sql/acl.sql']), vid=vid)
+                    # status, dataclres = self.conn.execute_dict(sql_acl)
+                    # if not status:
+                    #     return internal_server_error(errormsg=res)
 
-                    for row in dataclres['rows']:
-                        priv = parse_priv_from_db(row)
-                        res['rows'][0].setdefault(row['deftype'], []
-                                                  ).append(priv)
+                    # for row in dataclres['rows']:
+                    #     priv = parse_priv_from_db(row)
+                    #     res['rows'][0].setdefault(row['deftype'], []
+                    #                               ).append(priv)
 
-                    old_data.update(res['rows'][0])
+                    # old_data.update(res['rows'][0])
 
                     # Privileges
-                    for aclcol in acls:
-                        if aclcol in old_data:
-                            allowedacl = acls[aclcol]
-                            old_data[aclcol] = parse_priv_to_db(
-                                old_data[aclcol], allowedacl['acl'])
+                    # for aclcol in acls:
+                    #     if aclcol in old_data:
+                    #         allowedacl = acls[aclcol]
+                    #         old_data[aclcol] = parse_priv_to_db(
+                    #             old_data[aclcol], allowedacl['acl'])
 
                     old_data['acl_sql'] = render_template("/".join(
                         [self.template_path, 'sql/grant.sql']), data=old_data)
@@ -1021,7 +1071,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         """
         SQL_data = ''
         if self.manager.server_type == 'ppas' \
-            and self.manager.version >= 120000:
+                and self.manager.version >= 120000:
 
             from pgadmin.browser.server_groups.servers.databases.schemas.utils \
                 import trigger_definition
@@ -1602,6 +1652,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             status=200
         )
 
+
 # Override the operations for materialized view
 mview_operations = {
     'refresh_data': [{'put': 'refresh_data'}, {}],
@@ -2004,9 +2055,7 @@ class MViewNode(ViewNode, VacuumSettings):
             res['rows'][0]['autovacuum_freeze_min_age'],
             res['rows'][0]['autovacuum_freeze_max_age'],
             res['rows'][0]['autovacuum_freeze_table_age']]) \
-                                              or res['rows'][0][
-                                                  'autovacuum_enabled'] in (
-                                              't', 'f')
+            or res['rows'][0]['autovacuum_enabled'] in ('t', 'f')
 
         res['rows'][0]['toast_autovacuum'] = any([
             res['rows'][0]['toast_autovacuum_vacuum_threshold'],
@@ -2018,9 +2067,7 @@ class MViewNode(ViewNode, VacuumSettings):
             res['rows'][0]['toast_autovacuum_freeze_min_age'],
             res['rows'][0]['toast_autovacuum_freeze_max_age'],
             res['rows'][0]['toast_autovacuum_freeze_table_age']]) \
-                                             or res['rows'][0][
-                                                 'toast_autovacuum_enabled'] in (
-                                             't', 'f')
+            or res['rows'][0]['toast_autovacuum_enabled'] in ('t', 'f')
 
         res['rows'][0]['vacuum_settings_str'] = ''
 
