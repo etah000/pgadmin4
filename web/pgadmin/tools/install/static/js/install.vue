@@ -24,6 +24,17 @@
                 <el-input v-model="general.path" autocomplete="off"></el-input>
                 <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
                 </el-button>
+                <yl-upload
+                    action="/install/upload"
+                    :data="chunkData"
+                    :on-success="handleSuccess"
+                    :chunk-size="1024 * 1024 * 3"
+                    :thread="4"
+                >
+                  <el-button size="small" type="primary">点击上传</el-button>
+                  <div slot="tip" class="el-upload__tip"></div>
+                </yl-upload>
+
               </el-form-item>
             </el-form>
           </tab-content>
@@ -32,16 +43,19 @@
                 ref="multipleTable"
                 :data="softlists"
                 tooltip-effect="dark"
+                row-key="service"
                 style="width: 100%"
+                :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
                 @selection-change="handleSelectionChange">
               <el-table-column
                   type="selection"
-                  width="55">
+                  :selectable="rowSelectionSetting"
+                width="55">
               </el-table-column>
               <el-table-column
                   prop="service"
                   label="service"
-                  width="120">
+                  width="220">
               </el-table-column>
               <el-table-column
                   prop="version"
@@ -259,48 +273,62 @@
 </template>
 <script>
 import {getInstallConf, setInstallConf,validateConf,validateHost} from 'top/static/js/api/install.js'
+import YlUpload from 'top/misc/upload/index.vue'
 import Ip from 'top/tools/install/static/js/components/ip.vue';
 import gettext from 'sources/gettext'
 
 export default {
   components: {
-    Ip
+    Ip,
+    YlUpload
   },
   name: 'install',
   data: function () {
     return {
       softlists: [{
-        service: 'zookeeper',
+        service: 'zookeeper service',
         version: '3.5.7',
-        description: 'apache-zookeeper-3.5.7-bin.tar.gz'
+        description: '',
+        children: [{
+            service: 'zookeeper',
+            version: '3.5.7',
+            description: 'apache-zookeeper-3.5.7-bin.tar.gz'
+          },{
+            service: 'jdk',
+            version: '8u201',
+            description: 'jdk-8u201-linux-x64.tar.gz'
+          }]
       },{
-        service: 'jdk',
-        version: '8u201',
-        description: 'jdk-8u201-linux-x64.tar.gz'
-      },{
-        service: 'snowball-common-static',
+        service: 'snowball service',
         version: '2.8.13',
-        description: 'snowball-common-static-2.8.13-2.el7.x86_64.rpm'
-      },{
-        service: 'snowball-server',
-        version: '2.8.13',
-        description: 'snowball-server-2.8.13-2.el7.x86_64.rpm'
-      },{
-        service: 'snowball-client',
-        version: '2.8.13',
-        description: 'snowball-client-2.8.13-2.el7.x86_64.rpm'
-      },{
-        service: 'openssl-libs',
-        version: '1.0.2k',
-        description: 'openssl-libs-1.0.2k-19.el7.x86_64.rpm'
-      },{
-        service: 'openssl',
-        version: '1.0.2k',
-        description: 'openssl-1.0.2k-19.el7.x86_64.rpm'
-      },{
-        service: 'libicu',
-        version: '50.2',
-        description: 'libicu-50.2-3.el7.x86_64.rpm'
+        description: '',
+        children:[
+          {
+            service: 'snowball-common-static',
+            version: '2.8.13',
+            description: 'snowball-common-static-2.8.13-2.el7.x86_64.rpm'
+          },{
+            service: 'snowball-server',
+            version: '2.8.13',
+            description: 'snowball-server-2.8.13-2.el7.x86_64.rpm'
+          },{
+            service: 'snowball-client',
+            version: '2.8.13',
+            description: 'snowball-client-2.8.13-2.el7.x86_64.rpm'
+          },{
+            service: 'openssl-libs',
+            version: '1.0.2k',
+            description: 'openssl-libs-1.0.2k-19.el7.x86_64.rpm'
+          },{
+            service: 'openssl',
+            version: '1.0.2k',
+            description: 'openssl-1.0.2k-19.el7.x86_64.rpm'
+          },{
+            service: 'libicu',
+            version: '50.2',
+            description: 'libicu-50.2-3.el7.x86_64.rpm'
+          }
+        ]
       }],
       multipleSelection: [],
       softlist:{
@@ -421,13 +449,30 @@ export default {
     })*/
   },
   methods: {
+    chunkData(option){
+      return{
+        size: option.fileSize, // 总文件大小
+        chunks: option.chunkTotal, // 所有切片数量
+        chunk: option.chunkIndex,// 当前切片下标
+        md5: option.chunkHash, // 单个切片hash
+        filename: option.fileName, // 文件名
+        fileHash: option.fileHash // 整个文件hash
+      }
+    },
+    handleSuccess(response, file, fileList) {
+      //文件上传成功
+      console.log(response, file, fileList);
+    },
+
     gettext: function (text) {
       return gettext(text);
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-
+    rowSelectionSetting(row, index){
+      return true
+    },
     handleChange(index,ip) {
       this.hosts[index].ip = ip
     },
