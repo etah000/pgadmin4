@@ -165,7 +165,7 @@ class FileManagerModule(PgAdminModule):
         # Register 'file upload size' preference
         self.file_upload_size = self.preference.register(
             'options', 'file_upload_size',
-            gettext("Maximum file upload size (MB)"), 'integer', 50,
+            gettext("Maximum file upload size (MB)"), 'integer', 200,
             category_label=gettext('Options')
         )
         self.last_directory_visited = self.preference.register(
@@ -381,6 +381,12 @@ class Filemanager(object):
                             'rename', 'delete', 'upload', 'create']
             files_only = True
             folders_only = False
+            title = gettext("Storage Manager")
+        elif fm_type == 'storage_dialog_folder':
+            capabilities = ['select_folder', 'select_file', 'download',
+                            'rename', 'delete', 'upload', 'create']
+            files_only = False
+            folders_only = True
             title = gettext("Storage Manager")
 
         # Using os.path.join to make sure we have trailing '/' or '\'

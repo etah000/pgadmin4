@@ -201,3 +201,23 @@ def getInstallConf():
         'data': outdata
     }
     return ajax_response(response=res, status=200)
+
+@blueprint.route('/upload', methods=['POST'])
+def upload_part():  # 接收前端上传的一个分片
+    size = request.form.get('size')
+    chunks = request.form.get('chunks')
+    chunk = request.form.get('chunk')
+    md5 = request.form.get('md5')
+    filename = request.form.get('filename')
+    fileHash = request.form.get('fileHash')
+
+    sn = '%s.%s' % (fileHash, chunk)
+
+    file = request.files['file']
+    file.save(get_storage_directory()+'/soft/%s' % sn)  # 保存分片到本地
+
+    res = {
+        'code': "0000",
+        'msg': "success"
+    }
+    return ajax_response(response=res, status=200)

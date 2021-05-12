@@ -36,10 +36,12 @@ define('misc.file_manager', [
 
     },
     // Call dialogs subject to dialog_type param
+
     show_dialog: function(params) {
+
       if (params.dialog_type == 'create_file') {
         Alertify.createModeDlg(params).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
-      } else {
+     } else {
         Alertify.fileSelectionDlg(params).resizeTo(pgAdmin.Browser.stdW.md,pgAdmin.Browser.stdH.lg);
       }
     },
