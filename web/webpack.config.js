@@ -523,7 +523,7 @@ module.exports = [{
   resolve: {
     alias: webpackShimConfig.resolveAlias,
     modules: ['node_modules', '.'],
-    extensions: ['.js'],
+    extensions: ['.js', '.jsx'],
     unsafeCache: true,
   },
   // Watch mode Configuration: After initial build, webpack will watch for
