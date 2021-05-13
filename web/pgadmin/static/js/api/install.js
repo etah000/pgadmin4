@@ -28,3 +28,16 @@ export function validateHost(params) {
     data: params
   })
 }
+export function merge(params) {
+  return request({
+    url: '/install/merge',
+    method: 'post',
+    data: params
+  })
+}
+export function list() {
+  return request({
+    url: '/install/list',
+    method: 'post'
+  })
+}

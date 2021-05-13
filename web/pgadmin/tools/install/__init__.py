@@ -210,14 +210,54 @@ def upload_part():  # 接收前端上传的一个分片
     md5 = request.form.get('md5')
     filename = request.form.get('filename')
     fileHash = request.form.get('fileHash')
-
     sn = '%s.%s' % (fileHash, chunk)
-
     file = request.files['file']
     file.save(get_storage_directory()+'/soft/%s' % sn)  # 保存分片到本地
 
     res = {
-        'code': "0000",
+        'fileHash': fileHash,
+        'chunk': chunk,
         'msg': "success"
     }
     return ajax_response(response=res, status=200)
+
+@blueprint.route('/merge', methods=['POST'])
+def upload_success():  # 按序读出分片内容，并写入新文件
+    data = json.loads(
+        request.data, encoding='utf-8'
+    )
+    target_filename = data['name']
+    fileHash = data['fileHash']
+    chunk = 0  # 分片序号
+    with open(get_storage_directory()+'/soft/%s' % target_filename, 'wb') as target_file:  # 创建新文件
+        while True:
+            try:
+                filename = get_storage_directory()+'/soft/%s.%s' % (fileHash, chunk)
+                source_file = open(filename, 'rb')  # 按序打开每个分片
+                target_file.write(source_file.read())  # 读取分片内容写入新文件
+                source_file.close()
+            except IOError as msg:
+                break
+
+            chunk += 1
+            os.remove(filename)  # 删除该分片，节约空间
+    return ajax_response(response={'code': "0000",'msg': "success"}, status=200)
+
+@blueprint.route('/list', methods=['POST'])
+def file_list():
+    files = os.listdir(get_storage_directory()+'/soft/')  # 获取文件目录
+    #files = list(map(lambda x: x if isinstance(x, str) else x.decode('utf-8'), files) ) # 注意编码
+    return ajax_response(response=files, status=200)
+
+@blueprint.route('/download/<filename>', methods=['GET'])
+def file_download(filename):
+    def send_chunk():  # 流式读取
+        store_path = get_storage_directory()+'/soft/%s' % filename
+        with open(store_path, 'rb') as target_file:
+            while True:
+                chunk = target_file.read(20 * 1024 * 1024)
+                if not chunk:
+                    break
+                yield chunk
+
+    return Response(send_chunk(), content_type='application/octet-stream')

@@ -18,23 +18,25 @@
                      shape="circle"
                      color="#20a0ff"
                      error-color="#fa0202">
-          <tab-content title="软件源" icon="el-icon-coin" :before-change="validatePgk" >
+          <tab-content title="软件源" icon="el-icon-coin" :before-change="validateSource" >
             <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
-              <el-form-item label="软件目录" label-width="110px" prop="path">
-                <el-input v-model="general.path" autocomplete="off"></el-input>
+              <el-form-item label="软件包准备" label-width="110px" prop="path">
+<!--            <el-input v-model="general.path" autocomplete="off"></el-input>
                 <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
-                </el-button>
+                </el-button>-->
                 <yl-upload
                     action="/install/upload"
+                    drag
+                    multiple
                     :data="chunkData"
                     :on-success="handleSuccess"
                     :chunk-size="1024 * 1024 * 3"
                     :thread="4"
                 >
-                  <el-button size="small" type="primary">点击上传</el-button>
+                  <i class="el-icon-upload"></i>
+                  <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                   <div slot="tip" class="el-upload__tip"></div>
                 </yl-upload>
-
               </el-form-item>
             </el-form>
           </tab-content>
@@ -272,7 +274,7 @@
   </a>
 </template>
 <script>
-import {getInstallConf, setInstallConf,validateConf,validateHost} from 'top/static/js/api/install.js'
+import {getInstallConf, setInstallConf,validateConf,validateHost,merge,list} from 'top/static/js/api/install.js'
 import YlUpload from 'top/misc/upload/index.vue'
 import Ip from 'top/tools/install/static/js/components/ip.vue';
 import gettext from 'sources/gettext'
@@ -456,12 +458,19 @@ export default {
         chunk: option.chunkIndex,// 当前切片下标
         md5: option.chunkHash, // 单个切片hash
         filename: option.fileName, // 文件名
-        fileHash: option.fileHash // 整个文件hash
+        fileHash: option.fileHash, // 整个文件hash
+        chunkSize: option.chunkSize // 整个文件hash
       }
     },
     handleSuccess(response, file, fileList) {
       //文件上传成功
       console.log(response, file, fileList);
+      merge({
+        name:file.name,
+        fileHash:response[0].fileHash
+      }).then(res=> {
+      }).catch(() => {
+      })
     },
 
     gettext: function (text) {
@@ -503,6 +512,16 @@ export default {
     },
     validatePgk:function (){
       return new Promise((resolve, reject) => {
+        resolve(true)
+      })
+    },
+    validateSource:function (){
+      return new Promise((resolve, reject) => {
+        list().then(res=> {
+          console.log(res)
+        }).catch(() => {
+
+        })
         resolve(true)
       })
     },
