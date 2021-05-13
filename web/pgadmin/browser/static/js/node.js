@@ -1480,7 +1480,7 @@ define('pgadmin.browser.node', [
           }
         }.bind(panel),
         onSaveUpdate = function(view, saveBtn,newModel) {
-          console.log(view.model);
+          // console.log(view.model);
           var m = view.model,
             d = newModel,
             // Generate a timer for the request
@@ -1489,7 +1489,6 @@ define('pgadmin.browser.node', [
             }, 1000);
           if(!view.model){
              m = view.collection.models[0];
-             console.log("%%%%%%%%");
              
           }
           // Prevent subsequent save operation by disabling Save button
@@ -1684,15 +1683,15 @@ define('pgadmin.browser.node', [
           panel.$container.attr('action-mode', action);
           let j = panel.$container.find('.obj_properties').first();
           let  view = j.data('obj-view');
-          console.log(view.collection);
-          console.log(view.model);
+          // console.log(view.collection);
+          // console.log(view.model);
 
           //属性为列表的时候
           if(view.collection){
               let oldModel=view.collection.models;
               let collectionJson=[];
               for(let item in oldModel){
-                console.log(oldModel[item]);
+                // console.log(oldModel[item]);
                 let newModel={};
                 let attributes=oldModel[item].attributes;
                 let shard_num=attributes.shard_num;
@@ -1708,7 +1707,7 @@ define('pgadmin.browser.node', [
                 collectionJson.push(newModel);
               }
               // view.model=view.collection;
-              console.log(collectionJson);
+              // console.log(collectionJson);
               onSaveUpdate.call(this, view, btn,collectionJson);
           }
           //属性为输入表单的时候
