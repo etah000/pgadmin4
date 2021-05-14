@@ -277,6 +277,7 @@ define('pgadmin.node.table', [
                 t.select(i);
               }, 10);
             })
+            
             .fail(function(xhr, status, error) {
               Alertify.pgRespErrorNotify(xhr, error);
               t.unload(i);

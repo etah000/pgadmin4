@@ -1480,12 +1480,17 @@ define('pgadmin.browser.node', [
           }
         }.bind(panel),
         onSaveUpdate = function(view, saveBtn,newModel) {
+          // console.log(view.model);
           var m = view.model,
             d = newModel,
             // Generate a timer for the request
             timer = setTimeout(function() {
               $('.obj_properties').addClass('show_progress');
             }, 1000);
+          if(!view.model){
+             m = view.collection.models[0];
+             
+          }
           // Prevent subsequent save operation by disabling Save button
           if (saveBtn)
             $(saveBtn).prop('disabled', true);
@@ -1495,6 +1500,7 @@ define('pgadmin.browser.node', [
               attrs: newModel,
               validate: false,
               cache: false,
+              method:'put',
               wait: true,
               success: function() {
                 onSaveFunc.call();
@@ -1677,15 +1683,15 @@ define('pgadmin.browser.node', [
           panel.$container.attr('action-mode', action);
           let j = panel.$container.find('.obj_properties').first();
           let  view = j.data('obj-view');
-          console.log(view.collection);
-          console.log(view.model);
+          // console.log(view.collection);
+          // console.log(view.model);
 
           //属性为列表的时候
           if(view.collection){
               let oldModel=view.collection.models;
               let collectionJson=[];
               for(let item in oldModel){
-                console.log(oldModel[item]);
+                // console.log(oldModel[item]);
                 let newModel={};
                 let attributes=oldModel[item].attributes;
                 let shard_num=attributes.shard_num;
@@ -1700,9 +1706,9 @@ define('pgadmin.browser.node', [
                 newModel.default_database=default_database;
                 collectionJson.push(newModel);
               }
-             console.log(collectionJson);
-
-
+              // view.model=view.collection;
+              // console.log(collectionJson);
+              onSaveUpdate.call(this, view, btn,collectionJson);
           }
           //属性为输入表单的时候
           if(view.model){
@@ -1714,7 +1720,6 @@ define('pgadmin.browser.node', [
               newModel[key]=attributes[key];
           }
           newModel.oid=attributes.oid;
-          // console.log(view);
           // console.log(view.model.toJSON(true));
           // view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
           // console.log(view);

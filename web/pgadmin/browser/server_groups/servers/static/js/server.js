@@ -921,14 +921,16 @@ define('pgadmin.node.server', [
         },{
           id: 'version', label: gettext('Version'), type: 'text', group: null,
           mode: ['properties'], visible: 'isConnected',
-        },{
-          id: 'bgcolor', label: gettext('Background'), type: 'color',
-          group: null, mode: ['edit', 'create'], disabled: 'isfgColorSet',
-          deps: ['fgcolor'],
-        },{
-          id: 'fgcolor', label: gettext('Foreground'), type: 'color',
-          group: null, mode: ['edit', 'create'], disabled: 'isConnected',
-        },{
+        },
+        // {
+        //   id: 'bgcolor', label: gettext('Background'), type: 'color',
+        //   group: null, mode: ['edit', 'create'], disabled: 'isfgColorSet',
+        //   deps: ['fgcolor'],
+        // },{
+        //   id: 'fgcolor', label: gettext('Foreground'), type: 'color',
+        //   group: null, mode: ['edit', 'create'], disabled: 'isConnected',
+        // },
+        {
           id: 'connect_now', controlLabel: gettext('Connect now?'), type: 'checkbox',
           group: null, mode: ['create'],
         },{

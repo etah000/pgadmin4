@@ -206,10 +206,10 @@ define('pgadmin.node.mview', [
           }),
           select2: { allowClear: false, width: '100%' },
         },
-        {
-          id: 'engine_params', label: gettext('Engine Params'), cell: 'string',
-          type: 'text', mode: ['properties','create', 'edit'],
-        },
+        // {
+        //   id: 'engine_params', label: gettext('Engine Params'), cell: 'string',
+        //   type: 'text', mode: ['properties','create', 'edit'], 
+        // },
         {
           id: 'to_database', label: gettext('To Database'), cell: 'string',
           type: 'text', disabled: 'inSchema',
