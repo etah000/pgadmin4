@@ -198,7 +198,7 @@
               </el-table-column>
             </el-table>
           </tab-content>
-          <tab-content title="服务设置" icon="el-icon-setting">
+          <tab-content title="服务设置" icon="el-icon-setting" :before-change="validateService">
             <el-collapse>
               <el-collapse-item title="zookeeper service 设置" v-if="zookeeperselected" name="1">
                 <el-form :model="zookeeper" ref="zookeeperForm" :rules="rulesZk" size="medium">
@@ -239,22 +239,7 @@
                             <el-input  size="small" v-model="scope.row.name"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="port1" label="客户端连接端口" width="120" >
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.port1"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="port2" label="心跳端口"  >
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.port2"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="port3" label="集群内通讯端口" width="120">
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.port3"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="ssh" label="服务器名">
+                        <el-table-column prop="ssh" label="所在服务器" width="120">
                           <template slot-scope="scope">
                             <el-select
                                 v-model="scope.row.ssh"
@@ -272,6 +257,22 @@
                             </el-select>
                           </template>
                         </el-table-column>
+                        <el-table-column prop="port1" label="客户端连接端口" width="120" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.port1"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="port2" label="心跳端口"  >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.port2"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="port3" label="集群内通讯端口" width="120">
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.port3"></el-input>
+                          </template>
+                        </el-table-column>
+
                         <el-table-column label="操作" >
                           <template slot-scope="scope">
                             <el-button @click.stop.prevent="deleteRowZk(scope.$index, zookeeper.nodes)" size="small" type="danger">
@@ -344,42 +345,12 @@
                       <el-table
                           :data="snowball.nodes"
                           style="width: 100%">
-                        <el-table-column prop="name" label="snowball节点名" >
+                        <el-table-column prop="name" fixed label="snowball节点名" width="120">
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.name"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="path" label="数据路径" >
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.path"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="tcp_port" label="tcp_port" >
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.tcp_port"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="http_port" label="http_port" >
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.http_port"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="interserver_http_port" label="interserver_http_port" >
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.interserver_http_port"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="listen_host" label="listen_host" >
-                          <template slot-scope="scope">
-                            <ip :index="scope.$index" :ip="scope.row.listen_host"  @change="handleChangeSblisten"></ip>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="timezone" label="timezone" >
-                          <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.timezone"></el-input>
-                          </template>
-                        </el-table-column>
-                        <el-table-column prop="ssh" label="服务器名">
+                        <el-table-column prop="ssh" label="所在服务器" width="120">
                           <template slot-scope="scope">
                             <el-select
                                 v-model="scope.row.ssh"
@@ -397,9 +368,40 @@
                             </el-select>
                           </template>
                         </el-table-column>
+                        <el-table-column prop="path" label="数据路径" width="150" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.path"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="tcp_port" label="tcp_port" width="80" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.tcp_port"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="http_port" label="http_port" width="80" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.http_port"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="interserver_http_port" label="interserver_http_port" width="100">
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.interserver_http_port"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="listen_host" label="listen_host" width="200" >
+                          <template slot-scope="scope">
+                            <ip :index="scope.$index" :ip="scope.row.listen_host"  @change="handleChangeSblisten"></ip>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="timezone" label="timezone" width="150">
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.timezone"></el-input>
+                          </template>
+                        </el-table-column>
+
                         <el-table-column label="操作" >
                           <template slot-scope="scope">
-                            <el-button @click.stop.prevent="deleteRowZk(scope.$index, zookeeper.nodes)" size="small" type="danger">
+                            <el-button @click.stop.prevent="deleteRowSb(scope.$index, snowball.nodes)" size="small" type="danger">
                               移除
                             </el-button>
                           </template>
@@ -499,7 +501,7 @@ export default {
         listen_host: '0.0.0.0',
         timezone:'Asia/Shanghai',
         basecfgtpl:'snowball.config.xml.tpl',
-        licensetpl:'license.xml.tpl',
+        licensetpl:'',
         nodes: [
           {name: 'node01', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server1'},
           {name: 'node02', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server2'},
@@ -530,6 +532,12 @@ export default {
       },
       rulesSnowball: {
         datadir: [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+        timezone: [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+        licensetpl: [
           {required: true, message: '不能为空', trigger: 'blur'}
         ],
         tcp_port: [
@@ -656,7 +664,56 @@ export default {
         resolve(true)
       })
     },
+    validateService:function() {
+      return new Promise((resolve, reject) => {
+        if(this.zookeeperselected){
+          this.$refs['zookeeperForm'].validate((valid) => {
+            if (valid) {
+            } else {
+              reject('表单输入有误！')
+              return false;
+            }
+          });
+          if(this.zookeeper.nodes.length==0){
+            reject('不能为空！')
+          }
+          var zkorders = new Set(this.zookeeper.nodes.map(e=>{return e.order}));
+          if(zkorders.size!=this.zookeeper.nodes.length){
+            reject('序列重复！')
+          }
+          var zkNames = new Set(this.zookeeper.nodes.map(e=>{return e.name}));
+          if(zkNames.size!=this.zookeeper.nodes.length){
+            reject('zk节点名重复！')
+          }
+          var zkServerNames = new Set(this.zookeeper.nodes.map(e=>{return e.ssh}));
+          if(zkServerNames.size!=this.zookeeper.nodes.length){
+            reject('zk节点服务器名重复！')
+          }
+        }
+        if(this.snowballselected){
+          this.$refs['snowballForm'].validate((valid) => {
+            if (valid) {
+            } else {
+              reject('表单输入有误！')
+              return false;
+            }
+          });
+          if(this.snowball.nodes.length==0){
+            reject('snowball 节点不能为空！')
+          }
+          var snowballNames = new Set(this.snowball.nodes.map(e=>{return e.name}));
+          if(snowballNames.size!=this.snowball.nodes.length){
+            reject('snowball节点名不能重复！')
+          }
+          var snowballServerNames = new Set(this.snowball.nodes.map(e=>{return e.ssh}));
+          if(snowballServerNames.size!=this.snowball.nodes.length){
+            reject('snowball节点服务器名重复！')
+          }
 
+        }
+        resolve(true)
+      })
+    },
     validateHost:function() {
       return new Promise((resolve, reject) => {
         if(this.hosts.length==0){
@@ -744,54 +801,13 @@ export default {
         resolve(true)
       })
     },
-    validateSnowball: function () {
-      return new Promise((resolve, reject) => {
-        this.$refs['snowballForm'].validate((valid) => {
-          if (valid) {
-          } else {
-            reject('表单输入有误！')
-            return false;
-          }
-        });
-        var snowballnodes = new Set(this.snowball.nodes);
-        if(snowballnodes.size!=this.snowball.nodes.length){
-          reject("snowball节点服务器名重复")
-        }
-        resolve(true)
-      })
-    },
-    validateZk: function () {
-      return new Promise((resolve, reject) => {
-        this.$refs['zookeeperForm'].validate((valid) => {
-          if (valid) {
-          } else {
-            reject('表单输入有误！')
-            return false;
-          }
-        });
-        if(this.zookeeper.nodes.length==0){
-          reject('不能为空！')
-        }
-        var zkorders = new Set(this.zookeeper.nodes.map(e=>{return e.order}));
-        if(zkorders.size!=this.zookeeper.nodes.length){
-          reject('序列重复！')
-        }
-        var zkNames = new Set(this.zookeeper.nodes.map(e=>{return e.name}));
-        if(zkNames.size!=this.zookeeper.nodes.length){
-          reject('zk节点名重复！')
-        }
-        var zkServerNames = new Set(this.zookeeper.nodes.map(e=>{return e.ssh}));
-        if(zkServerNames.size!=this.zookeeper.nodes.length){
-          reject('zk节点服务器名重复！')
-        }
-        resolve(true)
-      })
-    },
-
     deleteRow(index, rows) {
       rows.splice(index, 1);
     },
     deleteRowZk(index, rows) {
+      rows.splice(index, 1);
+    },
+    deleteRowSb(index, rows) {
       rows.splice(index, 1);
     },
     addzk() {
