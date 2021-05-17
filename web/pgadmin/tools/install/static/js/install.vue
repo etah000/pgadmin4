@@ -681,6 +681,11 @@ export default {
           if(zkorders.size!=this.zookeeper.nodes.length){
             reject('序列重复！')
           }
+          this.zookeeper.nodes.map(e=>{
+            if(e.name.trim()==''){
+              reject('zk节点名,不能为空！')
+            }
+          })
           var zkNames = new Set(this.zookeeper.nodes.map(e=>{return e.name}));
           if(zkNames.size!=this.zookeeper.nodes.length){
             reject('zk节点名重复！')
@@ -701,6 +706,11 @@ export default {
           if(this.snowball.nodes.length==0){
             reject('snowball 节点不能为空！')
           }
+          this.snowball.nodes.map(e=>{
+            if(e.name.trim()==''){
+              reject('snowball节点名,不能为空！')
+            }
+          })
           var snowballNames = new Set(this.snowball.nodes.map(e=>{return e.name}));
           if(snowballNames.size!=this.snowball.nodes.length){
             reject('snowball节点名不能重复！')
@@ -719,6 +729,11 @@ export default {
         if(this.hosts.length==0){
           reject('不能为空！')
         }
+        this.hosts.map(e=>{
+          if(e.name.trim()==''){
+            reject('服务器名,不能为空！')
+          }
+        })
         var serverNames = new Set(this.hosts.map(e=>{return e.name}));
         if(serverNames.size!=this.hosts.length){
           reject('服务器重名！')
@@ -896,7 +911,7 @@ export default {
 }
 span.error{
   color: #fa0202;
-  font-size:20px;
+  font-size:14px;
   display:flex;
   justify-content:center;
 }
