@@ -2,18 +2,12 @@
 
 import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
-from pgadmin.tools.install.config import zookeeperConf
 from pgadmin.utils import get_storage_directory
-
+from flask import session
 
 
 class AbstractExecutor():
-    def getZookeeperFile(self):
-        return {
-            'zookeeper':'',
-            'jdk':''
-        }
-    pass
+
 
     def prepareFirewalldRule(self, node):
         conf = node.getInfo()
@@ -30,18 +24,19 @@ class AbstractExecutor():
         # print('check checkFirewalld ...', node)
         return True
 
-    def copyInstallFile(self, node,spath,remoteSoftdir,remoteAppdir):
+    def copyInstallFile(self, node,spath,remoteSoftdir,remoteAppdir,softlist):
         cmd = ''
         cmd = cmd + 'mkdir -p /app && mkdir -p ' + remoteSoftdir + '&& '
-        cmd = cmd + 'rm -rf /app/jdk && rm -rf /app/jdk1.8.0_201 && rm -rf /app/apache-zookeeper-3.5.7-bin && rm -rf /app/zookeeper'
+        cmd = cmd + 'rm -rf /app/jdk && rm -rf /app/jdk* && rm -rf /app/apache-zookeeper* && rm -rf /app/zookeeper'
         node.call(cmd)
 
-        softlist = self.getZookeeperFile();
+        #softlist = self.getZookeeperFile();
         for soft, filename in softlist.items():
             fullFilename = get_storage_directory()+ spath + filename
             res = node.put(fullFilename, remoteSoftdir)
+            session['percentagesize'] = session.get('percentagesize')+os.path.getsize(fullFilename)
             print(res)
-        self.unzipInstallFile(node,remoteSoftdir)
+        self.unzipInstallFile(node,remoteSoftdir,softlist)
         self.cpZookerCfgFile(node,remoteAppdir)
         self.makeIdfile(node)
         return True
@@ -53,10 +48,9 @@ class AbstractExecutor():
             content = content + k + '=' + confs[k] + '\n'
         content = content + '\n'
 
-        nodes = zookeeperConf.options('nodes')
-        for nodename in nodes:
-            temp = zookeeperConf.getNodeInfo(nodename)
-            str = "server.%s=%s:%s:%s" % (temp['servid'], temp['host'], temp['leaderPort'], temp['listenPort'])
+        #nodes = zookeeperConf.options('nodes')
+        for server in node.servers:
+            str = "server.%s=%s:%s:%s" % (server['servid'], server['host'], server['leaderPort'], server['listenPort'])
             content = content + str + '\n'
         print(content);
         filename = remoteAppdir + 'conf/zoo.cfg'
@@ -75,9 +69,9 @@ class AbstractExecutor():
         res = node.call(cmd)
         print(res)
 
-    def unzipInstallFile(self,node,remoteSoftdir):
+    def unzipInstallFile(self,node,remoteSoftdir,softlist):
 
-        softlist = self.getZookeeperFile();
+        #softlist = self.getZookeeperFile();
 
         javafile = softlist['jdk']
         zkfile = softlist['zookeeper']
@@ -87,7 +81,7 @@ class AbstractExecutor():
         cmd = ''
         cmd = cmd + 'tar -zxvf ' + remoteJavafile + ' -C /app && '
         cmd = cmd + 'tar -zxvf ' + remoteZkfile + ' -C /app && '
-        cmd = cmd + 'mv  /app/jdk1.8.0_201 /app/jdk && mv  /app/apache-zookeeper-3.5.7-bin /app/zookeeper &&'
+        cmd = cmd + 'mv  /app/jdk* /app/jdk && mv  /app/apache-zookeeper* /app/zookeeper &&'
 
         cmd = cmd + "sed -i '/JAVA_HOME=/d' /etc/profile && "
         cmd = cmd + "sed -i '/$JAVA_HOME\/jre/d' /etc/profile && "

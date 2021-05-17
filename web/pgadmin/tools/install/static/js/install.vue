@@ -18,58 +18,172 @@
                      shape="circle"
                      color="#20a0ff"
                      error-color="#fa0202">
-          <tab-content title="软件源" icon="el-icon-coin" :before-change="validateSource" >
+          <!--<tab-content title="软件源" icon="el-icon-coin" :before-change="validateSource" >
             <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
               <el-form-item label="软件包准备" label-width="110px" prop="path">
-<!--            <el-input v-model="general.path" autocomplete="off"></el-input>
-                <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
-                </el-button>-->
-                <yl-upload
-                    action="/install/upload"
-                    drag
-                    multiple
-                    :data="chunkData"
-                    :on-success="handleSuccess"
-                    :chunk-size="1024 * 1024 * 3"
-                    :thread="4"
-                >
-                  <i class="el-icon-upload"></i>
-                  <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                  <div slot="tip" class="el-upload__tip"></div>
-                </yl-upload>
+                         <el-input v-model="general.path" autocomplete="off"></el-input>
+                             <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
+                             </el-button>
+
               </el-form-item>
             </el-form>
-          </tab-content>
+          </tab-content>-->
           <tab-content title="组件选择" icon="el-icon-coin" :before-change="validatePgk" >
-            <el-table
+            <el-collapse>
+              <el-collapse-item  name="1">
+                <template slot="title">
+                  <el-checkbox v-model="zookeeperselected">zookeeper service </el-checkbox>
+                </template>
+                <el-form  size="medium" label-width="180px">
+                  <el-form-item label="apache-zookeeper"  prop="zookeeper">
+                    <el-input v-model="zookeeper.softlist.zookeeper" :readonly="true" >
+                      <template slot="append">
+                        <yl-upload
+                            action="/install/upload"
+                            :data="chunkData"
+                            :on-success="handleSuccess"
+                            :before-upload="beforeZookeeperUpload"
+                            :show-file-list = false
+                             accept = ".gz, .zip,.bz2, .rpm"
+                            :chunk-size="1024 * 1024 * 3"
+                            :thread="4"
+                        >
+                          <i class="el-icon-upload"></i>
+                        </yl-upload>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="jdk"  prop="jdk">
+                    <el-input v-model="zookeeper.softlist.jdk" :readonly="true" >
+                      <template slot="append">
+                        <yl-upload
+                            action="/install/upload"
+                            :data="chunkData"
+                            :on-success="handleSuccess"
+                            :before-upload="beforeJdkUpload"
+                            :show-file-list = false
+                            accept = ".gz, .zip,.bz2, .rpm"
+                            :chunk-size="1024 * 1024 * 3"
+                            :thread="4"
+                        >
+                          <i class="el-icon-upload"></i>
+                        </yl-upload>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
+              <el-collapse-item  name="2">
+                <template slot="title">
+                  <el-checkbox v-model="snowballselected">snowball db </el-checkbox>
+                </template>
+                <el-form  size="medium" label-width="180px">
+                  <el-form-item label="snowball-common"  prop="common">
+                    <el-input v-model="snowball.softlist.common" :readonly="true">
+                      <template slot="append">
+                        <yl-upload
+                            action="/install/upload"
+                            :data="chunkData"
+                            :on-success="handleSuccess"
+                            :before-upload="beforeSnowballCommonUpload"
+                            :show-file-list = false
+                            accept = ".gz, .zip,.bz2, .rpm"
+                            :chunk-size="1024 * 1024 * 3"
+                            :thread="4"
+                        >
+                          <i class="el-icon-upload"></i>
+                        </yl-upload>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="snowball-server"  prop="server">
+                    <el-input v-model="snowball.softlist.server" :readonly="true">
+                      <template slot="append">
+                        <yl-upload
+                            action="/install/upload"
+                            :data="chunkData"
+                            :on-success="handleSuccess"
+                            :before-upload="beforeSnowballServerUpload"
+                            :show-file-list = false
+                            accept = ".gz, .zip,.bz2, .rpm"
+                            :chunk-size="1024 * 1024 * 3"
+                            :thread="4"
+                        >
+                          <i class="el-icon-upload"></i>
+                        </yl-upload>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="snowball-client"  prop="client">
+                    <el-input v-model="snowball.softlist.client" :readonly="true">
+                      <template slot="append">
+                        <yl-upload
+                            action="/install/upload"
+                            :data="chunkData"
+                            :on-success="handleSuccess"
+                            :before-upload="beforeSnowballClientUpload"
+                            :show-file-list = false
+                            accept = ".gz, .zip,.bz2, .rpm"
+                            :chunk-size="1024 * 1024 * 3"
+                            :thread="4"
+                        >
+                          <i class="el-icon-upload"></i>
+                        </yl-upload>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
+            </el-collapse>
+<!--            <el-table
                 ref="multipleTable"
                 :data="softlists"
                 tooltip-effect="dark"
                 row-key="service"
                 style="width: 100%"
                 :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+                @select="select"
                 @selection-change="handleSelectionChange">
               <el-table-column
                   type="selection"
                   :selectable="rowSelectionSetting"
                 width="55">
               </el-table-column>
+&lt;!&ndash;              <el-table-column>
+                <template slot-scope="scope">
+                  <el-checkbox v-if="scope.row.service== 'zookeeper'||scope.row.service== 'snowball'"></el-checkbox>
+                </template>
+              </el-table-column>&ndash;&gt;
               <el-table-column
                   prop="service"
                   label="service"
                   width="220">
               </el-table-column>
-              <el-table-column
+&lt;!&ndash;              <el-table-column
                   prop="version"
                   label="version"
                   width="120">
-              </el-table-column>
+              </el-table-column>&ndash;&gt;
               <el-table-column
                   prop="description"
-                  label="description"
-                  show-overflow-tooltip>
+                  label="pkg" width="360">
               </el-table-column>
-            </el-table>
+              <el-table-column>
+                <template slot-scope="scope">
+                    <yl-upload
+                        action="/install/upload"
+                        v-if="!['zookeeper', 'snowball'].includes(scope.row.service)"
+                        :data="chunkData"
+                        :on-success="handleSuccess"
+                        accept = ".gz, .zip,.bz2, .rpm"
+                        :chunk-size="1024 * 1024 * 3"
+                        :thread="4"
+                    >
+                      <el-button size="small" icon="el-icon-upload"  type="primary"></el-button>
+                    </yl-upload>
+                </template>
+              </el-table-column>
+            </el-table>-->
           </tab-content>
           <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
             <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加服务器
@@ -134,127 +248,191 @@
               </el-table-column>
             </el-table>
           </tab-content>
-          <tab-content title="zookeeper 设置" icon="el-icon-setting" :before-change="validateZk">
-            <el-form :model="zookeeper" ref="zookeeperForm" :rules="rulesZk" size="medium">
-                <el-row>
-                  <el-col :span="12">
-                    <el-form-item label="tickTime" :label-width="formLabelWidth" prop="tickTime">
-                      <el-input v-model="zookeeper.tickTime" autocomplete="off"></el-input>
-                    </el-form-item>
-                    <el-form-item label="initLimit" :label-width="formLabelWidth" prop="initLimit">
-                      <el-input v-model="zookeeper.initLimit" autocomplete="off"></el-input>
-                    </el-form-item>
-                    <el-form-item label="syncLimit" :label-width="formLabelWidth" prop="syncLimit">
-                      <el-input v-model="zookeeper.syncLimit" autocomplete="off"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="12">
-                    <el-form-item label="dataDir" :label-width="formLabelWidth" prop="dataDir">
-                      <el-input v-model="zookeeper.dataDir" autocomplete="off"></el-input>
-                    </el-form-item>
-                    <el-form-item label="clientPort" :label-width="formLabelWidth" prop="clientPort">
-                      <el-input v-model="zookeeper.clientPort" autocomplete="off"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-button @click="addzk" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加Zk节点</el-button>
-                    <el-table
-                        :data="zookeeper.nodes"
-                        style="width: 100%">
-                      <el-table-column prop="order" label="序列" >
-                        <template slot-scope="scope">
-                          <el-input  size="small" v-model="scope.row.order"></el-input>
-                        </template>
-                      </el-table-column>
-                      <el-table-column prop="name" label="zk节点名" >
-                        <template slot-scope="scope">
-                          <el-input  size="small" v-model="scope.row.name"></el-input>
-                        </template>
-                      </el-table-column>
-                      <el-table-column prop="port1" label="客户端连接端口" width="120" >
-                        <template slot-scope="scope">
-                          <el-input  size="small" v-model="scope.row.port1"></el-input>
-                        </template>
-                      </el-table-column>
-                      <el-table-column prop="port2" label="心跳端口"  >
-                        <template slot-scope="scope">
-                          <el-input  size="small" v-model="scope.row.port2"></el-input>
-                        </template>
-                      </el-table-column>
-                      <el-table-column prop="port3" label="集群内通讯端口" width="120">
-                        <template slot-scope="scope">
-                          <el-input  size="small" v-model="scope.row.port3"></el-input>
-                        </template>
-                      </el-table-column>
-                      <el-table-column prop="ssh" label="服务器名">
-                        <template slot-scope="scope">
-                          <el-select
-                              v-model="scope.row.ssh"
-                              size="small"
-                              filterable
-                              allow-create
-                              default-first-option
-                          >
-                            <el-option
-                                v-for="item in hosts"
-                                :key="item.name"
-                                :label="item.name"
-                                :value="item.name">
-                            </el-option>
-                          </el-select>
-                        </template>
-                      </el-table-column>
-                      <el-table-column label="操作" >
-                        <template slot-scope="scope">
-                          <el-button @click.stop.prevent="deleteRowZk(scope.$index, zookeeper.nodes)" size="small" type="danger">
-                            移除
-                          </el-button>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-                  </el-col>
-                </el-row>
-              </el-form>
-          </tab-content>
-          <tab-content title="snowball 设置" icon="el-icon-orange" :before-change="validateSnowball">
-            <el-form :model="snowball" ref="snowballForm" :rules="rulesSnowball"  size="medium">
-              <el-row>
-                <el-col :span="12">
-                  <el-form-item label="datadir" :label-width="formLabelWidth" prop="datadir">
-                    <el-input v-model="snowball.datadir" autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="tcp_port" :label-width="formLabelWidth" prop="tcp_port">
-                    <el-input v-model="snowball.tcp_port" autocomplete="off"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="http_port" :label-width="formLabelWidth" prop="http_port">
-                    <el-input v-model="snowball.http_port" autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="listen_host" :label-width="formLabelWidth" prop="listen_host">
-                    <ip  :index=0 :ip="snowball.listen_host"></ip>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24">
-                  <el-form-item label="interserver_http_port" label-width="160px" prop="interserver_http_port">
-                    <el-input v-model="snowball.interserver_http_port" autocomplete="off"></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24">
-                  <el-form-item label="nodes" :label-width="formLabelWidth" prop="nodes">
-                    <el-checkbox-group v-model="snowball.nodes">
-                      <el-checkbox v-for="host in hosts" :label="host.name"  />
-                    </el-checkbox-group>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-form>
+          <tab-content title="服务设置" icon="el-icon-setting">
+            <el-collapse>
+              <el-collapse-item title="zookeeper 设置" v-if="zookeeperselected" name="1">
+                <el-form :model="zookeeper" ref="zookeeperForm" :rules="rulesZk" size="medium">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="tickTime" :label-width="formLabelWidth" prop="tickTime">
+                        <el-input v-model="zookeeper.tickTime" autocomplete="off"></el-input>
+                      </el-form-item>
+                      <el-form-item label="initLimit" :label-width="formLabelWidth" prop="initLimit">
+                        <el-input v-model="zookeeper.initLimit" autocomplete="off"></el-input>
+                      </el-form-item>
+                      <el-form-item label="syncLimit" :label-width="formLabelWidth" prop="syncLimit">
+                        <el-input v-model="zookeeper.syncLimit" autocomplete="off"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="dataDir" :label-width="formLabelWidth" prop="dataDir">
+                        <el-input v-model="zookeeper.dataDir" autocomplete="off"></el-input>
+                      </el-form-item>
+                      <el-form-item label="clientPort" :label-width="formLabelWidth" prop="clientPort">
+                        <el-input v-model="zookeeper.clientPort" autocomplete="off"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-button @click="addzk" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加Zk节点</el-button>
+                      <el-table
+                          :data="zookeeper.nodes"
+                          style="width: 100%">
+                        <el-table-column prop="order" label="序列" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.order"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="name" label="zk节点名" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.name"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="port1" label="客户端连接端口" width="120" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.port1"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="port2" label="心跳端口"  >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.port2"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="port3" label="集群内通讯端口" width="120">
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.port3"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="ssh" label="服务器名">
+                          <template slot-scope="scope">
+                            <el-select
+                                v-model="scope.row.ssh"
+                                size="small"
+                                filterable
+                                allow-create
+                                default-first-option
+                            >
+                              <el-option
+                                  v-for="item in hosts"
+                                  :key="item.name"
+                                  :label="item.name"
+                                  :value="item.name">
+                              </el-option>
+                            </el-select>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="操作" >
+                          <template slot-scope="scope">
+                            <el-button @click.stop.prevent="deleteRowZk(scope.$index, zookeeper.nodes)" size="small" type="danger">
+                              移除
+                            </el-button>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </el-col>
+                  </el-row>
+                </el-form>
+              </el-collapse-item>
+              <el-collapse-item title="snowball 设置" v-if="snowballselected" name="2">
+                <el-form :model="snowball" ref="snowballForm" :rules="rulesSnowball"  size="medium">
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="datadir" :label-width="formLabelWidth" prop="datadir">
+                        <el-input v-model="snowball.datadir" autocomplete="off"></el-input>
+                      </el-form-item>
+                      <el-form-item label="tcp_port" :label-width="formLabelWidth" prop="tcp_port">
+                        <el-input v-model="snowball.tcp_port" autocomplete="off"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="http_port" :label-width="formLabelWidth" prop="http_port">
+                        <el-input v-model="snowball.http_port" autocomplete="off"></el-input>
+                      </el-form-item>
+                      <el-form-item label="listen_host" :label-width="formLabelWidth" prop="listen_host">
+                        <ip  :index=0 :ip="snowball.listen_host"></ip>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="interserver_http_port" label-width="160px" prop="interserver_http_port">
+                        <el-input v-model="snowball.interserver_http_port" autocomplete="off"></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-button @click="addsb" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加SB节点</el-button>
+                      <el-table
+                          :data="snowball.nodes"
+                          style="width: 100%">
+                        <el-table-column prop="name" label="SB节点名" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.name"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="path" label="path" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.path"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="tcp_port" label="tcp_port" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.tcp_port"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="http_port" label="http_port" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.http_port"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="interserver_http_port" label="interserver_http_port" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.interserver_http_port"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="listen_host" label="listen_host" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.listen_host"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="timezone" label="timezone" >
+                          <template slot-scope="scope">
+                            <el-input  size="small" v-model="scope.row.timezone"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="ssh" label="服务器名">
+                          <template slot-scope="scope">
+                            <el-select
+                                v-model="scope.row.ssh"
+                                size="small"
+                                filterable
+                                allow-create
+                                default-first-option
+                            >
+                              <el-option
+                                  v-for="item in hosts"
+                                  :key="item.name"
+                                  :label="item.name"
+                                  :value="item.name">
+                              </el-option>
+                            </el-select>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="操作" >
+                          <template slot-scope="scope">
+                            <el-button @click.stop.prevent="deleteRowZk(scope.$index, zookeeper.nodes)" size="small" type="danger">
+                              移除
+                            </el-button>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </el-col>
+                  </el-row>
+                </el-form>
+              </el-collapse-item>
+            </el-collapse>
           </tab-content>
           <tab-content title="安装" icon="el-icon-monitor">
             <el-progress :text-inside="true" :stroke-width="26" :percentage="percentage"></el-progress>
@@ -274,10 +452,11 @@
   </a>
 </template>
 <script>
-import {getInstallConf, setInstallConf,validateConf,validateHost,merge,list} from 'top/static/js/api/install.js'
+import {getInstallConf, setInstallConf,validateConf,validateHost,merge,list,processer} from 'top/static/js/api/install.js'
 import YlUpload from 'top/misc/upload/index.vue'
 import Ip from 'top/tools/install/static/js/components/ip.vue';
 import gettext from 'sources/gettext'
+import {Message} from "element-ui";
 
 export default {
   components: {
@@ -287,12 +466,14 @@ export default {
   name: 'install',
   data: function () {
     return {
+      zookeeperselected: false,
+      snowballselected: false,
       softlists: [{
-        service: 'zookeeper service',
+        service: 'zookeeper',
         version: '3.5.7',
         description: '',
         children: [{
-            service: 'zookeeper',
+            service: 'apache-zookeeper',
             version: '3.5.7',
             description: 'apache-zookeeper-3.5.7-bin.tar.gz'
           },{
@@ -301,12 +482,12 @@ export default {
             description: 'jdk-8u201-linux-x64.tar.gz'
           }]
       },{
-        service: 'snowball service',
+        service: 'snowball',
         version: '2.8.13',
         description: '',
         children:[
           {
-            service: 'snowball-common-static',
+            service: 'snowball-common',
             version: '2.8.13',
             description: 'snowball-common-static-2.8.13-2.el7.x86_64.rpm'
           },{
@@ -317,40 +498,10 @@ export default {
             service: 'snowball-client',
             version: '2.8.13',
             description: 'snowball-client-2.8.13-2.el7.x86_64.rpm'
-          },{
-            service: 'openssl-libs',
-            version: '1.0.2k',
-            description: 'openssl-libs-1.0.2k-19.el7.x86_64.rpm'
-          },{
-            service: 'openssl',
-            version: '1.0.2k',
-            description: 'openssl-1.0.2k-19.el7.x86_64.rpm'
-          },{
-            service: 'libicu',
-            version: '50.2',
-            description: 'libicu-50.2-3.el7.x86_64.rpm'
           }
         ]
       }],
       multipleSelection: [],
-      softlist:{
-        'snowball':{
-          'common':'snowball-common-static-2.8.13-2.el7.x86_64.rpm',
-          'server':'snowball-server-2.8.13-2.el7.x86_64.rpm',
-          'client':'snowball-client-2.8.13-2.el7.x86_64.rpm',
-          'dependencies':{
-            'openssl-libs':'openssl-libs-1.0.2k-19.el7.x86_64.rpm',
-            'openssl':'openssl-1.0.2k-19.el7.x86_64.rpm',
-            'libicu':'libicu-50.2-3.el7.x86_64.rpm'
-          }
-        },
-        'zookeeper':{
-          'zookeeper':'apache-zookeeper-3.5.7-bin.tar.gz',
-          'dependencies':{
-            'jdk':'jdk-8u201-linux-x64.tar.gz'
-          }
-        }
-      },
       loadingWizard: false,
       errorMsg: null,
       count: 0,
@@ -366,36 +517,50 @@ export default {
       dialogFormVisible: false,
       formLabelWidth: '90px',
       general:{
-        path:'/soft/',
+        path:'/',
         remoteSoftdir:'/app/soft/',
         remoteAppdir:'/app/zookeeper/',
         remoteConfDir:'/etc/snowball-server/',
         remoteJdkdir:'/app/jdk/'
       },
       hosts: [
-        {name: 'node1', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1023', status: 1},
-        {name: 'node2', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1024', status: 1},
-        {name: 'node3', ip: '192.168.2.143', user: 'root', password: 'admin', port: '1025', status: 1}
+        {name: 'server1', ip: '192.168.52.128', user: 'root', password: 'admin', port: '22', status: 1},
+        {name: 'server2', ip: '192.168.52.129', user: 'root', password: 'admin', port: '22', status: 1},
+        {name: 'server3', ip: '192.168.52.130', user: 'root', password: 'admin', port: '22', status: 1}
       ],
       zookeeper: {
+        softlist:{
+          'zookeeper':'',
+          'jdk':''},
         tickTime: '2000',
         initLimit: '10',
         syncLimit: '5',
         dataDir: '/data/zookeeper',
         clientPort: '2181',
         nodes: [
-          {name: 'zk001', order: '1', port1: '2181', port2: '2888', port3: '3888', ssh: 'node1'},
-          {name: 'zk002', order: '2', port1: '2181', port2: '2888', port3: '3889', ssh: 'node2'},
-          {name: 'zk003', order: '3', port1: '2181', port2: '2888', port3: '3890', ssh: 'node3'}
+          {name: 'zk001', order: '1', port1: '2181', port2: '2888', port3: '3888', ssh: 'server1'},
+          {name: 'zk002', order: '2', port1: '2181', port2: '2888', port3: '3888', ssh: 'server2'},
+          {name: 'zk003', order: '3', port1: '2181', port2: '2888', port3: '3888', ssh: 'server3'}
         ]
       },
       snowball: {
+        softlist:{
+          'common':'',
+          'server':'',
+          'client':''},
         datadir: '/data',
         tcp_port: '9000',
         http_port: '8123',
         interserver_http_port: '9090',
         listen_host: '0.0.0.0',
-        nodes: []
+        timezone:'Asia/Shanghai',
+        basecfgtpl:'snowball.config.xml.tpl',
+        licensetpl:'license.xml.tpl',
+        nodes: [
+          {name: 'node01', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server1'},
+          {name: 'node02', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server2'},
+          {name: 'node03', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server3'}
+        ]
       },
       rulesGeneral:{
         path: [
@@ -451,6 +616,54 @@ export default {
     })*/
   },
   methods: {
+    gettext: function (text) {
+      return gettext(text);
+    },
+    beforeZookeeperUpload(file){
+      if(file.name.indexOf('apache-zookeeper')==-1){
+        this.$message.error('选择的 apache-zookeeper 安装文件有误，请重新选择！');
+        return false
+      }else {
+        this.zookeeper.softlist.zookeeper = file.name
+        return true
+      }
+    },
+    beforeJdkUpload(file){
+      if(file.name.indexOf('jdk')==-1){
+        this.$message.error('选择的 jdk 安装文件有误，请重新选择！');
+        return false
+      }else {
+        this.zookeeper.softlist.jdk = file.name
+        return true
+      }
+    },
+    beforeSnowballCommonUpload(file){
+      if(file.name.indexOf('snowball-common')==-1){
+        this.$message.error('选择的 snowball-common 安装文件有误，请重新选择！');
+        return false
+      }else {
+        this.snowball.softlist.common = file.name
+        return true
+      }
+    },
+    beforeSnowballClientUpload(file){
+      if(file.name.indexOf('snowball-client')==-1){
+        this.$message.error('选择的 snowball-client 安装文件有误，请重新选择！');
+        return false
+      }else {
+        this.snowball.softlist.client = file.name
+        return true
+      }
+    },
+    beforeSnowballServerUpload(file){
+      if(file.name.indexOf('snowball-server')==-1){
+        this.$message.error('选择的 snowball-server 安装文件有误，请重新选择！');
+        return false
+      }else {
+        this.snowball.softlist.server = file.name
+        return true
+      }
+    },
     chunkData(option){
       return{
         size: option.fileSize, // 总文件大小
@@ -472,15 +685,67 @@ export default {
       }).catch(() => {
       })
     },
+    validatePgk:function (){
+      return new Promise((resolve, reject) => {
+        if(this.zookeeperselected==false && this.snowballselected == false ){
+          reject('请选择要安装的组件！')
+        }
+        if(this.zookeeperselected){
+          if(this.zookeeper.softlist.zookeeper==''||this.zookeeper.softlist.jdk==''){
+            reject('请选择要安装的软件包！')
+          }
+        }
+        if(this.snowballselected){
+          if(this.snowball.softlist.common==''||this.snowball.softlist.server==''||this.snowball.softlist.client==''){
+            reject('请选择要安装的软件包！')
+          }
+        }
+        resolve(true)
+      })
+    },
 
-    gettext: function (text) {
-      return gettext(text);
+    validateHost:function() {
+      return new Promise((resolve, reject) => {
+        if(this.hosts.length==0){
+          reject('不能为空！')
+        }
+        var serverNames = new Set(this.hosts.map(e=>{return e.name}));
+        if(serverNames.size!=this.hosts.length){
+          reject('服务器重名！')
+        }
+        var servers = new Set(this.hosts.map(e=>{return e.ip+":"+e.port}));
+        if(servers.size!=this.hosts.length){
+          reject('服务器地址重复！')
+        }
+        validateHost({hosts: this.hosts}).then(response => {
+          const {data} = response
+          let arr = data.map(e=>{return e.status})
+          let index = arr.indexOf(false);
+          if (index==-1){
+            resolve(true)
+          }
+          reject('尝试连接服务器时出错！')
+        }).catch(() => {
+          reject('服务器配置错误！')
+        })
+      })
+    },
+    select(selections, row){
+      selections.forEach(selection => {
+        if(selection.service == 'zookeeper'){//#选中zookeeper组件
+          this.zookeeperselected = true
+        }
+        if(selection.service == 'snowball') {
+          this.snowballselected = true
+        }
+      });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     rowSelectionSetting(row, index){
-      return true
+      var services = ["zookeeper", "snowball"];
+      return services.includes(row.service)
     },
     handleChange(index,ip) {
       this.hosts[index].ip = ip
@@ -510,15 +775,10 @@ export default {
     handleValidation: function(isValid, tabIndex){
       console.log('Tab: '+tabIndex+ ' valid: '+isValid)
     },
-    validatePgk:function (){
-      return new Promise((resolve, reject) => {
-        resolve(true)
-      })
-    },
     validateSource:function (){
       return new Promise((resolve, reject) => {
         list().then(res=> {
-          console.log(res)
+         // this.softlists = res.data
         }).catch(() => {
 
         })
@@ -568,32 +828,7 @@ export default {
         resolve(true)
       })
     },
-    validateHost:function() {
-      return new Promise((resolve, reject) => {
-        if(this.hosts.length==0){
-          reject('不能为空！')
-        }
-        var serverNames = new Set(this.hosts.map(e=>{return e.name}));
-        if(serverNames.size!=this.hosts.length){
-          reject('服务器重名！')
-        }
-        var servers = new Set(this.hosts.map(e=>{return e.ip+":"+e.port}));
-        if(servers.size!=this.hosts.length){
-          reject('服务器地址重复！')
-        }
-        validateHost({hosts: this.hosts}).then(response => {
-          const {data} = response
-          let arr = data.map(e=>{return e.status})
-          let index = arr.indexOf(false);
-          if (index==-1){
-            resolve(true)
-          }
-          reject('尝试连接服务器时出错！')
-        }).catch(() => {
-          reject('服务器配置错误！')
-        })
-      })
-    },
+
     deleteRow(index, rows) {
       rows.splice(index, 1);
     },
@@ -606,8 +841,20 @@ export default {
         order: '3',
         port1: '2181',
         port2: '2888',
-        port3: '3890',
+        port3: '3888',
         ssh: 'nodeX'
+      })
+    },
+    addsb() {
+      this.snowball.nodes.push({
+        name: 'node03',
+        path:'/data/snowball/',
+        tcp_port:'9000',
+        http_port:'8123',
+        interserver_http_port:'9090',
+        listen_host:'0.0.0.0',
+        timezone:'Asia/Shanghai',
+        ssh: 'server3'
       })
     },
     add() {
@@ -615,22 +862,29 @@ export default {
         name: 'nodex',
         ip: '192.168.1.1',
         user: 'root',
-        password: '******',
+        password: 'admin',
         port: '22',
         status: 1
       });
     },
     onComplete() {
       let c = setInterval(()=>{
-        if(this.num<100){
+        processer().then(_ => {
+          const {data} = _
+          this.percentage = data.percentage
+        }).catch(() => {})
+       /* if(this.num<100){
           this.num++
           this.percentage = this.num
         }else {
           this.num =0
-        }
-      }, 5000);
+        }*/
+      }, 3000);
+
       setInstallConf({
         config: {
+          zookeeperselected: this.zookeeperselected,
+          snowballselected: this.snowballselected,
           general: this.general,
           hosts: this.hosts,
           zookeeper: this.zookeeper,

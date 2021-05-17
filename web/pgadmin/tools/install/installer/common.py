@@ -125,6 +125,7 @@ def CheckSSHConnectAndGetOsInfo(host,port,authmode, user, password, authfile):
   os = 'unkown'
   v = 'unkown'
   if (res != False):
+    connectStatus = True
     res = res.replace('\r\n', '').strip()
     if (res.find('CentOS') != -1):
       os = 'centos'
@@ -134,6 +135,7 @@ def CheckSSHConnectAndGetOsInfo(host,port,authmode, user, password, authfile):
       os = 'ubuntu'
     else:
       os = 'unkown'
+
     if os == 'centos' or os == 'redhat':
       r = re.findall('release (.+?) \(', res)
       v = r[0][0:3]
@@ -142,7 +144,9 @@ def CheckSSHConnectAndGetOsInfo(host,port,authmode, user, password, authfile):
       v = r[0][0:5]
     else:
       v = 'unkown'
-    connectStatus = True
+    if (res.find('refused')!=-1) :
+        connectStatus = False
+
   else:
     connectStatus = False
   res = {

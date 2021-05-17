@@ -217,8 +217,8 @@ class ZookeeperConf(AbstractConfig):
     pass
 
 
-snowballConf = SnowballConfig(selfPath+'/config/conf.ini')
-zookeeperConf = ZookeeperConf(selfPath+'/config/conf.zookeeper.install.ini')
+#snowballConf = SnowballConfig(selfPath+'/config/conf.ini')
+#zookeeperConf = ZookeeperConf(selfPath+'/config/conf.zookeeper.install.ini')
 
 class ClusterConfig(AbstractConfig):
     def getClusetName(self):

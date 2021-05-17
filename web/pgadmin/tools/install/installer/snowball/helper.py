@@ -2,20 +2,22 @@
 
 import xmltodict,json
 from pgadmin.tools.install.installer.snowball.node import Node
-from pgadmin.tools.install.installer.snowball.executor import Cent7Executor
+from pgadmin.tools.install.installer.snowball.executor.abstract import AbstractExecutor
 
-from pgadmin.tools.install.config import clusterConfig , snowballConf
+from pgadmin.tools.install.config import clusterConfig
 
 class Helper():
 
     nodes = {}
+    jsonCfg= {}
     executors = {}
     checkedList = {}
-
+    def __init__(self, jsonCfg):
+        self.jsonCfg = jsonCfg
     def getNode(self, nodename):
         #if self.nodes.has_key(nodename) != True:
         if nodename not in self.nodes:
-            self.nodes[nodename] = Node(nodename)
+            self.nodes[nodename] = Node(nodename,self.jsonCfg)
         return self.nodes[nodename]
 
     def getExecuter(self,nodename):
@@ -29,7 +31,7 @@ class Helper():
             if(node.os['name'] == 'centos'):
                 osversion = float(node.os['version'][0:3])
                 if(osversion >= 7):
-                    self.executors[nodename] = Cent7Executor()
+                    self.executors[nodename] = AbstractExecutor()
                 else:
                     # self.executors[nodename] = Cent6Executor()
                     raise Exception('Centos6 can not Support')
@@ -88,11 +90,11 @@ class Helper():
         executor = self.getExecuter(nodename)
         return executor.prepareDataDisk(node)
 
-    def copyInstallFile(self,nodename,spath,remoteSoftdir):
+    def copyInstallFile(self,nodename,spath,remoteSoftdir,softlist):
 
         node = self.getNode(nodename)
         executor = self.getExecuter(nodename)
-        return executor.copyInstallFile(node,spath,remoteSoftdir)
+        return executor.copyInstallFile(node,spath,remoteSoftdir,softlist)
 
     def installSnowballServ(self, nodename,remoteSoftdir):
 
@@ -176,6 +178,7 @@ class Helper():
         # xmlfile = xmltodict.unparse(snowballconf, pretty=True);
         # print(xmlfile)
         return  res;
+
     def getIP(self,name,hosts):
         for host in hosts:
             if host['name'] == name :
@@ -183,4 +186,4 @@ class Helper():
         return '0.0.0.0'
 
 
-helper = Helper()
+

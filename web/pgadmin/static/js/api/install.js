@@ -41,3 +41,9 @@ export function list() {
     method: 'post'
   })
 }
+export function processer() {
+  return request({
+    url: '/install/processer',
+    method: 'post'
+  })
+}

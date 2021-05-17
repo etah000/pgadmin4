@@ -4,6 +4,7 @@ import sys, os, re
 import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.utils import get_storage_directory
+from flask import session
 # from config import snowballConf as Confobj
 
 selfPath = GetSelfPath()
@@ -26,13 +27,6 @@ class AbstractExecutor:
         }
         return False
 
-    def getSnowballFile(self):
-        files =  {
-            'common':'',
-            'server':'',
-            'client':'',
-        }
-        return False
 
     def prepareDependency(self, node,spath,remoteSoftdir):
         needInstallSoftlist = self.checkDependency(node)
@@ -89,12 +83,12 @@ class AbstractExecutor:
         # print('check checkFirewalld ...', node)
         return True
 
-    def copyInstallFile(self, node,spath,remoteAppdir):
+    def copyInstallFile(self, node,spath,remoteAppdir,softlist):
         node.call('mkdir -p ' + remoteAppdir)
-        softlist = self.getSnowballFile();
         for soft, filename in softlist.items():
             fullFilename = get_storage_directory()+ spath+ filename
             node.put(fullFilename, remoteAppdir)
+            session['percentagesize'] = session.get('percentagesize')+os.path.getsize(fullFilename)
 
         return True
 
@@ -104,13 +98,13 @@ class AbstractExecutor:
         path = conf['yandex']['path']
         node.call('mkdir -p /app ; mkdir -p '+path)
 
-        cmd = 'rpm -e snowball-client-2.8.13-2.el7.x86_64; rpm -e snowball-server-2.8.13-2.el7.x86_64; rpm -e snowball-common-static-2.8.13-2.el7.x86_64;rpm -ivh /app/soft/snowball-*.rpm;'
+        cmd = 'rpm -qa|grep -i snowball|xargs rpm -e; rpm -ivh /app/soft/snowball-*.rpm;'
         res = node.call(cmd)
         print(res)
 
         self.updateRomoteConfigXml(node,conf,remoteConfDir)
-
-        res = node.put(confPath+'snowball.license.xml.tpl', remoteConfDir+'config.d/license.xml')
+        #注册license
+        res = node.put(get_storage_directory()+'/snowball.license.xml.tpl', remoteConfDir+'config.d/license.xml')
         res = node.call('chown -R snowball:snowball '+path)
 
     def startSnowballServ(self, node):

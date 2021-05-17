@@ -1,40 +1,35 @@
 # coding: utf-8
-
+from pgadmin.tools.install.installer.snowball.helper import Helper
 import sys, os
-from pgadmin.tools.install.config import snowballConf as conf
-from pgadmin.tools.install.installer.snowball.helper import helper
-
-nodes = conf.options('nodes')
 
 class Processer():
 
-    def install(self,spath,remoteSoftdir,remoteConfDir):
+    def install(self,spath,remoteSoftdir,remoteConfDir,softlist,nodes,jsonCfg):
         try:
-            self.installSnowball(spath,remoteSoftdir,remoteConfDir)
+            self.installSnowball(spath,remoteSoftdir,remoteConfDir,softlist,nodes,jsonCfg)
         except Exception as e:
             print(e)
 
-    def installSnowball(self,spath,remoteSoftdir,remoteConfDir):
+    def installSnowball(self,spath,remoteSoftdir,remoteConfDir,softlist,nodes,jsonCfg):
 
         print('\r\nStart Install Snowball ....... ')
 
         print('\r\nStep-1: Check node ssh connection .......')
-        self.__checkNodesSystemInfo()
+        self.__checkNodesSystemInfo(nodes,jsonCfg)
 
         print('\r\nStep-2: Prepare for node ....')
-        self.__prepareForNodes(spath,remoteSoftdir)
+        self.__prepareForNodes(spath,remoteSoftdir,nodes,softlist,jsonCfg)
 
         print('\r\nStep-3: Install snowball on Node ....')
-        self.__installSnowballOnNodes(remoteConfDir)
+        self.__installSnowballOnNodes(remoteConfDir,nodes,jsonCfg)
         #
         print("\r\nStep-4: Start snowball server ....")
-        self.__startSnowballServ()
+        self.__startSnowballServ(nodes,jsonCfg)
         #
         print("\r\nStep-5: Verify snowball server status ....")
-        self.__verifySnowballServStatus()
+        self.__verifySnowballServStatus(nodes,jsonCfg)
 
-    def __checkNodesSystemInfo(self):
-        global nodes
+    def __checkNodesSystemInfo(self,nodes,jsonCfg):
         allNodeSupporedToInstall = True
         unSupportNode = ''
         sys.stdout.write('待安装的节点:')
@@ -47,7 +42,7 @@ class Processer():
                 # msg = 'Connect to %s: %s ' % (nodename, self.host);
                 msg = 'Connect to %s: ' % (nodename);
                 sys.stdout.write(msg)
-                res = helper.checkNodeSSHConnection(nodename)
+                res = Helper(jsonCfg).checkNodeSSHConnection(nodename)
 
                 if res == False:
                     print('\r\n~\033[1;31mConnect Failure:\033[0m ' + nodename)
@@ -55,7 +50,7 @@ class Processer():
                     print('\r\n~\033[1;32mConnect Success:\033[0m ' + nodename +':'+ res)
 
                 # 操作系统是否支持检查
-                res = helper.isSportedToInstall(nodename)
+                res = Helper(jsonCfg).isSportedToInstall(nodename)
                 if  res != False:
                     print('~IsSported: \033[1;32mSuccess\033[0m')
                     tempSuccessNode.append(nodename)
@@ -89,53 +84,51 @@ class Processer():
             print('Exception:' +e)
             raise e
 
-    def __prepareForNodes(self,spath,remoteSoftdir):
+    def __prepareForNodes(self,spath,remoteSoftdir,nodes,softlist,jsonCfg):
 
         for nodename in nodes:
             # print('-- Prepare data disk ....')
             # self.__prepareDataDisk(nodename)
 
-            print('-2.1 Prepare soft dependency for node : ' + nodename)
-            self.__prepareDependencyForNode(nodename,spath,remoteSoftdir)
+            #print('-2.1 Prepare soft dependency for node : ' + nodename)
+            #self.__prepareDependencyForNode(nodename,spath,remoteSoftdir)
 
             print('-2.2 Prepare firewalld rules node : ' + nodename)
-            self.__prepareFirewalldRules(nodename)
+            self.__prepareFirewalldRules(nodename,jsonCfg)
             #
             print('-2.3 Prepare install file ....')
-            self.__copyInstallFileToNodes(nodename,spath,remoteSoftdir)
+            self.__copyInstallFileToNodes(nodename,spath,remoteSoftdir,softlist,jsonCfg)
 
 
 
-    def __prepareDataDisk(self,nodename):
+    def __prepareDataDisk(self,nodename,jsonCfg):
 
-        helper.prepareDataDisk(nodename)
+        Helper(jsonCfg).prepareDataDisk(nodename)
 
-    def __prepareDependencyForNode(self,nodename,spath,remoteSoftdir):
+    def __prepareDependencyForNode(self,nodename,spath,remoteSoftdir,jsonCfg):
 
-        helper.prepareDependency(nodename,spath,remoteSoftdir)
+        Helper(jsonCfg).prepareDependency(nodename,spath,remoteSoftdir)
 
-    def __prepareFirewalldRules(self,nodename):
+    def __prepareFirewalldRules(self,nodename,jsonCfg):
 
-        helper.prepareFirewalldRule(nodename)
+        Helper(jsonCfg).prepareFirewalldRule(nodename)
 
-    def __copyInstallFileToNodes(self,nodename,spath,remoteSoftdir):
+    def __copyInstallFileToNodes(self,nodename,spath,remoteSoftdir,softlist,jsonCfg):
 
-        helper.copyInstallFile(nodename,spath,remoteSoftdir)
+        Helper(jsonCfg).copyInstallFile(nodename,spath,remoteSoftdir,softlist)
 
-    def __installSnowballOnNodes(self,remoteConfDir):
+    def __installSnowballOnNodes(self,remoteConfDir,nodes,jsonCfg):
         for nodename in nodes:
-            helper.installSnowballServ(nodename,remoteConfDir)
+            Helper(jsonCfg).installSnowballServ(nodename,remoteConfDir)
 
-
-    def __startSnowballServ(self):
+    def __startSnowballServ(self,nodes,jsonCfg):
         for nodename in nodes:
-            helper.startSnowballServ(nodename)
+            Helper(jsonCfg).startSnowballServ(nodename)
 
-
-    def __verifySnowballServStatus(self):
+    def __verifySnowballServStatus(self,nodes,jsonCfg):
         for nodename in nodes:
-            helper.verifySnowballStatus(nodename)
+            Helper(jsonCfg).verifySnowballStatus(nodename)
 
 
 
-snowballProcesser = Processer()
+

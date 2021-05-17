@@ -1,4 +1,4 @@
-
+import sys, os, re
 from pgadmin.tools.install.installer.common import Put, Exec, CheckSSHConnectAndGetOsInfo
 from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.utils import get_storage_directory
@@ -19,7 +19,7 @@ class AbstractNode():
     }
     status = False
     def write(self, content, filename):
-        tempfilename = get_storage_directory()+'/soft/tempfile'
+        tempfilename = os.path.join(get_storage_directory(),'tempfile')
         with open(tempfilename, "w") as f:
             f.write(str(content))
             f.close()
