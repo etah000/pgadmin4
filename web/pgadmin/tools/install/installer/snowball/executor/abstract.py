@@ -103,8 +103,8 @@ class AbstractExecutor:
         print(res)
 
         self.updateRomoteConfigXml(node,conf,remoteConfDir)
-        #注册license
-        res = node.put(get_storage_directory()+'/snowball.license.xml.tpl', remoteConfDir+'config.d/license.xml')
+        #注册license licensetpl
+        res = node.put(get_storage_directory()+'/%s' % node.getlicense(), remoteConfDir+'config.d/license.xml')
         res = node.call('chown -R snowball:snowball '+path)
 
     def startSnowballServ(self, node):

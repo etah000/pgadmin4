@@ -12,9 +12,11 @@ class Node(AbstractNode):
     snowballconf = {}
     info = {}
     dbStatus = False
+    licensetpl ='license.xml'
 
     def __init__(self, name, jsonCfg ):
         self.jsonCfg = jsonCfg;
+        self.licensetpl = jsonCfg['snowball']['licensetpl']
         infoT = self.getNodeInfo(name,jsonCfg['snowball']['nodes'])
         info = {'name': infoT['name'],
                 'host': self.getIP(infoT['ssh'],jsonCfg['hosts']),
@@ -76,7 +78,8 @@ class Node(AbstractNode):
 
     def getSnowballConf(self):
         return self.snowballconf
-
+    def getlicense(self):
+        return self.licensetpl
 
     def query(self,sql):
         cmd = 'snowball-client -h 127.0.0.1 --port '+self.info['tcp_port']+ " --multiquery --query '"+sql+"'";

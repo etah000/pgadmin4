@@ -135,55 +135,6 @@
                 </el-form>
               </el-collapse-item>
             </el-collapse>
-<!--            <el-table
-                ref="multipleTable"
-                :data="softlists"
-                tooltip-effect="dark"
-                row-key="service"
-                style="width: 100%"
-                :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-                @select="select"
-                @selection-change="handleSelectionChange">
-              <el-table-column
-                  type="selection"
-                  :selectable="rowSelectionSetting"
-                width="55">
-              </el-table-column>
-&lt;!&ndash;              <el-table-column>
-                <template slot-scope="scope">
-                  <el-checkbox v-if="scope.row.service== 'zookeeper'||scope.row.service== 'snowball'"></el-checkbox>
-                </template>
-              </el-table-column>&ndash;&gt;
-              <el-table-column
-                  prop="service"
-                  label="service"
-                  width="220">
-              </el-table-column>
-&lt;!&ndash;              <el-table-column
-                  prop="version"
-                  label="version"
-                  width="120">
-              </el-table-column>&ndash;&gt;
-              <el-table-column
-                  prop="description"
-                  label="pkg" width="360">
-              </el-table-column>
-              <el-table-column>
-                <template slot-scope="scope">
-                    <yl-upload
-                        action="/install/upload"
-                        v-if="!['zookeeper', 'snowball'].includes(scope.row.service)"
-                        :data="chunkData"
-                        :on-success="handleSuccess"
-                        accept = ".gz, .zip,.bz2, .rpm"
-                        :chunk-size="1024 * 1024 * 3"
-                        :thread="4"
-                    >
-                      <el-button size="small" icon="el-icon-upload"  type="primary"></el-button>
-                    </yl-upload>
-                </template>
-              </el-table-column>
-            </el-table>-->
           </tab-content>
           <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
             <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加服务器
@@ -205,7 +156,6 @@
                   width = "240"
                   >
                 <template slot-scope="scope">
-<!--                  <vue-ip :index="scope.$index" :ip="scope.row.ip" :port="scope.row.port" @change="handleChange(scope.row.ip,scope.row.port,scope.$index)"></vue-ip>-->
                   <ip :index="scope.$index" :ip="scope.row.ip"  @change="handleChange"></ip>
                 </template>
               </el-table-column>
@@ -250,7 +200,7 @@
           </tab-content>
           <tab-content title="服务设置" icon="el-icon-setting">
             <el-collapse>
-              <el-collapse-item title="zookeeper 设置" v-if="zookeeperselected" name="1">
+              <el-collapse-item title="zookeeper service 设置" v-if="zookeeperselected" name="1">
                 <el-form :model="zookeeper" ref="zookeeperForm" :rules="rulesZk" size="medium">
                   <el-row>
                     <el-col :span="12">
@@ -275,7 +225,7 @@
                   </el-row>
                   <el-row>
                     <el-col :span="24">
-                      <el-button @click="addzk" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加Zk节点</el-button>
+                      <el-button @click="addzk" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加zookeeper节点</el-button>
                       <el-table
                           :data="zookeeper.nodes"
                           style="width: 100%">
@@ -334,7 +284,7 @@
                   </el-row>
                 </el-form>
               </el-collapse-item>
-              <el-collapse-item title="snowball 设置" v-if="snowballselected" name="2">
+              <el-collapse-item title="snowball db 设置" v-if="snowballselected" name="2">
                 <el-form :model="snowball" ref="snowballForm" :rules="rulesSnowball"  size="medium">
                   <el-row>
                     <el-col :span="12">
@@ -350,29 +300,56 @@
                         <el-input v-model="snowball.http_port" autocomplete="off"></el-input>
                       </el-form-item>
                       <el-form-item label="listen_host" :label-width="formLabelWidth" prop="listen_host">
-                        <ip  :index=0 :ip="snowball.listen_host"></ip>
+                        <ip  :index=0 :ip="snowball.listen_host" @change="handleChangeSb"></ip>
                       </el-form-item>
                     </el-col>
                   </el-row>
                   <el-row>
-                    <el-col :span="24">
+                    <el-col :span="12">
                       <el-form-item label="interserver_http_port" label-width="160px" prop="interserver_http_port">
                         <el-input v-model="snowball.interserver_http_port" autocomplete="off"></el-input>
                       </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="timezone" :label-width="formLabelWidth" prop="timezone">
+                        <el-input v-model="snowball.timezone" autocomplete="off"></el-input>
+                      </el-form-item>
+                    </el-col>
                   </el-row>
                   <el-row>
                     <el-col :span="24">
-                      <el-button @click="addsb" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加SB节点</el-button>
+                      <el-form-item label="license" :label-width="formLabelWidth"  prop="licensetpl">
+                        <el-input v-model="snowball.licensetpl" :readonly="true" >
+                          <template slot="append">
+                            <yl-upload
+                                action="/install/upload"
+                                :data="chunkData"
+                                :on-success="handleSuccess"
+                                :before-upload="beforeLicensetplUpload"
+                                :show-file-list = false
+                                accept = ".xml, .tpl"
+                                :chunk-size="1024 * 1024 * 3"
+                                :thread="4"
+                            >
+                              <i class="el-icon-upload"></i>
+                            </yl-upload>
+                          </template>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-button @click="addsb" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加snowball节点</el-button>
                       <el-table
                           :data="snowball.nodes"
                           style="width: 100%">
-                        <el-table-column prop="name" label="SB节点名" >
+                        <el-table-column prop="name" label="snowball节点名" >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.name"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="path" label="path" >
+                        <el-table-column prop="path" label="数据路径" >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.path"></el-input>
                           </template>
@@ -394,7 +371,7 @@
                         </el-table-column>
                         <el-table-column prop="listen_host" label="listen_host" >
                           <template slot-scope="scope">
-                            <el-input  size="small" v-model="scope.row.listen_host"></el-input>
+                            <ip :index="scope.$index" :ip="scope.row.listen_host"  @change="handleChangeSblisten"></ip>
                           </template>
                         </el-table-column>
                         <el-table-column prop="timezone" label="timezone" >
@@ -468,39 +445,6 @@ export default {
     return {
       zookeeperselected: false,
       snowballselected: false,
-      softlists: [{
-        service: 'zookeeper',
-        version: '3.5.7',
-        description: '',
-        children: [{
-            service: 'apache-zookeeper',
-            version: '3.5.7',
-            description: 'apache-zookeeper-3.5.7-bin.tar.gz'
-          },{
-            service: 'jdk',
-            version: '8u201',
-            description: 'jdk-8u201-linux-x64.tar.gz'
-          }]
-      },{
-        service: 'snowball',
-        version: '2.8.13',
-        description: '',
-        children:[
-          {
-            service: 'snowball-common',
-            version: '2.8.13',
-            description: 'snowball-common-static-2.8.13-2.el7.x86_64.rpm'
-          },{
-            service: 'snowball-server',
-            version: '2.8.13',
-            description: 'snowball-server-2.8.13-2.el7.x86_64.rpm'
-          },{
-            service: 'snowball-client',
-            version: '2.8.13',
-            description: 'snowball-client-2.8.13-2.el7.x86_64.rpm'
-          }
-        ]
-      }],
       multipleSelection: [],
       loadingWizard: false,
       errorMsg: null,
@@ -618,6 +562,15 @@ export default {
   methods: {
     gettext: function (text) {
       return gettext(text);
+    },
+    beforeLicensetplUpload(file){
+      if(file.name.indexOf('license')==-1){
+        this.$message.error('选择的 license 安装文件有误，请重新选择！');
+        return false
+      }else {
+        this.snowball.licensetpl = file.name
+        return true
+      }
     },
     beforeZookeeperUpload(file){
       if(file.name.indexOf('apache-zookeeper')==-1){
@@ -749,6 +702,12 @@ export default {
     },
     handleChange(index,ip) {
       this.hosts[index].ip = ip
+    },
+    handleChangeSb(index,ip) {
+      this.snowball.listen_host = ip
+    },
+    handleChangeSblisten(index,ip) {
+      this.snowball.nodes[index].listen_host = ip
     },
     fileSelectionDlg() {
       let params = {
