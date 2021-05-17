@@ -878,6 +878,8 @@ export default {
       });
     },
     onComplete() {
+      this.installres = false
+      this.haserror = false
       let c = setInterval(()=>{
         processer().then(_ => {
           const {data} = _
