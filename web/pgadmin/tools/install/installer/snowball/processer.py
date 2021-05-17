@@ -5,10 +5,7 @@ import sys, os
 class Processer():
 
     def install(self,spath,remoteSoftdir,remoteConfDir,softlist,nodes,jsonCfg):
-        try:
-            self.installSnowball(spath,remoteSoftdir,remoteConfDir,softlist,nodes,jsonCfg)
-        except Exception as e:
-            print(e)
+        self.installSnowball(spath,remoteSoftdir,remoteConfDir,softlist,nodes,jsonCfg)
 
     def installSnowball(self,spath,remoteSoftdir,remoteConfDir,softlist,nodes,jsonCfg):
 

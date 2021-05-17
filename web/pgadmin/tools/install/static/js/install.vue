@@ -421,6 +421,12 @@
                 :description=res
                 show-icon>
             </el-alert>
+            <el-alert
+                v-show="haserror"
+                type="error"
+                description="server error"
+                show-icon>
+            </el-alert>
           </tab-content>
           <div class="loader" v-if="loadingWizard"></div>
           <div v-if="errorMsg">
@@ -460,6 +466,7 @@ export default {
       active: 0,
       res: '',
       installres: false,
+      haserror: false,
       dialogFormVisible: false,
       formLabelWidth: '90px',
       general:{
@@ -874,7 +881,7 @@ export default {
       let c = setInterval(()=>{
         processer().then(_ => {
           const {data} = _
-          this.percentage = data.percentage
+          this.percentage = data.percentage.toFixed(2)
         }).catch(() => {})
        /* if(this.num<100){
           this.num++
@@ -900,6 +907,8 @@ export default {
         this.percentage = 100
         clearInterval(c)
       }).catch(() => {
+        this.haserror = true
+        this.percentage = 0
         clearInterval(c)
       })
     }

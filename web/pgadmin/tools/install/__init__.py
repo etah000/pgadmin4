@@ -144,6 +144,11 @@ def setInstallConf():
     # for host in data['config']['hosts']:
     #     conf.set ('sshs',host['name'],'1,'+host['user']+','+host['password']+','+host['port'])
     # conf.write(open(cfgpath, "r+", encoding="utf-8")) # r+模式
+    res = {
+        'code': "0000",
+        'msg': "success",
+        'data': "install success!"
+    }
     #要处理的文件大小
     allsize = 0
     session['percentagesize'] = 0
@@ -170,30 +175,33 @@ def setInstallConf():
     remoteSoftdir=data['config']['general']['remoteSoftdir']
     remoteAppdir=data['config']['general']['remoteAppdir']
     remoteConfDir=data['config']['general']['remoteConfDir']
-
-    #zookeeperselected
-    if data['config']['zookeeperselected'] == True:
-        zksoftlist=data['config']['zookeeper']['softlist']
-        zknodes = []
-        for node in data['config']['zookeeper']['nodes']:
-            zknodes.append(node['name'])
-        current_app.logger.info('install  Zookeeper start')
-        ZookeeperProcesser().install(spath,remoteSoftdir,remoteAppdir,zksoftlist,zknodes,data['config'])
-        current_app.logger.info('install  Zookeeper end')
-    #snowballselected
-    if data['config']['snowballselected'] == True:
-        sbsoftlist=data['config']['snowball']['softlist']
-        sbnodes = []
-        for node in data['config']['snowball']['nodes']:
-            sbnodes.append(node['name'])
-        current_app.logger.info('install  Snowball start')
-        SnowballProcesser().install(spath,remoteSoftdir,remoteConfDir,sbsoftlist,sbnodes,data['config'])
-        current_app.logger.info('install  Snowball end')
-    res = {
-        'code': "0000",
-        'msg': "success",
-        'data': "install success!"
-    }
+    try:
+        #zookeeperselected
+        if data['config']['zookeeperselected'] == True:
+            zksoftlist=data['config']['zookeeper']['softlist']
+            zknodes = []
+            for node in data['config']['zookeeper']['nodes']:
+                zknodes.append(node['name'])
+            current_app.logger.info('install  Zookeeper start')
+            ZookeeperProcesser().install(spath,remoteSoftdir,remoteAppdir,zksoftlist,zknodes,data['config'])
+            current_app.logger.info('install  Zookeeper end')
+        #snowballselected
+        if data['config']['snowballselected'] == True:
+            sbsoftlist=data['config']['snowball']['softlist']
+            sbnodes = []
+            for node in data['config']['snowball']['nodes']:
+                sbnodes.append(node['name'])
+            current_app.logger.info('install  Snowball start')
+            SnowballProcesser().install(spath,remoteSoftdir,remoteConfDir,sbsoftlist,sbnodes,data['config'])
+            current_app.logger.info('install  Snowball end')
+    except Exception as e:
+      print(e)
+      res = {
+          'code': "9999",
+          'msg': "server error",
+          'data': ""
+      }
+      return ajax_response(response=res, status=200)
     return ajax_response(response=res, status=200)
 
 @blueprint.route("/getInstallConf",methods=["GET", "POST"],endpoint="get_install_conf")
@@ -239,7 +247,7 @@ def validateHost():
 
 @blueprint.route('/processer', methods=['POST'])
 def processer():
-    data ={'percentage': 100*session.get('percentagesize')/session.get('allsize')}
+    data ={'percentage': 100*session.get('percentagesize')*0.99/session.get('allsize')}
     return ajax_response(response={'code': "0000",'msg': "success",'data': data}, status=200)
 
 @blueprint.route('/upload', methods=['POST'])

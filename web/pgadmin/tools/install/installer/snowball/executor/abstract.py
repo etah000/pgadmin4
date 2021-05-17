@@ -1,17 +1,16 @@
 # coding: utf-8
-import sys, os, re
-# import json
 import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.utils import get_storage_directory
 from flask import session
+import sys, os, re
 # from config import snowballConf as Confobj
 
-selfPath = GetSelfPath()
+#selfPath = GetSelfPath()
 
 #softPath = selfPath + '/soft/'
 
-confPath = selfPath + '/config/'
+#confPath = selfPath + '/config/'
 
 #remoteAppdir = '/app/soft/'
 

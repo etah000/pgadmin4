@@ -1,8 +1,8 @@
 # coding: utf-8
-
-import sys, os
-from flask import session
 from pgadmin.tools.install.installer.zookeeper.helper import Helper
+import sys, os
+
+
 
 
 class Processer():

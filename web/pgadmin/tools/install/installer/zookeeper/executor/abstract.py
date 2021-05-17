@@ -4,7 +4,7 @@ import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.utils import get_storage_directory
 from flask import session
-
+import sys, os, re
 
 class AbstractExecutor():
 
