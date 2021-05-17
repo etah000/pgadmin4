@@ -690,6 +690,12 @@ export default {
           if(zkNames.size!=this.zookeeper.nodes.length){
             reject('zk节点名重复！')
           }
+          var hostsName=this.hosts.map(e=>{return e.name})
+          this.zookeeper.nodes.map(node=>{
+            if(hostsName.indexOf(node.ssh)==-1){
+              reject('zk节点服务器设置错误！')
+            }
+          })
           var zkServerNames = new Set(this.zookeeper.nodes.map(e=>{return e.ssh}));
           if(zkServerNames.size!=this.zookeeper.nodes.length){
             reject('zk节点服务器名重复！')
@@ -715,6 +721,13 @@ export default {
           if(snowballNames.size!=this.snowball.nodes.length){
             reject('snowball节点名不能重复！')
           }
+
+          var hostsName=this.hosts.map(e=>{return e.name})
+          this.snowball.nodes.map(node=>{
+            if(hostsName.indexOf(node.ssh)==-1){
+              reject('snowball节点所在服务器设置错误！')
+            }
+          })
           var snowballServerNames = new Set(this.snowball.nodes.map(e=>{return e.ssh}));
           if(snowballServerNames.size!=this.snowball.nodes.length){
             reject('snowball节点服务器名重复！')
