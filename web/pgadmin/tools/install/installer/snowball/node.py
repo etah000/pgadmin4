@@ -45,18 +45,18 @@ class Node(AbstractNode):
         snowballconf['yandex']['http_port'] = snowballCfg['http_port']
         snowballconf['yandex']['interserver_http_port'] = snowballCfg['interserver_http_port']
         snowballconf['yandex']['listen_host'] = snowballCfg['listen_host']
-        #snowballconf['yandex']['timezone'] = snowballCfg['timezone']
+        snowballconf['yandex']['timezone'] = snowballCfg['timezone']
         #集群置空
         snowballconf['yandex']['remote_servers'] = ''
         #局部设置
         for node in snowballCfg['nodes']:
             if node['name'] == name:
-                snowballconf['yandex']['path'] = node['path']
-                snowballconf['yandex']['tcp_port'] = node['tcp_port']
-                snowballconf['yandex']['http_port'] = node['http_port']
-                snowballconf['yandex']['interserver_http_port'] = node['interserver_http_port']
-                snowballconf['yandex']['listen_host'] = node['listen_host']
-                snowballconf['yandex']['timezone'] = node['timezone']
+                snowballconf['yandex']['path'] = node.get('path', snowballconf['yandex']['path'])
+                snowballconf['yandex']['tcp_port'] = node.get('tcp_port', snowballconf['yandex']['tcp_port'])
+                snowballconf['yandex']['http_port'] = node.get('http_port', snowballconf['yandex']['http_port'])
+                snowballconf['yandex']['interserver_http_port'] = node.get('interserver_http_port', snowballconf['yandex']['interserver_http_port'])
+                snowballconf['yandex']['listen_host'] = node.get('listen_host', snowballconf['yandex']['listen_host'])
+                snowballconf['yandex']['timezone'] = node.get('timezone', snowballconf['yandex']['timezone'])
         return  snowballconf
     def getIP(self,name,hosts):
         for host in hosts:
