@@ -467,6 +467,7 @@ export default {
       res: '',
       installres: false,
       haserror: false,
+      installing: false,
       dialogFormVisible: false,
       formLabelWidth: '90px',
       general:{
@@ -878,41 +879,52 @@ export default {
       });
     },
     onComplete() {
-      this.installres = false
-      this.haserror = false
-      let c = setInterval(()=>{
-        processer().then(_ => {
-          const {data} = _
-          this.percentage = data.percentage.toFixed(2)
-        }).catch(() => {})
-       /* if(this.num<100){
-          this.num++
-          this.percentage = this.num
-        }else {
-          this.num =0
-        }*/
-      }, 3000);
+      if(this.installing){
+        this.$message({
+          message: '正在安装！',
+          type: 'warning'
+        });
+        return
+      }else {
+        this.installing = true
+        this.installres = false
+        this.haserror = false
+        let c = setInterval(()=>{
+          processer().then(_ => {
+            const {data} = _
+            this.percentage = data.percentage.toFixed(2)
+          }).catch(() => {
+            this.haserror = true
+            this.installres = false
+            this.installing = false
+          })
+        }, 3000);
+        setInstallConf({
+          config: {
+            zookeeperselected: this.zookeeperselected,
+            snowballselected: this.snowballselected,
+            general: this.general,
+            hosts: this.hosts,
+            zookeeper: this.zookeeper,
+            snowball: this.snowball
+          }
+        }).then(response => {
+          const {data} = response
+          this.res = data
+          this.haserror = false
+          this.installres = true
+          this.installing = false
+          this.percentage = 100
+          clearInterval(c)
+        }).catch(() => {
+          this.haserror = true
+          this.installres = false
+          this.installing = false
+          this.percentage = 0
+          clearInterval(c)
+        })
+      }
 
-      setInstallConf({
-        config: {
-          zookeeperselected: this.zookeeperselected,
-          snowballselected: this.snowballselected,
-          general: this.general,
-          hosts: this.hosts,
-          zookeeper: this.zookeeper,
-          snowball: this.snowball
-        }
-      }).then(response => {
-        const {data} = response
-        this.res = data
-        this.installres = true
-        this.percentage = 100
-        clearInterval(c)
-      }).catch(() => {
-        this.haserror = true
-        this.percentage = 0
-        clearInterval(c)
-      })
     }
   }
 }
