@@ -250,7 +250,7 @@ define([
     //     }
     //     return true;
     //   },
-    // }, 
+    // },
     // {
     //   id: 'no_of_jobs',
     //   label: gettext('Number of jobs'),
@@ -273,7 +273,7 @@ define([
     //   select2: {
     //     allowClear: false,
     //   },
-    // }, 
+    // },
      {
       id: 'server_note',
       label: gettext('Note'),
@@ -282,7 +282,7 @@ define([
       visible: function(m) {
         return m.get('type') === 'server';
       },
-    }, 
+    },
     // {
     //   type: 'nested',
     //   control: 'fieldset',
@@ -334,7 +334,7 @@ define([
     //       return false;
     //     return true;
     //   },
-    // }, 
+    // },
     // {
     //   type: 'nested',
     //   control: 'fieldset',
@@ -554,7 +554,7 @@ define([
     //     disabled: false,
     //     group: gettext('Disable'),
     //   }],
-    // }, 
+    // },
     // {
     //   type: 'nested',
     //   control: 'fieldset',
@@ -701,7 +701,7 @@ define([
         });
       }
       // console.log(menus);
-      pgBrowser.add_menus(menus);
+      // pgBrowser.add_menus(menus);
       return this;
     },
     start_backup_global: function(action, item) {
