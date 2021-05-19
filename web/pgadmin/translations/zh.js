@@ -1,0 +1,45 @@
+var zh={
+  install:{
+    install:'安装工具',
+    wizTitle:"安装向导",
+    hosts:"服务器设置",
+    next:"下一步",
+    back:"上一步",
+    finish:"开始安装",
+    service:"组件选择",
+    serviceSetting:"服务设置",
+    installing:"安装",
+    addhost:"添加服务器",
+    addzkeeper:"添加zkeeper节点",
+    addsnowball:"添加snowball节点",
+    del:"移除",
+    msgcompselect:"请选择要安装的组件!",
+    msgpkgselect:"请选择要安装的软件包!",
+    notnull:"不能为空",
+    selected:`选择的`,
+    errorpkg:`安装文件有误，请重新选择！`,
+    hostname: '服务器名',
+    ipaddress: 'ip地址',
+    sshport: 'ssh端口',
+    username: '用户名',
+    password: "密码",
+    operate: "操作",
+    setting:"设置",
+    //zk list
+    order:"序列",
+    zkname:"zk节点名",
+    ssh:"所在服务器",
+    clientPort:"客户端连接端口",
+    leaderPort:"心跳端口",
+    listenPort:"集群内通讯端口",
+    //sb
+    sbname:'snowball节点名',
+    path:"数据路径",
+    formerro:"表单输入有误！",
+    duplicate:"重复！",
+    error:"设置错误！",
+    conerror:"尝试连接服务器时出错！",
+    installstats:"正在安装 稍后尝试！"
+  }
+}
+export default zh

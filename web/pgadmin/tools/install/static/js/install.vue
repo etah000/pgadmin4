@@ -1,6 +1,6 @@
 <template>
   <a id="install" href="#" data-toggle="pg-menu" role="menuitem" class="dropdown-item">
-    <span data-test="menu-item-text"  @click="dialogFormVisible = true">{{ gettext('Install') }} </span>
+    <span data-test="menu-item-text"  @click="dialogFormVisible = true">{{$t('install.install')}}</span>
     <el-dialog width="65%"
                :modal="true"
                :close-on-click-modal="false"
@@ -11,24 +11,14 @@
                      @on-validate="handleValidation"
                      @on-loading="setLoading"
                      @on-error="handleErrorMessage"
-                     title="安装向导"
-                     back-button-text="上一步"
-                     next-button-text="下一步"
-                     finish-button-text="开始安装"
+                     :title="$t('install.wizTitle')"
+                     :back-button-text="$t('install.back')"
+                     :next-button-text="$t('install.next')"
+                     :finish-button-text="$t('install.finish')"
                      shape="circle"
                      color="#20a0ff"
                      error-color="#fa0202">
-          <!--<tab-content title="软件源" icon="el-icon-coin" :before-change="validateSource" >
-            <el-form :model="general"  ref="generalForm" :rules="rulesGeneral"  size="medium">
-              <el-form-item label="软件包准备" label-width="110px" prop="path">
-                         <el-input v-model="general.path" autocomplete="off"></el-input>
-                             <el-button @click="fileSelectionDlg" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>选取
-                             </el-button>
-
-              </el-form-item>
-            </el-form>
-          </tab-content>-->
-          <tab-content title="组件选择" icon="el-icon-coin" :before-change="validatePgk" >
+          <tab-content :title="$t('install.service')" icon="el-icon-coin" :before-change="validatePgk" >
             <el-collapse>
               <el-collapse-item  name="1">
                 <template slot="title">
@@ -136,15 +126,14 @@
               </el-collapse-item>
             </el-collapse>
           </tab-content>
-          <tab-content title="服务器设置" icon="el-icon-set-up" :before-change="validateHost" >
-            <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加服务器
-            </el-button>
+          <tab-content :title="$t('install.hosts')" icon="el-icon-set-up" :before-change="validateHost" >
+            <el-button @click="add" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>{{$t('install.addhost')}}</el-button>
             <el-table
                 :data="hosts"
                 style="width: 100%">
               <el-table-column
                   prop="name"
-                  label="服务器名"
+                  :label="$t('install.hostname')"
                   >
                 <template slot-scope="scope">
                   <el-input  size="small" v-model="scope.row.name" ></el-input>
@@ -152,7 +141,7 @@
               </el-table-column>
               <el-table-column
                   prop="ip"
-                  label="ip地址"
+                  :label="$t('ipaddress')"
                   width = "240"
                   >
                 <template slot-scope="scope">
@@ -161,15 +150,15 @@
               </el-table-column>
               <el-table-column
                   prop="port"
-                  label="ssh端口"
-              >
+                  :label="$t('sshport')"
+                >
                 <template slot-scope="scope">
                   <el-input  size="small" v-model="scope.row.port" ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
                   prop="user"
-                  label="用户名"
+                  :label="$t('username')"
                   >
                 <template slot-scope="scope">
                   <el-input  size="small" v-model="scope.row.user"></el-input>
@@ -177,14 +166,14 @@
               </el-table-column>
               <el-table-column
                   prop="password"
-                  label="密码"
+                  :label="$t('password')"
                   >
                 <template slot-scope="scope">
                   <el-input type="password"  size="small" v-model="scope.row.password"></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                  label="操作"
+                  :label="$t('operate')"
                   >
                 <template slot-scope="scope">
                   <el-button
@@ -192,15 +181,15 @@
                       size="small"
                       type="danger"
                   >
-                    移除
+                    {{$t('install.del')}}
                   </el-button>
                 </template>
               </el-table-column>
             </el-table>
           </tab-content>
-          <tab-content title="服务设置" icon="el-icon-setting" :before-change="validateService">
+          <tab-content :title="$t('install.serviceSetting')" icon="el-icon-setting" :before-change="validateService">
             <el-collapse>
-              <el-collapse-item title="zookeeper service 设置" v-if="zookeeperselected" name="1">
+              <el-collapse-item :title="'zookeeper service '+ $t('install.setting')" v-if="zookeeperselected" name="1">
                 <el-form :model="zookeeper" ref="zookeeperForm" :rules="rulesZk" size="medium">
                   <el-row>
                     <el-col :span="12">
@@ -225,21 +214,23 @@
                   </el-row>
                   <el-row>
                     <el-col :span="24">
-                      <el-button @click="addzk" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加zookeeper节点</el-button>
+                      <el-button @click="addzk" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>{{$t('install.addzkeeper')}}</el-button>
                       <el-table
                           :data="zookeeper.nodes"
                           style="width: 100%">
-                        <el-table-column prop="order" label="序列" >
+                        <el-table-column prop="order"
+                                         :label="$t('install.order')" >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.order"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="name" label="zk节点名" >
+                        <el-table-column prop="name"
+                                         :label="$t('install.zkname')" >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.name"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="ssh" label="所在服务器" width="120">
+                        <el-table-column prop="ssh" :label="$t('install.ssh')" width="120">
                           <template slot-scope="scope">
                             <el-select
                                 v-model="scope.row.ssh"
@@ -257,26 +248,26 @@
                             </el-select>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="port1" label="客户端连接端口" width="120" >
+                        <el-table-column prop="port1" :label="$t('clientPort')" width="120" >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.port1"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="port2" label="心跳端口"  >
+                        <el-table-column prop="port2" :label="$t('leaderPort')"  >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.port2"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="port3" label="集群内通讯端口" width="120">
+                        <el-table-column prop="port3" :label="$t('listenPort')" width="120">
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.port3"></el-input>
                           </template>
                         </el-table-column>
 
-                        <el-table-column label="操作" >
+                        <el-table-column :label="$t('operate')" >
                           <template slot-scope="scope">
                             <el-button @click.stop.prevent="deleteRowZk(scope.$index, zookeeper.nodes)" size="small" type="danger">
-                              移除
+                              {{$t('install.del')}}
                             </el-button>
                           </template>
                         </el-table-column>
@@ -285,7 +276,7 @@
                   </el-row>
                 </el-form>
               </el-collapse-item>
-              <el-collapse-item title="snowball db 设置" v-if="snowballselected" name="2">
+              <el-collapse-item :title="'snowball db '+ $t('install.setting')"  v-if="snowballselected" name="2">
                 <el-form :model="snowball" ref="snowballForm" :rules="rulesSnowball"  size="medium">
                   <el-row>
                     <el-col :span="12">
@@ -341,16 +332,16 @@
                   </el-row>
                   <el-row>
                     <el-col :span="24">
-                      <el-button @click="addsb" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>添加snowball节点</el-button>
+                      <el-button @click="addsb" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>{{$t('install.addsnowball')}}</el-button>
                       <el-table
                           :data="snowball.nodes"
                           style="width: 100%">
-                        <el-table-column prop="name" fixed label="snowball节点名" width="120">
+                        <el-table-column prop="name" fixed :label="$t('install.sbname')" width="120">
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.name"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="ssh" label="所在服务器" width="120">
+                        <el-table-column prop="ssh" :label="$t('install.ssh')" width="120">
                           <template slot-scope="scope">
                             <el-select
                                 v-model="scope.row.ssh"
@@ -368,7 +359,7 @@
                             </el-select>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="path" label="数据路径" width="150" >
+                        <el-table-column prop="path" :label="$t('install.path')" width="150" >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.path"></el-input>
                           </template>
@@ -399,10 +390,10 @@
                           </template>
                         </el-table-column>
 
-                        <el-table-column label="操作" >
+                        <el-table-column :label="$t('operate')" >
                           <template slot-scope="scope">
                             <el-button @click.stop.prevent="deleteRowSb(scope.$index, snowball.nodes)" size="small" type="danger">
-                              移除
+                              {{$t('install.del')}}
                             </el-button>
                           </template>
                         </el-table-column>
@@ -413,7 +404,7 @@
               </el-collapse-item>
             </el-collapse>
           </tab-content>
-          <tab-content title="安装" icon="el-icon-monitor">
+          <tab-content :title="$t('install.installing')"  icon="el-icon-monitor">
             <el-progress :text-inside="true" :stroke-width="26" :percentage="percentage"></el-progress>
             <el-alert
                 v-show="installres"
@@ -440,7 +431,6 @@
 import {getInstallConf, setInstallConf,validateConf,validateHost,merge,list,processer} from 'top/static/js/api/install.js'
 import YlUpload from 'top/misc/upload/index.vue'
 import Ip from 'top/tools/install/static/js/components/ip.vue';
-import gettext from 'sources/gettext'
 import {Message} from "element-ui";
 
 export default {
@@ -518,50 +508,50 @@ export default {
       },
       rulesGeneral:{
         path: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ]
       },
       rulesZk: {
         tickTime: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         initLimit: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         syncLimit: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         dataDir: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         clientPort: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ]
       },
       rulesSnowball: {
         datadir: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         timezone: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         licensetpl: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         tcp_port: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         http_port: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         interserver_http_port: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         listen_host: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
         nodes: [
-          {required: true, message: '不能为空', trigger: 'blur'}
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ]
       },
     }
@@ -569,19 +559,11 @@ export default {
   created() {
   },
   mounted() {
-    /*getInstallConf().then(response => {
-      //const { data } = response
-      //this.countData = data
-    }).catch(() => {
-    })*/
   },
   methods: {
-    gettext: function (text) {
-      return gettext(text);
-    },
     beforeLicensetplUpload(file){
       if(file.name.indexOf('license')==-1){
-        this.$message.error('选择的 license 安装文件有误，请重新选择！');
+        this.$message.error(`${this.$t('install.selected')} license ${this.$t('install.errorpkg')}` );
         return false
       }else {
         this.snowball.licensetpl = file.name
@@ -590,7 +572,7 @@ export default {
     },
     beforeZookeeperUpload(file){
       if(file.name.indexOf('apache-zookeeper')==-1){
-        this.$message.error('选择的 apache-zookeeper 安装文件有误，请重新选择！');
+        this.$message.error(`${this.$t('install.selected')} apache-zookeeper ${this.$t('install.errorpkg')}` );
         return false
       }else {
         this.zookeeper.softlist.zookeeper = file.name
@@ -599,7 +581,7 @@ export default {
     },
     beforeJdkUpload(file){
       if(file.name.indexOf('jdk')==-1){
-        this.$message.error('选择的 jdk 安装文件有误，请重新选择！');
+        this.$message.error(`${this.$t('install.selected')} jdk ${this.$t('install.errorpkg')}` );
         return false
       }else {
         this.zookeeper.softlist.jdk = file.name
@@ -608,7 +590,7 @@ export default {
     },
     beforeSnowballCommonUpload(file){
       if(file.name.indexOf('snowball-common')==-1){
-        this.$message.error('选择的 snowball-common 安装文件有误，请重新选择！');
+        this.$message.error(`${this.$t('install.selected')} snowball-common ${this.$t('install.errorpkg')}` );
         return false
       }else {
         this.snowball.softlist.common = file.name
@@ -617,7 +599,7 @@ export default {
     },
     beforeSnowballClientUpload(file){
       if(file.name.indexOf('snowball-client')==-1){
-        this.$message.error('选择的 snowball-client 安装文件有误，请重新选择！');
+        this.$message.error(`${this.$t('install.selected')} snowball-client ${this.$t('install.errorpkg')}` );
         return false
       }else {
         this.snowball.softlist.client = file.name
@@ -626,7 +608,7 @@ export default {
     },
     beforeSnowballServerUpload(file){
       if(file.name.indexOf('snowball-server')==-1){
-        this.$message.error('选择的 snowball-server 安装文件有误，请重新选择！');
+        this.$message.error(`${this.$t('install.selected')} snowball-server ${this.$t('install.errorpkg')}` );
         return false
       }else {
         this.snowball.softlist.server = file.name
@@ -657,16 +639,16 @@ export default {
     validatePgk:function (){
       return new Promise((resolve, reject) => {
         if(this.zookeeperselected==false && this.snowballselected == false ){
-          reject('请选择要安装的组件！')
+          reject(`${this.$t('install.msgcompselect')}`)
         }
         if(this.zookeeperselected){
           if(this.zookeeper.softlist.zookeeper==''||this.zookeeper.softlist.jdk==''){
-            reject('请选择要安装的软件包！')
+            reject(`${this.$t('install.msgpkgselect')}`)
           }
         }
         if(this.snowballselected){
           if(this.snowball.softlist.common==''||this.snowball.softlist.server==''||this.snowball.softlist.client==''){
-            reject('请选择要安装的软件包！')
+            reject(`${this.$t('install.msgpkgselect')}`)
           }
         }
         resolve(true)
@@ -678,67 +660,67 @@ export default {
           this.$refs['zookeeperForm'].validate((valid) => {
             if (valid) {
             } else {
-              reject('表单输入有误！')
+              reject(`${this.$t('install.formerro')}`)
               return false;
             }
           });
           if(this.zookeeper.nodes.length==0){
-            reject('不能为空！')
+            reject(`${this.$t('install.notnull')}`)
           }
           var zkorders = new Set(this.zookeeper.nodes.map(e=>{return e.order}));
           if(zkorders.size!=this.zookeeper.nodes.length){
-            reject('序列重复！')
+            reject(`${this.$t('install.order')}${this.$t('install.duplicate')}`)
           }
           this.zookeeper.nodes.map(e=>{
             if(e.name.trim()==''){
-              reject('zk节点名,不能为空！')
+              reject(`${this.$t('install.zkname')}${this.$t('install.notnull')}`)
             }
           })
           var zkNames = new Set(this.zookeeper.nodes.map(e=>{return e.name}));
           if(zkNames.size!=this.zookeeper.nodes.length){
-            reject('zk节点名重复！')
+            reject(`${this.$t('install.zkname')}${this.$t('install.duplicate')}`)
           }
           var hostsName=this.hosts.map(e=>{return e.name})
           this.zookeeper.nodes.map(node=>{
             if(hostsName.indexOf(node.ssh)==-1){
-              reject('zk节点服务器设置错误！')
+              reject(`zk ${this.$t('install.ssh')} ${this.$t('install.error')}`)
             }
           })
           var zkServerNames = new Set(this.zookeeper.nodes.map(e=>{return e.ssh}));
           if(zkServerNames.size!=this.zookeeper.nodes.length){
-            reject('zk节点服务器名重复！')
+            reject(`zk ${this.$t('install.ssh')} ${this.$t('install.duplicate')}`)
           }
         }
         if(this.snowballselected){
           this.$refs['snowballForm'].validate((valid) => {
             if (valid) {
             } else {
-              reject('表单输入有误！')
+              reject(`${this.$t('install.formerro')}`)
               return false;
             }
           });
           if(this.snowball.nodes.length==0){
-            reject('snowball 节点不能为空！')
+            reject(`snowball ${this.$t('install.notnull')}`)
           }
           this.snowball.nodes.map(e=>{
             if(e.name.trim()==''){
-              reject('snowball节点名,不能为空！')
+              reject(`${this.$t('install.sbname')}${this.$t('install.notnull')}`)
             }
           })
           var snowballNames = new Set(this.snowball.nodes.map(e=>{return e.name}));
           if(snowballNames.size!=this.snowball.nodes.length){
-            reject('snowball节点名不能重复！')
+            reject(`${this.$t('install.sbname')}${this.$t('install.duplicate')}`)
           }
 
           var hostsName=this.hosts.map(e=>{return e.name})
           this.snowball.nodes.map(node=>{
             if(hostsName.indexOf(node.ssh)==-1){
-              reject('snowball节点所在服务器设置错误！')
+              reject(`snowball ${this.$t('install.ssh')} ${this.$t('install.error')}`)
             }
           })
           var snowballServerNames = new Set(this.snowball.nodes.map(e=>{return e.ssh}));
           if(snowballServerNames.size!=this.snowball.nodes.length){
-            reject('snowball节点服务器名重复！')
+            reject(`snowball ${this.$t('install.ssh')} ${this.$t('install.duplicate')}`)
           }
 
         }
@@ -748,20 +730,20 @@ export default {
     validateHost:function() {
       return new Promise((resolve, reject) => {
         if(this.hosts.length==0){
-          reject('不能为空！')
+          reject(`${this.$t('install.notnull')}`)
         }
         this.hosts.map(e=>{
           if(e.name.trim()==''){
-            reject('服务器名,不能为空！')
+            reject(`${this.$t('install.hostname')} ${this.$t('install.notnull')}`)
           }
         })
         var serverNames = new Set(this.hosts.map(e=>{return e.name}));
         if(serverNames.size!=this.hosts.length){
-          reject('服务器重名！')
+          reject(`${this.$t('install.hostname')} ${this.$t('install.duplicate')}`)
         }
         var servers = new Set(this.hosts.map(e=>{return e.ip+":"+e.port}));
         if(servers.size!=this.hosts.length){
-          reject('服务器地址重复！')
+          reject(`${this.$t('install.ipaddress')} ${this.$t('install.duplicate')}`)
         }
         validateHost({hosts: this.hosts}).then(response => {
           const {data} = response
@@ -770,9 +752,9 @@ export default {
           if (index==-1){
             resolve(true)
           }
-          reject('尝试连接服务器时出错！')
+          reject(`${this.$t('install.conerror')}`)
         }).catch(() => {
-          reject('服务器配置错误！')
+          reject(`${this.$t('install.error')}`)
         })
       })
     },

@@ -13221,3 +13221,5 @@ msgid ""
 "Error: {0}"
 msgstr ""
 
+msgid "installation wizard"
+msgstr ""

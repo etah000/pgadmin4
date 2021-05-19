@@ -47,3 +47,9 @@ export function processer() {
     method: 'post'
   })
 }
+export function getAllPreferences() {
+  return request({
+    url: '/preferences/get_all',
+    method: 'get'
+  })
+}

@@ -13396,6 +13396,9 @@ msgid ""
 "Error: {0}"
 msgstr ""
 
+msgid "installation wizard"
+msgstr "安装向导"
+
 #~ msgid "Script - "
 #~ msgstr "脚本 - "
 
