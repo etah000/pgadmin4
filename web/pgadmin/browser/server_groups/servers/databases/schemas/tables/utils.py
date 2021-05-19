@@ -476,8 +476,17 @@ class BaseTableView(PGChildNodeView, BasePartitionTable):
                                                   'ddl.sql']),
                                         data=data, conn=self.conn, is_sql=True)
 
+        SQL = render_template("/".join([self.table_template_path,
+                                                  'show_create.sql']),
+                                        data=data, conn=self.conn, is_sql=True)
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        else:
+            table_sql = res
+
         # Add into main sql
-        table_sql = re.sub('\n{2,}', '\n\n', table_sql)
+        # table_sql = re.sub('\n{2,}', '\n\n', table_sql)
         main_sql.append(table_sql.strip('\n'))
 
         sql = '\n'.join(main_sql)
