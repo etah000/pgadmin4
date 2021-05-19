@@ -285,7 +285,7 @@ def create_app(app_name=None):
     @babel.localeselector
     def get_locale():
         """Get the language for the user."""
-        language = 'en'
+        language = 'zh'
         if config.SERVER_MODE is False:
             # Get the user language preference from the miscellaneous module
             if current_user.is_authenticated:

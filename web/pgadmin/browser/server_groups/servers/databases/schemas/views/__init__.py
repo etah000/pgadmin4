@@ -13,6 +13,7 @@ import copy
 import re
 from functools import wraps
 
+import sqlparse
 import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babelex import gettext
@@ -519,6 +520,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
         def_ = match.group('definition') if match else ''
         def_ = def_.strip().strip(';').strip()
+        def_ = sqlparse.format(def_, reindent=True)
 
         result['definition'] = def_
 
@@ -635,6 +637,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
             def_ = match.group('definition')
             def_ = def_.strip().strip(';').strip()
+            def_ = sqlparse.format(def_, reindent=True, keyword_case='lower')
 
             return def_
 
@@ -649,16 +652,19 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
 
         old_def = extract_def(old_ddl)
         new_def = new_ddl.strip().strip(';').strip()
+        # turn old_def and new_def keyword case to lower for comparison
+        new_def = sqlparse.format(new_def, reindent=True, keyword_case='lower')
         flag_redef = (old_def and new_def and old_def != new_def)
 
         try:
-
             # step 1: create or replace view first
             if flag_redef:
+                # do use the original definition,
+                # in case of keyword_case change lead to error
                 _data = {
                     'database': did,
                     'name': vid,
-                    'definition': new_def
+                    'definition': data['definition']
                 }
                 SQL, _ = self.getSQL(gid, sid, did, _data, vid)
                 SQL = SQL.strip('\n').strip(' ')
@@ -1341,12 +1347,21 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
         partition_main_sql = ""
 
         # if table is partitions then
-        table_sql = render_template("/".join([self.template_path,
-                                              'sql/ddl.sql']),
-                                    data=data, conn=self.conn, is_sql=True)
+        # table_sql = render_template("/".join([self.template_path,
+        #                                       'sql/ddl.sql']),
+        #                             data=data, conn=self.conn, is_sql=True)
+
+        SQL = render_template("/".join([self.template_path,
+                                                  'sql/show_create.sql']),
+                                        data=data, conn=self.conn, is_sql=True)
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        else:
+            table_sql = res
 
         # Add into main sql
-        table_sql = re.sub('\n{2,}', '\n\n', table_sql)
+        # table_sql = re.sub('\n{2,}', '\n\n', table_sql)
         main_sql.append(table_sql.strip('\n'))
 
         sql = '\n'.join(main_sql)
@@ -1924,12 +1939,21 @@ class MViewNode(ViewNode, VacuumSettings):
         partition_main_sql = ""
 
         # if table is partitions then
-        table_sql = render_template("/".join([self.template_path,
-                                              'sql/ddl.sql']),
-                                    data=data, conn=self.conn, is_sql=True)
+        # table_sql = render_template("/".join([self.template_path,
+        #                                       'sql/ddl.sql']),
+        #                             data=data, conn=self.conn, is_sql=True)
+
+        SQL = render_template("/".join([self.template_path,
+                                                  'sql/show_create.sql']),
+                                        data=data, conn=self.conn, is_sql=True)
+        status, res = self.conn.execute_scalar(SQL)
+        if not status:
+            return internal_server_error(errormsg=res)
+        else:
+            table_sql = res
 
         # Add into main sql
-        table_sql = re.sub('\n{2,}', '\n\n', table_sql)
+        # table_sql = re.sub('\n{2,}', '\n\n', table_sql)
         main_sql.append(table_sql.strip('\n'))
 
         sql = '\n'.join(main_sql)

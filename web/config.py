@@ -30,7 +30,7 @@ from pgadmin.utils import env, IS_WIN, fs_short_path
 ##########################################################################
 
 # Name of the application to display in the UI
-APP_NAME = 'SuperAdmin' 
+APP_NAME = 'SuperAdmin'
 APP_ICON = 'pg-icon'
 
 ##########################################################################
@@ -90,6 +90,8 @@ LANGUAGES = {
     # 'ru': 'Russian',
     # 'es': 'Spanish',
 }
+
+BABEL_DEFAULT_LOCALE = 'zh'
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!
 # List of modules to skip when dynamically loading
