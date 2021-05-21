@@ -141,7 +141,7 @@
               </el-table-column>
               <el-table-column
                   prop="ip"
-                  :label="$t('ipaddress')"
+                  :label="$t('install.ipaddress')"
                   width = "240"
                   >
                 <template slot-scope="scope">
@@ -150,7 +150,7 @@
               </el-table-column>
               <el-table-column
                   prop="port"
-                  :label="$t('sshport')"
+                  :label="$t('install.sshport')"
                 >
                 <template slot-scope="scope">
                   <el-input  size="small" v-model="scope.row.port" ></el-input>
@@ -158,7 +158,7 @@
               </el-table-column>
               <el-table-column
                   prop="user"
-                  :label="$t('username')"
+                  :label="$t('install.username')"
                   >
                 <template slot-scope="scope">
                   <el-input  size="small" v-model="scope.row.user"></el-input>
@@ -166,14 +166,14 @@
               </el-table-column>
               <el-table-column
                   prop="password"
-                  :label="$t('password')"
+                  :label="$t('install.password')"
                   >
                 <template slot-scope="scope">
                   <el-input type="password"  size="small" v-model="scope.row.password"></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                  :label="$t('operate')"
+                  :label="$t('install.operate')"
                   >
                 <template slot-scope="scope">
                   <el-button
@@ -248,23 +248,23 @@
                             </el-select>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="port1" :label="$t('clientPort')" width="120" >
+                        <el-table-column prop="port1" :label="$t('install.clientPort')" width="120" >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.port1"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="port2" :label="$t('leaderPort')"  >
+                        <el-table-column prop="port2" :label="$t('install.leaderPort')"  >
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.port2"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column prop="port3" :label="$t('listenPort')" width="120">
+                        <el-table-column prop="port3" :label="$t('install.listenPort')" width="120">
                           <template slot-scope="scope">
                             <el-input  size="small" v-model="scope.row.port3"></el-input>
                           </template>
                         </el-table-column>
 
-                        <el-table-column :label="$t('operate')" >
+                        <el-table-column :label="$t('install.operate')" >
                           <template slot-scope="scope">
                             <el-button @click.stop.prevent="deleteRowZk(scope.$index, zookeeper.nodes)" size="small" type="danger">
                               {{$t('install.del')}}
@@ -863,7 +863,7 @@ export default {
     onComplete() {
       if(this.installing){
         this.$message({
-          message: '正在安装！',
+          message: `${this.$t('install.installstats')}`,
           type: 'warning'
         });
         return
