@@ -11,7 +11,7 @@ import simplejson as json
 import paramiko
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
-    current_app, url_for
+    current_app, url_for, Response
 from flask_babelex import gettext
 from flask_security import current_user, login_required
 from pgadmin.browser.server_groups.servers.types import ServerType
@@ -34,6 +34,7 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 import os
 from pgadmin.utils import get_storage_directory
 from pgadmin.browser.utils import PGChildModule
+
 
 def has_any(data, keys):
     """
@@ -1125,8 +1126,9 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             current_app.logger.exception(e)
+            errmsg = getattr(e, 'message', str(e)).split('Stack trace')[0]
             return self.get_response_for_password(
-                server, 401, True, True, getattr(e, 'message', str(e)))
+                server, 401, True, True, errmsg)
 
         if not status:
             if hasattr(str, 'decode'):
@@ -1748,12 +1750,15 @@ class ServerNode(PGChildNodeView):
         )
         # get ssh connection info
         ssh_info = self._check_ssh_info(gid, sid)
+        if isinstance(ssh_info, Response):
+            return ssh_info
+
         if ssh_info['ssh_username'] is None or (
                 ssh_info['ssh_key_file'] is None and
                 ssh_info['ssh_authentication_type'] == 1) or (
                 ssh_info['ssh_password'] is None and
                 ssh_info['ssh_authentication_type'] == 0):
-            errmsg = 'please submit ssh connection information in properties!'
+            errmsg = gettext('please submit ssh connection information in properties!')
             return make_json_response(
                 success=0,
                 errormsg=errmsg
@@ -1880,7 +1885,7 @@ class ServerNode(PGChildNodeView):
         if ssh_info['ssh_username'] is None or (
             ssh_info['ssh_key_file'] is None and
             ssh_info['ssh_password'] is None):
-            errmsg = 'please submit ssh connection information in properties!'
+            errmsg = gettext('please submit ssh connection information in properties!')
             return make_json_response(
                 success=0,
                 errormsg=errmsg

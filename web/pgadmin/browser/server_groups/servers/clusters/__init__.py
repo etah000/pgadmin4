@@ -640,7 +640,7 @@ class DatabaseView(PGClusterChildNodeView):
         # get ssh connection info
         ssh_info = get_ssh_info(gid, sid)
         if not ssh_info:
-            errmsg = 'please submit ssh connection information in properties!'
+            errmsg = _('please submit ssh connection information in properties!')
             return None, errmsg
 
         fl = io.StringIO(data)
@@ -741,7 +741,7 @@ class DatabaseView(PGClusterChildNodeView):
         # get ssh connection info
         ssh_info = get_ssh_info(gid, sid)
         if not ssh_info:
-            errmsg = 'please submit ssh connection information in properties!'
+            errmsg = _('please submit ssh connection information in properties!')
             return make_json_response(
                 success=0,
                 errormsg=errmsg
