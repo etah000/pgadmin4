@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: pgadmin/__init__.py:527 pgadmin/__init__.py:580
 msgid "Auto-detected {0} installation with the data directory at {1}"
@@ -8933,7 +8933,6 @@ msgid "Failed to save the lock layout setting."
 msgstr "未能保存锁定布局设置。"
 
 #: pgadmin/browser/static/js/node.js:131
-#, fuzzy
 msgid "Update..."
 msgstr "更新..."
 
