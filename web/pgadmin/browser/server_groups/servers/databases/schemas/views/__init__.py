@@ -606,7 +606,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare, Cluster
             )
         except Exception as e:
             current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+            errmsg = str(e).split('Stack trace')[0]
+            return internal_server_error(errormsg=errmsg)
 
     @check_precondition
     def update(self, gid, sid, did, vid, scid=0):

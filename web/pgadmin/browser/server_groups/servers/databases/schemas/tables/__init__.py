@@ -1041,7 +1041,8 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         except Exception as e:
             traceback.print_exc()
-            return internal_server_error(errormsg=str(e))
+            errmsg = str(e).split('Stack trace')[0]
+            return internal_server_error(errormsg=errmsg)
 
     def _create_single_table(self, gid, sid, did, tid, data):
         SQL = render_template(

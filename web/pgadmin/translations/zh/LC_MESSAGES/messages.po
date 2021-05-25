@@ -880,7 +880,7 @@ msgstr "数据库连接已断开。"
 
 #: pgadmin/browser/server_groups/servers/clusters/__init__.py:586
 msgid "XMLSyntaxError ({})."
-msgstr ""
+msgstr "XML语法错误 ({})."
 
 #: pgadmin/browser/server_groups/servers/clusters/__init__.py:836
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:907
@@ -2915,7 +2915,7 @@ msgstr "主机名称"
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:355
 #, fuzzy
 msgid "Cluster type"
-msgstr "是否为系统类型？"
+msgstr "集群类型"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:357
 msgid "非复制集群"
@@ -2932,20 +2932,20 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:376
 #, fuzzy
 msgid "Default Databases"
-msgstr "要创建数据库吗？"
+msgstr "默认数据库"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:385
 msgid "preview xml"
-msgstr ""
+msgstr "预览 xml"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:568
 #, fuzzy
 msgid "host name cannot be empty."
-msgstr "列名不能为空。"
+msgstr "主机名不能为空。"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:572
 msgid "host name must be even number"
-msgstr ""
+msgstr "主机数量必须为偶数"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:615
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:402
@@ -6485,7 +6485,7 @@ msgstr "无法获取实用程序信息"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:95
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:102
 msgid "View..."
-msgstr ""
+msgstr "视图..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:211
 msgid ""
@@ -6497,11 +6497,11 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:213
 msgid "Do you wish to continue?"
-msgstr ""
+msgstr "是否继续?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:256
 msgid "Please enter view code."
-msgstr ""
+msgstr "请输入视图定义"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:63
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:77
@@ -6510,7 +6510,7 @@ msgstr "数据库..."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:428
 msgid "Database already connected."
-msgstr ""
+msgstr "数据库已连接."
 
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/9.2_plus/stats.sql:13
 msgid "Last statistics reset"
@@ -9122,7 +9122,7 @@ msgstr "取消全选"
 #: pgadmin/browser/static/js/node.ui.js:573
 #: pgadmin/tools/schema_diff/static/js/schema_diff.backform.js:100
 msgid "Select an item..."
-msgstr ""
+msgstr "请选择..."
 
 #: pgadmin/browser/static/js/toolbar.js:21
 #: pgadmin/browser/static/js/toolbar.js:22
@@ -9623,7 +9623,7 @@ msgstr "准备事务"
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:77
 #: pgadmin/tools/user_management/static/js/user_management.js:903
 msgid "Search"
-msgstr ""
+msgstr "搜索"
 
 #: pgadmin/dashboard/templates/dashboard/database_dashboard.html:88
 #: pgadmin/dashboard/templates/dashboard/server_dashboard.html:94
@@ -10737,11 +10737,11 @@ msgstr ""
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:113
 msgid "Rows Affected"
-msgstr ""
+msgstr "受影响行数"
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:131
 msgid "Error Message"
-msgstr ""
+msgstr "错误消息"
 
 #: pgadmin/static/js/sqleditor/history/query_history_details.js:173
 msgid "Copy to Query Editor"
@@ -10755,7 +10755,7 @@ msgstr "消息"
 
 #: pgadmin/static/js/sqleditor/history/query_history_entries.js:255
 msgid "Show queries generated internally by SnowAdmin?"
-msgstr ""
+msgstr "查看 SnowAdmin 内部查询?"
 
 #: pgadmin/static/js/tree/pgadmin_tree_save_state.js:89
 msgid "Error resetting the tree saved state.\""
@@ -12406,45 +12406,45 @@ msgstr ""
 
 #: pgadmin/tools/search_objects/__init__.py:26
 msgid "Search objects"
-msgstr ""
+msgstr "搜索对象"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:16
 msgid "Search Objects Error"
-msgstr ""
+msgstr "搜索对象错误"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:33
 msgid "Search Objects - "
-msgstr ""
+msgstr "搜索对象 - "
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog.js:35
 msgid "Search Objects..."
-msgstr ""
+msgstr "搜索对象..."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:69
 msgid "Type at least 2 characters"
-msgstr ""
+msgstr "输入至少2个字符"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:74
 msgid "Object types"
-msgstr ""
+msgstr "对象类型"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:151
 #, python-format
 msgid "%s match found."
-msgstr ""
+msgstr "匹配到 %s."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:151
 #, python-format
 msgid "%s matches found."
-msgstr ""
+msgstr "匹配到 %s."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:203
 msgid "Object name"
-msgstr ""
+msgstr "对象名称"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:215
 msgid "Browser path"
-msgstr ""
+msgstr "浏览器路径"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:255
 #, python-format
@@ -12455,28 +12455,28 @@ msgstr ""
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:267
 msgid "Locating..."
-msgstr ""
+msgstr "定位中..."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:274
 msgid "Unable to locate this object in the browser."
-msgstr ""
+msgstr "无法在浏览器中定位对象."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:474
 msgid "All types"
-msgstr ""
+msgstr "所有类型"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:594
 msgid "Searching...."
-msgstr ""
+msgstr "搜索中..."
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:616
 msgid "No response received"
-msgstr ""
+msgstr "没有收到应答"
 
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:620
 #, python-format
 msgid "An unexpected occurred: %s"
-msgstr ""
+msgstr "发生了异常: %s"
 
 #: pgadmin/tools/sqleditor/__init__.py:63
 msgid "Query tool"

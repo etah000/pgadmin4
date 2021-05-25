@@ -14,17 +14,17 @@ CREATE ROLE [IF NOT EXISTS | OR REPLACE] name1 [, name2 ...]
 #}
 
 {% if data.is_user %}
-CREATE USER IF NOT EXISTS {{ conn|qtIdent(data.rolname) }}{% if data.cluster %} ON CLUSTER {{ data.cluster }}{% endif %}{% if data.rolpassword %}
+CREATE USER {{ conn|qtIdent(data.rolname) }}{% if data.cluster %} ON CLUSTER {{ data.cluster }}{% endif %}{% if data.rolpassword %}
 
    IDENTIFIED WITH PLAINTEXT_PASSWORD BY {% if dummy %}'xxxxxx'{% else %} {{ data.rolpassword | qtLiteral(True) }}{% endif %}{% endif %}{% if data.host_type and data.host_express %}
 
    HOST {{ data.host_type}} {{ data.host_express | qtLiteral(True) }}{% endif %} {% if data.members and data.members|length > 0 %}
 
-   DEFAULT ROLE {{ conn|qtIdent(data.members)|join(', ') }}{% endif %}{% if data.variables %}
+   DEFAULT ROLE {{ conn|qtIdent(data.members)|join(', ') }}{% endif %}{% if data.variables or data.profile %}
 
    SETTINGS {% for var in data.variables %}{{ var.name }}={{ var.value }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %}{% if data.profile %}
 
-   SETTINGS PROFILE {{ data.profile| qtLiteral(True) }}{% endif %}
+   PROFILE {{ data.profile| qtLiteral(True) }}{% endif %}
 
 ;
 {#
@@ -37,7 +37,7 @@ CREATE USER IF NOT EXISTS {{ conn|qtIdent(data.rolname) }}{% if data.cluster %} 
 {% endif %}
 
 {% if not data.is_user %}
-CREATE ROLE IF NOT EXISTS {{ conn|qtIdent(data.rolname) }}{% if data.variables %}
+CREATE ROLE {{ conn|qtIdent(data.rolname) }}{% if data.variables or data.profile %}
 
    SETTINGS {% for var in data.variables %}{{ var.name }}={{ var.value }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %} {% if data.profile %}
 
