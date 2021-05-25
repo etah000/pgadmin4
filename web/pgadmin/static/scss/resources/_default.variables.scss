@@ -60,7 +60,7 @@ $text-height-calc: $line-height-base*$font-size-base/1rem;
 $grid-gutter-width: 15px;
 $border-radius: 0.25rem;
 
-$text-muted: #667185 !default;
+$text-muted: rgba(0,0,0,.2) !default;
 $header-bg: $color-bg !default;
 
 $tree-font-size: 0.925rem;
