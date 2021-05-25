@@ -86,7 +86,7 @@ export function initializeToolbar(panel, wcDocker) {
   // Iterate through default tool bar buttons and add them into the
   // browser panel.
   _.each(_defaultToolBarButtons, (btn) => {
-    registerToolBarButton(btn);
+  // registerToolBarButton(btn);
   });
 
   // Iterate through other tool bar buttons and add them into the
