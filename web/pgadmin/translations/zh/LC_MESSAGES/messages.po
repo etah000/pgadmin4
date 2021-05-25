@@ -2913,7 +2913,6 @@ msgid "Host Name"
 msgstr "主机名称"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:355
-#, fuzzy
 msgid "Cluster type"
 msgstr "集群类型"
 
@@ -2930,7 +2929,6 @@ msgid "1对1复制集群"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:376
-#, fuzzy
 msgid "Default Databases"
 msgstr "默认数据库"
 
@@ -9094,7 +9092,6 @@ msgid "Changes will be lost. Are you sure you want to reset?"
 msgstr "所做更改会丢失，确定要重置吗？"
 
 #: pgadmin/browser/static/js/node.js:1860
-#, fuzzy
 msgid "next"
 msgstr "下一步"
 
