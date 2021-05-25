@@ -9,6 +9,9 @@
 .DS_Store
 .idea
 .vscode
+data
+logs
+url_map.txt
 /*.diff
 /*.patch
 /dist
