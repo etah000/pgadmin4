@@ -13387,6 +13387,9 @@ msgid ""
 "Error: {0}"
 msgstr ""
 
+msgid "cancel"
+msgstr "取消"
+
 #~ msgid "Script - "
 #~ msgstr "脚本 - "
 
@@ -13772,9 +13775,6 @@ msgstr ""
 
 #~ msgid "%s %s?"
 #~ msgstr ""
-
-#~ msgid "cancel"
-#~ msgstr "取消"
 
 #~ msgid "terminate"
 #~ msgstr "终止"

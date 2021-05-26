@@ -13216,3 +13216,5 @@ msgid ""
 "Error: {0}"
 msgstr ""
 
+msgid "cancel"
+msgstr ""
