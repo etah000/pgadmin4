@@ -609,7 +609,7 @@ class DatabaseView(PGClusterChildNodeView):
         if not status:
             return make_json_response(
                 success=0,
-                errormsg=errmsg
+                errormsg=msg
             )
 
         return jsonify(
