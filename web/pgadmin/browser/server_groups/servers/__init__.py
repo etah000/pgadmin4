@@ -516,6 +516,7 @@ class ServerNode(PGChildNodeView):
             'ssh_username': 'ssh_username',
             'ssh_authentication_type': 'ssh_authentication_type',
             'ssh_key_file': 'ssh_key_file',
+            'ssh_password': 'ssh_password',
         }
 
         disp_lbl = {
@@ -561,13 +562,21 @@ class ServerNode(PGChildNodeView):
                         ).format(disp_lbl[arg])
                     )
 
+        # Get enc key
+        crypt_key_present, crypt_key = get_crypt_key()
+        if not crypt_key_present:
+            raise CryptKeyMissing
+
         for arg in config_param_map:
             if arg in data:
                 value = data[arg]
                 # sqlite3 do not have boolean type so we need to convert
                 # it manually to integer
-                if arg == 'sslcompression':
+                if arg in ('sslcompression', 'ssh_authentication_type'):
                     value = 1 if value else 0
+                if arg == 'ssh_password':
+                    value = encrypt(value, crypt_key)
+
                 setattr(server, config_param_map[arg], value)
                 idx += 1
 
@@ -1729,7 +1738,12 @@ class ServerNode(PGChildNodeView):
 
         if ssh_data['ssh_authentication_type'] == 0:
             if 'ssh_password' not in data:
-                ssh_data['ssh_password'] = server.ssh_password
+                decrypted_password = decrypt(server.ssh_password, crypt_key)
+
+                if isinstance(decrypted_password, bytes):
+                    decrypted_password = decrypted_password.decode()
+
+                ssh_data['ssh_password'] = decrypted_password
             else:
                 ssh_data['ssh_password'] = data['ssh_password']
             ssh_data['ssh_key_file'] = None
@@ -1836,7 +1850,7 @@ class ServerNode(PGChildNodeView):
                     'type': manager.server_type,
                     'version': manager.version,
                     'db': manager.db,
-                    'user': manager.user_info,
+                    'user': manager.user,
                     'in_recovery': in_recovery,
                     'wal_pause': wal_paused
                 }
@@ -1880,8 +1894,12 @@ class ServerNode(PGChildNodeView):
         current_app.logger.info(
             'Stop Server Request for server#{0}'.format(sid)
         )
+
         # get ssh connection info
         ssh_info = self._check_ssh_info(gid, sid)
+        if isinstance(ssh_info, Response):
+            return ssh_info
+
         if ssh_info['ssh_username'] is None or (
             ssh_info['ssh_key_file'] is None and
             ssh_info['ssh_password'] is None):
@@ -1939,10 +1957,7 @@ class ServerNode(PGChildNodeView):
                 "Could not start server(#{0}) - '{1}'.\nError: {2}"
                 .format(server.id, server.name, errmsg)
             )
-            return make_json_response(
-                success=0,
-                errormsg=errmsg
-            )
+            return make_json_response(success=0, errormsg=errmsg)
         else:
             # Release Connection
             manager.release(database=server.maintenance_db)
@@ -1958,12 +1973,12 @@ class ServerNode(PGChildNodeView):
                 info=gettext("Server stopped."),
                 data={
                     'icon': server_icon_and_background(True, manager, server),
-                    'connected': True,
+                    'connected': False,
                     'server_type': manager.server_type,
                     'type': manager.server_type,
                     'version': manager.version,
                     'db': manager.db,
-                    'user': manager.user_info,
+                    'user': manager.user,
                     'in_recovery': in_recovery,
                     'wal_pause': wal_paused
                 }
