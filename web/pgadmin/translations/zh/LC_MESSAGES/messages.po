@@ -6372,11 +6372,11 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:214
 msgid "To Database"
-msgstr "数据库"
+msgstr "目标数据库"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:218
 msgid "To Table"
-msgstr "旧表"
+msgstr "目标表"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:229
 msgid "Populate"
