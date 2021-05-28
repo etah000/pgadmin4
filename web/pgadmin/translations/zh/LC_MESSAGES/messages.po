@@ -11764,7 +11764,7 @@ msgstr "对象选择 (第1步, 共3步)"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:711
 msgid "Please select the objects to grant privileges to from the list below."
-msgstr ""
+msgstr "请从下面的列表中选择要授予特权的对象。"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:798
 msgid "Privilege Selection (step 2 of 3)"
