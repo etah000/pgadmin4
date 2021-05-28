@@ -8308,17 +8308,17 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:303
 msgid "Login/Group Role"
-msgstr "登录/组角色"
+msgstr "用户/角色"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:354
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:360
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:366
 msgid "Login/Group Role..."
-msgstr "登录/组角色..."
+msgstr "用户/角色..."
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:400
 msgid "User/Role"
-msgstr "用户/角色?"
+msgstr "用户/角色"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:417
 msgid "Auth Type"
