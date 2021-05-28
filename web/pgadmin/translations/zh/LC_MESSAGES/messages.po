@@ -8275,7 +8275,7 @@ msgstr "脏率限制不能为空。"
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:33
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:21
 msgid "Login/Group Roles"
-msgstr "登录/组角色"
+msgstr "用户/角色"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:547
 msgid ""
