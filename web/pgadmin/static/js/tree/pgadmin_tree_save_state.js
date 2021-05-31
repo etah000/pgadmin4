@@ -53,7 +53,7 @@ _.extend(pgBrowser.browserTreeState, {
   current_state: {},
 
   init: function() {
-
+    console.log('错误！！！')
     const save_tree_state_period = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval');
 
     if (!_.isUndefined(save_tree_state_period) &&  save_tree_state_period.value !== -1) {

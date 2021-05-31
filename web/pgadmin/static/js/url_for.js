@@ -23,12 +23,8 @@ define(['pgadmin.browser.endpoints'], function(endpoints) {
 
   return function url_for(endpoint, substitutions) {
     console.log(endpoint);
-    console.log(substitutions);
-    console.log(endpoints);
-
+    // endpoints 里边的数据是 接口对应字段的映射， 是后端生成的数据， 前端不需要管
     var rawURL = endpoints[endpoint];
-    //console.log("ccccurl_for")
-    // captures things of the form <path:substitutionName>
     var substitutionGroupsRegExp = /([<])([^:^>]*:)?([^>]+)([>])/g,
       interpolated = rawURL;
     console.log(rawURL)
@@ -41,6 +37,9 @@ define(['pgadmin.browser.endpoints'], function(endpoints) {
         if (substitutionName in substitutions) {
           return substitutions[substitutionName];
         }
+        alert('查看第二个参数')
+        alert(substitutions)
+        debugger
         return _origin;
       }
     );

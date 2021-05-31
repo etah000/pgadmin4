@@ -62,13 +62,14 @@ let _defaultToolBarButtons = [
 // Place holder for non default tool bar buttons.
 let _otherToolbarButtons = [];
 
-// This function is used to add button into the browser panel.
+// This function is used to add button into the browser panel. 面板中添加按钮
 function registerToolBarButton(btn) {
   /* Sometimes the panel onCreate is called two times.
    * Add buttons if not present in the panel also.
    */
   if (!(btn.label in _toolbarButtons)
         || (_.findIndex(_browserPanel._buttonList,{name:btn.label}) < 0)) {
+          debugger
     _browserPanel.addButton(
       btn.label, btn.btnClass, btn.text, btn.label, btn.toggled,
       btn.toggleClass, btn.parentClass, btn.enabled, btn.ariaLabel
@@ -78,7 +79,7 @@ function registerToolBarButton(btn) {
   }
 }
 
-// This function is used to add tool bar button and
+// This function is used to add tool bar button and 添加工具栏按钮
 // listen on the button event.
 export function initializeToolbar(panel, wcDocker) {
   _browserPanel = panel;

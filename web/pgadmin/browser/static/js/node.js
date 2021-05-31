@@ -452,7 +452,7 @@ define('pgadmin.browser.node', [
                   // Clear timeout and remove message
                   clearTimeout(timer);
                   $msgDiv.addClass('d-none');
-
+                  // 更新右边视图
                   // We got the latest attributes of the object. Render the view
                   // now.
                   view.render();
@@ -997,7 +997,6 @@ define('pgadmin.browser.node', [
 
         // Update the menu items
         pgAdmin.Browser.enable_disable_menus.apply(b, [item]);
-
         if (d && b) {
           if ('properties' in b.panels &&
             b.panels['properties'] &&
@@ -1022,7 +1021,7 @@ define('pgadmin.browser.node', [
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
           item);
-        return true;
+        // return true;
       },
       removed: function(item) {
         var self = this,
@@ -1101,7 +1100,6 @@ define('pgadmin.browser.node', [
      * This has also been used for creating a node.
      **/
     showProperties: function(item, data, panel, action) {
-      console.log('#showProperties');
       var that = this,
         tree = pgAdmin.Browser.tree,
         j = panel.$container.find('.obj_properties').first(),
@@ -1288,7 +1286,7 @@ define('pgadmin.browser.node', [
                 btn.on('click',() => {
                   Alertify.confirm(
                     gettext('Warning'),
-                    "Confirm to update?",
+                    gettext('Confirm to update?'),
                     function() {
                       setTimeout(function(){
                         onEdit();
@@ -1479,6 +1477,7 @@ define('pgadmin.browser.node', [
             });
           }
         }.bind(panel),
+        //
         onSaveUpdate = function(view, saveBtn,newModel) {
           // console.log(view.model);
           var m = view.model,
@@ -1503,29 +1502,29 @@ define('pgadmin.browser.node', [
               method:'put',
               wait: true,
               success: function() {
-                onSaveFunc.call();
+                // onSaveFunc.call();
                 // Hide progress cursor
-                $('.obj_properties').removeClass('show_progress');
+                // $('.obj_properties').removeClass('show_progress');
                 clearTimeout(timer);
 
                 // Removing the node-prop property of panel
                 // so that we show updated data on panel
-                var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
-                  pnlSql = pgBrowser.docker.findPanels('sql')[0],
-                  pnlStats = pgBrowser.docker.findPanels('statistics')[0],
-                  pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
-                  pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
+                // var pnlProperties = pgBrowser.docker.findPanels('properties')[0],
+                //   pnlSql = pgBrowser.docker.findPanels('sql')[0],
+                //   pnlStats = pgBrowser.docker.findPanels('statistics')[0],
+                //   pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
+                //   pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
 
-                if (pnlProperties)
-                  $(pnlProperties).removeData('node-prop');
-                if (pnlSql)
-                  $(pnlSql).removeData('node-prop');
-                if (pnlStats)
-                  $(pnlStats).removeData('node-prop');
-                if (pnlDependencies)
-                  $(pnlDependencies).removeData('node-prop');
-                if (pnlDependents)
-                  $(pnlDependents).removeData('node-prop');
+                // if (pnlProperties)
+                //   $(pnlProperties).removeData('node-prop');
+                // if (pnlSql)
+                //   $(pnlSql).removeData('node-prop');
+                // if (pnlStats)
+                //   $(pnlStats).removeData('node-prop');
+                // if (pnlDependencies)
+                //   $(pnlDependencies).removeData('node-prop');
+                // if (pnlDependents)
+                //   $(pnlDependents).removeData('node-prop');
               },
               error: function(m, jqxhr) {
                 Alertify.pgNotifier(
@@ -1683,8 +1682,6 @@ define('pgadmin.browser.node', [
           panel.$container.attr('action-mode', action);
           let j = panel.$container.find('.obj_properties').first();
           let  view = j.data('obj-view');
-          // console.log(view.collection);
-          // console.log(view.model);
 
           //属性为列表的时候
           if(view.collection){
@@ -1727,6 +1724,7 @@ define('pgadmin.browser.node', [
           }
         },
         editFunc = function() {
+
           var panel = this;
           if (action && action == 'properties') {
             action = 'edit';

@@ -88,7 +88,7 @@ _.extend(pgBrowser, {
     return _.findWhere(self.preferences_cache, {'id': id});
   },
 
-  // Get and cache the preferences
+  // Get and cache the preferences 取并缓存首选项
   cache_preferences: function (modulesChanged) {
     var self = this,
       headers = {};
@@ -101,6 +101,7 @@ _.extend(pgBrowser, {
       })
         .done(function(res) {
           self.preferences_cache = res;
+          // 当前时间毫秒数生成版本
           self.preference_version(self.generate_preference_version());
 
           pgBrowser.keyboardNavigation.init();
@@ -109,7 +110,7 @@ _.extend(pgBrowser, {
             modifyAnimation.modifyAlertifyAnimation(self);
           }
 
-          // Initialize Tree saving/reloading
+          // Initialize Tree saving/reloading 初始化树保存/重新加载
           pgBrowser.browserTreeState.init();
 
           /* Once the cache is loaded after changing the preferences,

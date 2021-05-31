@@ -98,6 +98,7 @@ export class TreeNode {
 
   /*
    * Find the ancestor with matches this condition
+  * 找到匹配此条件的祖先
    */
   ancestorNode(condition) {
     let node = this;
@@ -351,6 +352,7 @@ export class Tree {
    * that exist in the ACI for it.
    */
   register($treeJQuery) {
+    
     $treeJQuery.on('acitree', function (event, api, item, eventName) {
       if (api.isItem(item)) {
         /* If the id of node is changed, the path should also be changed */

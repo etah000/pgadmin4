@@ -19,7 +19,6 @@ function modifyAcitreeAnimation(pgBrowser, tree) {
   let enableAcitreeAnimation = pgBrowser.get_preference(
     'browser', 'enable_acitree_animation'
   ).value;
-
   if (_.isUndefined(tree)) {
     tree = pgBrowser.tree;
   }

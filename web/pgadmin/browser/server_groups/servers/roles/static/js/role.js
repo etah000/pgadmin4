@@ -346,7 +346,6 @@ define('pgadmin.node.role', [
           return;
 
         this.initialized = true;
-
         pgBrowser.add_menus([
           {
             name: 'create_role_on_server', node: 'server', module: this,

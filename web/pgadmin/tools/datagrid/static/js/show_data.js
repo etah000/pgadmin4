@@ -24,6 +24,7 @@ export function showDataGrid(
   filter=false,
   preferences=null
 ) {
+  debugger
   const node = pgBrowser.treeMenu.findNodeByDomElement(aciTreeIdentifier);
   if (node === undefined || !node.getData()) {
     alertify.alert(
@@ -215,7 +216,7 @@ function initFilterDialog(alertify, pgBrowser) {
         },
 
         callback: function(closeEvent) {
-
+          debugger
           if (closeEvent.button.text == gettext('OK')) {
             var sql = this.filter_obj.getValue();
             var that = this;

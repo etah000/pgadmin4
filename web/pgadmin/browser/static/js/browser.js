@@ -52,7 +52,7 @@ define('pgadmin.browser', [
       }
     }
   };
-
+// initializeBrowserTree aciTree 中 返回的结果进行排序
   var processTreeData = function(payload) {
     var data = JSON.parse(payload).data;
     if (data.length && data[0]._type !== 'column' &&
@@ -67,9 +67,7 @@ define('pgadmin.browser', [
     });
     return data;
   };
-
-  var initializeBrowserTree = pgAdmin.Browser.initializeBrowserTree =
-    function(b) {
+  var initializeBrowserTree = pgAdmin.Browser.initializeBrowserTree = function(b) {
       $('#tree').aciTree({
         ajax: {
           url: url_for('browser.nodes'),
@@ -77,6 +75,7 @@ define('pgadmin.browser', [
             'text json': processTreeData,
           },
         },
+        // 自定义querystring参数
         ajaxHook: function(item, settings) {
           if (item != null) {
             var d = this.itemData(item);
@@ -102,52 +101,52 @@ define('pgadmin.browser', [
 
       b.tree = $('#tree').aciTree('api');
       b.treeMenu.register($('#tree'));
+      
+      // b.treeMenu.registerDraggableType({
+      //   'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar' : (data, item)=>{
+      //     return pgadminUtils.fully_qualify(b, data, item);
+      //   },
+      //   'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule' : (data)=>{
+      //     return pgadminUtils.quote_ident(data._label);
+      //   },
+      //   'trigger trigger_function' : (data)=>{
+      //     return data._label;
+      //   },
+      //   'edbfunc function edbproc procedure' : (data, item)=>{
+      //     let newData = {...data},
+      //       parsedFunc = null,
+      //       dropVal = '',
+      //       curPos = {from: 0, to: 0};
 
-      b.treeMenu.registerDraggableType({
-        'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar' : (data, item)=>{
-          return pgadminUtils.fully_qualify(b, data, item);
-        },
-        'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule' : (data)=>{
-          return pgadminUtils.quote_ident(data._label);
-        },
-        'trigger trigger_function' : (data)=>{
-          return data._label;
-        },
-        'edbfunc function edbproc procedure' : (data, item)=>{
-          let newData = {...data},
-            parsedFunc = null,
-            dropVal = '',
-            curPos = {from: 0, to: 0};
+      //     parsedFunc = pgadminUtils.parseFuncParams(newData._label);
+      //     newData._label = parsedFunc.func_name;
+      //     dropVal = pgadminUtils.fully_qualify(b, newData, item);
 
-          parsedFunc = pgadminUtils.parseFuncParams(newData._label);
-          newData._label = parsedFunc.func_name;
-          dropVal = pgadminUtils.fully_qualify(b, newData, item);
+      //     if(parsedFunc.params.length > 0) {
+      //       dropVal = dropVal + '(';
+      //       curPos.from =  dropVal.length;
+      //       dropVal = dropVal + parsedFunc.params[0][0];
+      //       curPos.to = dropVal.length;
 
-          if(parsedFunc.params.length > 0) {
-            dropVal = dropVal + '(';
-            curPos.from =  dropVal.length;
-            dropVal = dropVal + parsedFunc.params[0][0];
-            curPos.to = dropVal.length;
+      //       for(let i=1; i<parsedFunc.params.length; i++) {
+      //         dropVal = dropVal + ', ' + parsedFunc.params[i][0];
+      //       }
 
-            for(let i=1; i<parsedFunc.params.length; i++) {
-              dropVal = dropVal + ', ' + parsedFunc.params[i][0];
-            }
+      //       dropVal = dropVal + ')';
+      //     } else {
+      //       dropVal = dropVal + '()';
+      //       curPos.from = curPos.to = dropVal.length + 1;
+      //     }
 
-            dropVal = dropVal + ')';
-          } else {
-            dropVal = dropVal + '()';
-            curPos.from = curPos.to = dropVal.length + 1;
-          }
-
-          return {
-            text: dropVal,
-            cur: curPos,
-          };
-        },
-      });
+      //     return {
+      //       text: dropVal,
+      //       cur: curPos,
+      //     };
+      //   },
+      // });
     };
 
-  // Extend the browser class attributes
+  // 扩展类型
   _.extend(pgAdmin.Browser, {
     // The base url for browser
     URL: url_for('browser.index'),
@@ -157,10 +156,10 @@ define('pgadmin.browser', [
     // Reversed Engineer query for the selected database node object goes
     // here
     editor:null,
-    // Left hand browser tree
+    // 左侧浏览器树
     tree:null,
     treeMenu: new tree.Tree(),
-    // list of script to be loaded, when a certain type of node is loaded
+    // 当加载某种类型的节点时，要加载的脚本列表
     // It will be used to register extensions, tools, child node scripts,
     // etc.
     scripts: {},
@@ -278,6 +277,7 @@ define('pgadmin.browser', [
       var panels = JSON.parse(pgBrowser.panels_items);
       _.each(panels, function(panel) {
         if (panel.isIframe) {
+          // 合并对象
           pgBrowser.frames[panel.name] = new pgBrowser.Frame({
             name: panel.name,
             title: panel.title,
@@ -290,6 +290,7 @@ define('pgadmin.browser', [
             url: panel.content,
           });
         } else {
+          // 合并对象
           pgBrowser.panels[panel.name] = new pgBrowser.Panel({
             name: panel.name,
             title: panel.title,
@@ -387,7 +388,7 @@ define('pgadmin.browser', [
       obj.initialized = true;
 
       // Cache preferences
-      obj.cache_preferences();
+      obj.cache_preferences(); // 这个方法里边报错， 最后决定是否删除
       obj.add_panels();
       // Initialize the Docker
       obj.docker = new wcDocker(

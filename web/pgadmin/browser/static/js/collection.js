@@ -294,31 +294,32 @@ define([
               }, 1000);
             },
           }).done(function(res) {
-            clearTimeout(timer);
+            // clearTimeout(timer);
 
-            if (_.isUndefined(that.grid) || _.isNull(that.grid)) return;
+            // if (_.isUndefined(that.grid) || _.isNull(that.grid)) return;
 
-            that.data = res;
+            // that.data = res;
 
-            if (that.data.length > 0) {
+            // if (that.data.length > 0) {
 
-              if (!$msgContainer.hasClass('d-none')) {
-                $msgContainer.addClass('d-none');
-              }
-              that.header.appendTo(j);
-              j.append(content);
+            //   if (!$msgContainer.hasClass('d-none')) {
+            //     $msgContainer.addClass('d-none');
+            //   }
+            //   that.header.appendTo(j);
+            //   // 这个是右边视图的内容
+            //   j.append(content);
 
-              // Listen scroll event to load more rows
-              $('.pg-prop-content').on('scroll', that.__loadMoreRows.bind(that));
+            //   // Listen scroll event to load more rows
+            //   $('.pg-prop-content').on('scroll', that.__loadMoreRows.bind(that));
 
-              that.collection.reset(that.data.splice(0, 50));
-            } else {
-            // Do not listen the scroll event
-              $('.pg-prop-content').off('scroll', that.__loadMoreRows);
+            //   that.collection.reset(that.data.splice(0, 50));
+            // } else {
+            // // Do not listen the scroll event
+            //   $('.pg-prop-content').off('scroll', that.__loadMoreRows);
 
-              $msgContainer.text(gettext('No properties are available for the selected object.'));
+            //   $msgContainer.text(gettext('No properties are available for the selected object.'));
 
-            }
+            // }
           }).fail(function(xhr, error) {
             pgBrowser.Events.trigger(
               'pgadmin:node:retrieval:error', 'properties', xhr, error.message, item, that
