@@ -490,6 +490,7 @@ define([
       });
     },
     reverseButtons: true,
+    'labels': { ok:gettext('OK'), cancel:gettext('cancel')}
   });
 
   alertify.prompt().set({

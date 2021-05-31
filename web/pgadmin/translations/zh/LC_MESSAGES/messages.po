@@ -2937,7 +2937,6 @@ msgid "preview xml"
 msgstr "预览 xml"
 
 #: pgadmin/browser/server_groups/servers/clusters/static/js/cluster.js:568
-#, fuzzy
 msgid "host name cannot be empty."
 msgstr "主机名不能为空。"
 
@@ -6372,17 +6371,14 @@ msgid "请选择"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:214
-#, fuzzy
 msgid "To Database"
-msgstr "数据库"
+msgstr "目标数据库"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:218
-#, fuzzy
 msgid "To Table"
-msgstr "旧表"
+msgstr "目标表"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:229
-#, fuzzy
 msgid "Populate"
 msgstr "是否更新？"
 
@@ -6405,7 +6401,6 @@ msgid "False"
 msgstr "False"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:240
-#, fuzzy
 msgid "Order Keys"
 msgstr "排序键"
 
@@ -8280,7 +8275,7 @@ msgstr "脏率限制不能为空。"
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:33
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:21
 msgid "Login/Group Roles"
-msgstr "登录/组角色"
+msgstr "用户/角色"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:547
 msgid ""
@@ -8313,17 +8308,17 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:303
 msgid "Login/Group Role"
-msgstr "登录/组角色"
+msgstr "用户/角色"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:354
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:360
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:366
 msgid "Login/Group Role..."
-msgstr "登录/组角色..."
+msgstr "用户/角色..."
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:400
 msgid "User/Role"
-msgstr "用户/角色?"
+msgstr "用户/角色"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:417
 msgid "Auth Type"
@@ -10866,7 +10861,6 @@ msgid "Create backup on group"
 msgstr ""
 
 #: pgadmin/tools/backup/__init__.py:173
-#, fuzzy
 msgid "Restore backup on group"
 msgstr "还原服务器上的备份"
 
@@ -10887,22 +10881,18 @@ msgid "Backing up the server '{0}'"
 msgstr "备份服务器'{0}'..."
 
 #: pgadmin/tools/backup/__init__.py:213
-#, fuzzy
 msgid "List backup on group '{0}'"
 msgstr "在服务器 \"{0}\" 上还原备份"
 
 #: pgadmin/tools/backup/__init__.py:217
-#, fuzzy
 msgid "Delete  backup on group '{0}'"
 msgstr "在服务器 \"{0}\" 上还原备份"
 
 #: pgadmin/tools/backup/__init__.py:221
-#, fuzzy
 msgid "Create  backup on group '{0}'"
 msgstr "在服务器 \"{0}\" 上还原备份"
 
 #: pgadmin/tools/backup/__init__.py:225
-#, fuzzy
 msgid "Restore backup on group '{0}'"
 msgstr "在服务器 \"{0}\" 上还原备份"
 
@@ -10919,22 +10909,18 @@ msgid "Backing up the server '{0}'..."
 msgstr "正在备份服务器 \"{0}\"..。"
 
 #: pgadmin/tools/backup/__init__.py:265
-#, fuzzy
 msgid "List backup on group '{0}'..."
 msgstr "在服务器'{0}'上还原备份..."
 
 #: pgadmin/tools/backup/__init__.py:270
-#, fuzzy
 msgid "Delete backup on group '{0}'..."
 msgstr "在服务器'{0}'上还原备份..."
 
 #: pgadmin/tools/backup/__init__.py:275
-#, fuzzy
 msgid "Create backup on group '{0}'..."
 msgstr "在服务器'{0}'上还原备份..."
 
 #: pgadmin/tools/backup/__init__.py:280
-#, fuzzy
 msgid "Restore backup on group '{0}'..."
 msgstr "在服务器'{0}'上还原备份..."
 
@@ -10945,7 +10931,6 @@ msgid "Running command:"
 msgstr "运行命令:"
 
 #: pgadmin/tools/backup/__init__.py:366 pgadmin/tools/backup/__init__.py:436
-#, fuzzy
 msgid "Could not find the snowball-tools."
 msgstr "找不到该格式。"
 
@@ -10977,22 +10962,18 @@ msgid ""
 msgstr "只有全局到整个数据库的对象才会以 纯文本格式进行备份"
 
 #: pgadmin/tools/backup/static/js/backup.js:182
-#, fuzzy
 msgid "backName"
 msgstr "名称"
 
 #: pgadmin/tools/backup/static/js/backup.js:185
-#, fuzzy
 msgid "tables"
 msgstr "表"
 
 #: pgadmin/tools/backup/static/js/backup.js:188
-#, fuzzy
 msgid "schema?"
 msgstr "架构"
 
 #: pgadmin/tools/backup/static/js/backup.js:200
-#, fuzzy
 msgid "increment?"
 msgstr "增量"
 
@@ -11786,7 +11767,7 @@ msgstr "对象选择 (第1步, 共3步)"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:711
 msgid "Please select the objects to grant privileges to from the list below."
-msgstr ""
+msgstr "请从下面的列表中选择要授予特权的对象。"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:798
 msgid "Privilege Selection (step 2 of 3)"
@@ -11809,7 +11790,7 @@ msgid ""
 "The SQL below will be executed on the database server to grant the "
 "selected privileges. Please click on <strong>Finish</strong> to complete "
 "the process."
-msgstr ""
+msgstr "下面的SQL将在数据库服务器上执行，以授予选定的权限。请单击“完成”完成此过程。"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:1127
 msgid "Grant Wizard"
@@ -12962,7 +12943,6 @@ msgid "Connection status"
 msgstr "连接状态"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:315
-#, fuzzy
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
 "and status."
@@ -12973,7 +12953,6 @@ msgid "Connection status refresh rate"
 msgstr "连接状态刷新率"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:325
-#, fuzzy
 msgid "The number of seconds between connection status polls."
 msgstr "连接状态轮询之间的秒数。"
 
@@ -13390,6 +13369,9 @@ msgid ""
 "Error: {0}"
 msgstr ""
 
+msgid "cancel"
+msgstr "取消"
+
 #~ msgid "Script - "
 #~ msgstr "脚本 - "
 
@@ -13775,9 +13757,6 @@ msgstr ""
 
 #~ msgid "%s %s?"
 #~ msgstr ""
-
-#~ msgid "cancel"
-#~ msgstr "取消"
 
 #~ msgid "terminate"
 #~ msgstr "终止"

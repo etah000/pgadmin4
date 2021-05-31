@@ -679,6 +679,19 @@ rolmembership:{
     @check_precondition(action='properties')
     def properties(self, gid, sid, rid):
 
+        data = dict()
+        if request.data:
+            data = json.loads(request.data, encoding='utf-8')
+        else:
+            data = request.args or request.form
+
+        can_login = data.get('can_login', None)
+        if can_login is None:
+            login_type = None
+        else:
+            login_type = 'user' if int(can_login) else 'role'
+
+        print('can_login, login_type:', can_login, login_type)
         status, res = self.conn.execute_dict(
             render_template(
                 self.sql_path + 'properties.sql',
@@ -694,6 +707,8 @@ rolmembership:{
             )
 
         self.transform(res)
+        if login_type is not None:
+            res['rows'] = [row for row in res['rows'] if row['login_type'] == login_type]
         if len(res['rows']) == 0:
             return gone(_("Could not find the role information."))
 

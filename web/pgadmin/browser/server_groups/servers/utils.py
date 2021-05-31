@@ -19,7 +19,8 @@ import config
 from pgadmin.model import db, Server
 from pgadmin.tools.scripts.ssh_utils import SSHClient
 from pgadmin.utils import get_storage_directory
-
+from pgadmin.utils.crypto import decrypt
+from pgadmin.utils.master_password import get_crypt_key
 
 def parse_priv_from_db(db_privileges):
     """
@@ -303,9 +304,9 @@ def get_ssh_info(gid, sid):
     # conn = manager.connection()
 
     # Get enc key
-    # crypt_key_present, crypt_key = get_crypt_key()
-    # if not crypt_key_present:
-    #     raise CryptKeyMissing
+    crypt_key_present, crypt_key = get_crypt_key()
+    if not crypt_key_present:
+        raise CryptKeyMissing
 
     if 'ssh_username' not in data:
         ssh_data['ssh_username'] = server.ssh_username
@@ -350,14 +351,19 @@ def get_ssh_info(gid, sid):
 
     if ssh_data['ssh_authentication_type'] == 0:
         if 'ssh_password' not in data:
-            ssh_data['ssh_password'] = server.ssh_password
+            decrypted_password = decrypt(server.ssh_password, crypt_key)
+
+            if isinstance(decrypted_password, bytes):
+                decrypted_password = decrypted_password.decode()
+
+            ssh_data['ssh_password'] = decrypted_password
         else:
             ssh_data['ssh_password'] = data['ssh_password']
-        ssh_data['ssh_key_file'] = None
+        ssh_data['private_key'] = None
 
     if ssh_data['ssh_username'] is None \
        or (
-           ssh_data['ssh_key_file'] is None
+           ssh_data['private_key'] is None
            and ssh_data['ssh_password'] is None
     ):
 
