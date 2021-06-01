@@ -32,7 +32,7 @@ class AbstractExecutor():
 
         #softlist = self.getZookeeperFile();
         for soft, filename in softlist.items():
-            fullFilename = get_storage_directory()+ spath + filename
+            fullFilename = filename
             res = node.put(fullFilename, remoteSoftdir)
             session['percentagesize'] = session.get('percentagesize')+os.path.getsize(fullFilename)
             print(res)
@@ -76,8 +76,8 @@ class AbstractExecutor():
         javafile = softlist['jdk']
         zkfile = softlist['zookeeper']
 
-        remoteJavafile = remoteSoftdir + javafile;
-        remoteZkfile = remoteSoftdir + zkfile;
+        remoteJavafile = remoteSoftdir + os.path.basename(javafile);
+        remoteZkfile = remoteSoftdir + os.path.basename(zkfile);
         cmd = ''
         cmd = cmd + 'tar -zxvf ' + remoteJavafile + ' -C /app && '
         cmd = cmd + 'tar -zxvf ' + remoteZkfile + ' -C /app && '

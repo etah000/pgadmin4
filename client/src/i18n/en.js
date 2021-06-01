@@ -1,0 +1,45 @@
+var en={
+  install:{
+    install:'Install Tool',
+    wizTitle:"installation wizard",
+    hosts:"hosts",
+    next:"next",
+    back:"back",
+    finish:"install",
+    service:"Components",
+    serviceSetting:"Settings",
+    installing:"Installing",
+    addhost:"add host",
+    addzkeeper:"add zkeeper node",
+    addsnowball:"add snowball node",
+    del:"delete",
+    msgcompselect:"Please select the components to install !",
+    msgpkgselect:"Please select the package to install!",
+    notnull:"Cannot be empty",
+    selected:`selected`,
+    errorpkg:`error in installation file, please select again！`,
+    hostname: 'host name',
+    ipaddress: 'ip address',
+    sshport: 'ssh port',
+    username: 'username',
+    password: 'password',
+    operate: "operate",
+    setting:"setting",
+    //zk list
+    order:"index",
+    zkname:"zk node name",
+    ssh:"host name",
+    clientPort:"clientPort",
+    leaderPort:"leaderPort",
+    listenPort:"listenPort",
+    //sb
+    sbname:'snowball node name',
+    path:"data path",
+    formerro:"Form input error!",
+    duplicate:"duplicate！",
+    error:"setting error！",
+    conerror:"An error occurred while trying to connect to the server！",
+    installstats:"Installing. Try again later"
+}
+}
+export default en

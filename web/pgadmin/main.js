@@ -31,7 +31,7 @@ Vue.use(FormWizard);
 //import App from './App.vue'
 import install from 'tools/install/static/js/install.vue'
 
-setTimeout(function() {
+/*setTimeout(function() {
   //console.log(pgAdmin.Browser.get_preference_for_id(45).value) 主题 standard dark
   //console.log(pgAdmin.Browser.get_preference_for_id(44).value) 语言 en zh
   axios.get('/preferences/get_all')
@@ -49,5 +49,5 @@ setTimeout(function() {
     });
   // document.getElementById('install').appendChild(component.$el)
   // console.log("###document.getElementById('install').appendChild(component.$el)")
-}, 3000);
+}, 3000);*/
 

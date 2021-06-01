@@ -1,7 +1,7 @@
 # coding: utf-8
 import xmltodict
 from pgadmin.tools.install.installer.common import GetSelfPath
-from pgadmin.utils import get_storage_directory
+#from pgadmin.utils import get_storage_directory
 from flask import session
 import sys, os, re
 # from config import snowballConf as Confobj
@@ -54,7 +54,7 @@ class AbstractExecutor:
 
         for soft in softlist:
             filename = self.geDependencyFile(soft)
-            fullFilename = get_storage_directory()+ spath+ filename
+            fullFilename = filename
             node.put(fullFilename,remoteAppdir)
         return True
 
@@ -85,7 +85,7 @@ class AbstractExecutor:
     def copyInstallFile(self, node,spath,remoteAppdir,softlist):
         node.call('mkdir -p ' + remoteAppdir)
         for soft, filename in softlist.items():
-            fullFilename = get_storage_directory()+ spath+ filename
+            fullFilename = filename
             node.put(fullFilename, remoteAppdir)
             session['percentagesize'] = session.get('percentagesize')+os.path.getsize(fullFilename)
 
@@ -103,7 +103,7 @@ class AbstractExecutor:
 
         self.updateRomoteConfigXml(node,conf,remoteConfDir)
         #注册license licensetpl
-        res = node.put(get_storage_directory()+'/%s' % node.getlicense(), remoteConfDir+'config.d/license.xml')
+        res = node.put(node.getlicense(), remoteConfDir+'config.d/license.xml')
         res = node.call('chown -R snowball:snowball '+path)
 
     def startSnowballServ(self, node):

@@ -15,15 +15,15 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing
-from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
+#from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from flask_babelex import gettext as gettext
-from pgadmin.tools.install.installer.snowball.helper import Helper
+#from pgadmin.tools.install.installer.snowball.helper import Helper
 from pgadmin.tools.install.installer.snowball.processer import Processer as SnowballProcesser
 from pgadmin.tools.install.installer.zookeeper.processer import Processer as ZookeeperProcesser
 from pgadmin.tools.install.installer.common import GetSelfPath
 from pgadmin.tools.install.installer.common import CheckSSHConnectAndGetOsInfo
 selfPath = GetSelfPath()
-
+from flask_cors import CORS, cross_origin
 # 修改为区分大小写
 class MyConfigParser(configparser.ConfigParser):
 
@@ -89,6 +89,7 @@ def script():
     )
 
 @blueprint.route("/setInstallConf",methods=["GET", "POST"],endpoint="set_install_conf")
+@cross_origin(supports_credentials=True)
 def setInstallConf():
     data = json.loads(
         request.data, encoding='utf-8'
@@ -155,18 +156,18 @@ def setInstallConf():
     #zookeeperselected
     if data['config']['zookeeperselected'] == True:
         nodeCount =  len(data['config']['zookeeper']['nodes'])
-        zookeeperpath = os.path.join(get_storage_directory(),data['config']['zookeeper']['softlist']['zookeeper'])
+        zookeeperpath = data['config']['zookeeper']['softlist']['zookeeper']
         allsize += os.path.getsize(zookeeperpath)*nodeCount
-        jdkpath = os.path.join(get_storage_directory(),data['config']['zookeeper']['softlist']['jdk'])
+        jdkpath = data['config']['zookeeper']['softlist']['jdk']
         allsize += os.path.getsize(jdkpath)*nodeCount
 
     if data['config']['snowballselected'] == True:
         nodeCount =  len(data['config']['snowball']['nodes'])
-        commonpath = os.path.join(get_storage_directory(),data['config']['snowball']['softlist']['common'])
+        commonpath = data['config']['snowball']['softlist']['common']
         allsize += os.path.getsize(commonpath)*nodeCount
-        serverpath = os.path.join(get_storage_directory(),data['config']['snowball']['softlist']['server'])
+        serverpath = data['config']['snowball']['softlist']['server']
         allsize += os.path.getsize(serverpath)*nodeCount
-        clientpath = os.path.join(get_storage_directory(),data['config']['snowball']['softlist']['client'])
+        clientpath = data['config']['snowball']['softlist']['client']
         allsize += os.path.getsize(clientpath)*nodeCount
     session['allsize'] = allsize
 
@@ -227,6 +228,7 @@ def validateConf():
     return ajax_response(response=res, status=200)
 
 @blueprint.route("/validateHost",methods=["GET", "POST"],endpoint="validate_host")
+@cross_origin(supports_credentials=True)
 def validateHost():
     data = json.loads(
         request.data, encoding='utf-8'
@@ -246,6 +248,7 @@ def validateHost():
     return ajax_response(response=res, status=200)
 
 @blueprint.route('/processer', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def processer():
     data ={'percentage': 100*session.get('percentagesize')*0.99/session.get('allsize')}
     return ajax_response(response={'code': "0000",'msg': "success",'data': data}, status=200)
