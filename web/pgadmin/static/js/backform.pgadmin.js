@@ -1956,6 +1956,7 @@ define([
       groupInfo = {};
 
     // 'schema' has the information about how to generate the form.
+    // 生成表单的信息。
     if (schema && _.isArray(schema)) {
       var evalASFunc = evalASFunc = function(prop) {
         return ((prop && proto[prop] &&

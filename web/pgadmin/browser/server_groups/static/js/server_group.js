@@ -42,10 +42,11 @@ define('pgadmin.node.server_group', [
         },
         schema: [
           {
-            id: 'id', label: gettext('ID'), type: 'int', group: null,
+            id: 'id', label: gettext('ID'), type: 'int',
+            disabled: 'disabled',
             mode: ['properties'],
           },{
-            id: 'name', label: gettext('Name'), type: 'text', group: null,
+            id: 'name', label: gettext('Name'), type: 'text',
             mode: ['properties', 'edit', 'create'],
           },
         ],
