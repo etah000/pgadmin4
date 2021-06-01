@@ -30,6 +30,7 @@ root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
 
+import config
 from pgadmin import create_app
 
 
@@ -362,7 +363,7 @@ def setup_db():
 
     app = create_app()
 
-    print(u"SuperAdmin - Application Initialisation")
+    print(u"{} - Application Initialisation".format(config.APP_NAME))
     print(u"======================================\n")
 
     with app.app_context():
