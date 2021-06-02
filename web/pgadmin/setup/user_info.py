@@ -39,7 +39,7 @@ def user_info():
             # Prompt the user for their default username and password.
             print(
                 u"Enter the email address and password to use for the initial "
-                u"pgAdmin user account:\n"
+                u"{} user account:\n".format(config.APP_NAME)
             )
 
             email_filter = re.compile(

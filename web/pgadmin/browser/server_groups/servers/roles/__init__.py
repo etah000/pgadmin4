@@ -570,11 +570,21 @@ rolmembership:{
 
     @check_precondition(action='list')
     def list(self, gid, sid):
-        status, res = self.conn.execute_dict(
-            render_template(
-                self.sql_path + 'properties.sql'
+        status = False
+        res = dict()
+        try:
+            status, res = self.conn.execute_dict(
+                render_template(
+                    self.sql_path + 'properties.sql'
+                )
             )
-        )
+        except Exception as ex:
+            # DB::Exception: Not enough privileges.
+            if 'Code: 497.' in str(ex):
+                status = True
+                res['rows'] = []
+            else:
+                raise
 
         if not status:
             return internal_server_error(
@@ -592,10 +602,18 @@ rolmembership:{
 
     @check_precondition(action='nodes')
     def nodes(self, gid, sid):
-
-        status, rset = self.conn.execute_2darray(
-            render_template(self.sql_path + 'nodes.sql')
-        )
+        status = False
+        rset = dict()
+        try:
+            status, rset = self.conn.execute_2darray(
+                render_template(self.sql_path + 'nodes.sql')
+            )
+        except Exception as ex:
+            # DB::Exception: Not enough privileges.
+            if 'Code: 497.' in str(ex):
+                return make_json_response(data=[], status=200)
+            else:
+                raise
 
         if not status:
             return internal_server_error(

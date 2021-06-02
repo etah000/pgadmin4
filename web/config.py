@@ -46,7 +46,7 @@ APP_ICON = 'pg-icon'
 #
 
 # Application version number components
-APP_RELEASE = 1
+APP_RELEASE = 2
 APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
