@@ -75,7 +75,7 @@ define('pgadmin.browser', [
             'text json': processTreeData,
           },
         },
-        // 自定义querystring参数
+        // 在请求树的时候 自定义 querystring 参数
         ajaxHook: function(item, settings) {
           if (item != null) {
             var d = this.itemData(item);
@@ -176,7 +176,7 @@ define('pgadmin.browser', [
       lg: 550,
       default: 550,
     },
-    // Default panels
+    // Default panels 显示默认的面板， 在执行 init 是回执行 add_panels 这个方法 通过后端添加面板
     panels: {
       // Panel to keep the left hand browser tree
       'browser': new pgAdmin.Browser.Panel({
@@ -274,6 +274,7 @@ define('pgadmin.browser', [
     },
     add_panels: function() {
       /* Add hooked-in panels by extensions */
+      // panels_items 的值是 utils.js 中 通过 后端赋值的， 
       var panels = JSON.parse(pgBrowser.panels_items);
       _.each(panels, function(panel) {
         if (panel.isIframe) {
@@ -320,11 +321,11 @@ define('pgadmin.browser', [
       },
     },
     // A callback to load/fetch a script when a certain node is loaded
-    register_script: function(n, m, p) {
-      var scripts = this.scripts;
-      scripts[n] = _.isArray(scripts[n]) ? scripts[n] : [];
-      scripts[n].push({'name': m, 'path': p, loaded: false});
-    },
+    // register_script: function(n, m, p) {
+    //   var scripts = this.scripts;
+    //   scripts[n] = _.isArray(scripts[n]) ? scripts[n] : [];
+    //   scripts[n].push({'name': m, 'path': p, loaded: false});
+    // },
     masterpass_callback_queue: [],
     // Enable/disable menu options
     enable_disable_menus: function(item) {
@@ -403,6 +404,7 @@ define('pgadmin.browser', [
         });
       if (obj.docker) {
         // Initialize all the panels
+        // load() 方法其实是执行的， panel 或者 frames.js 中的 registerPanelType 注册面板的方法
         _.each(obj.panels, function(panel, name) {
           obj.panels[name].load(obj.docker);
         });
@@ -412,10 +414,12 @@ define('pgadmin.browser', [
         });
 
         // Stored layout in database from the previous session
+        // 在数据库中存储了前一个会话的布局
         var layout = pgBrowser.utils.layout;
         obj.restore_layout(obj.docker, layout, obj.buildDefaultLayout.bind(obj));
-
+        // 当布局发生变化是 更新布局
         obj.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
+          // save_current_layout 调用 layout 的方法 发送请求
           obj.save_current_layout('Browser/Layout', obj.docker);
         });
       }
@@ -428,7 +432,7 @@ define('pgadmin.browser', [
           readOnly: true,
           extraKeys: pgAdmin.Browser.editor_shortcut_keys,
           screenReaderLabel: gettext('SQL'),
-        });
+      });
       /* Cache may take time to load for the first time
        * Reflect the changes once cache is available
        */
@@ -440,7 +444,7 @@ define('pgadmin.browser', [
         }
       }, 500);
 
-      /* Check for sql editor preference changes */
+      /* Check for sql editor preference changes 检查sql编辑器首选项的更改*/
       obj.onPreferencesChange('sqleditor', function() {
         obj.reflectPreferences('sqleditor');
       });
@@ -459,18 +463,19 @@ define('pgadmin.browser', [
         selector: '.aciTreeLine',
         autoHide: false,
         build: function(element) {
-          console.log(obj);
           var item = obj.tree.itemFrom(element),
-            d = obj.tree.itemData(item),
-            menus = obj.menus['context'][d._type],
-            $div = $('<div></div>'),
-            context_menu = {};
-            console.log(d._type);
-            console.log(menus);
+          // 获取当前条的数据
+          d = obj.tree.itemData(item),
+          // 根据 d._type 获取 右键的菜单
+          menus = obj.menus['context'][d._type],
+          $div = $('<div></div>'),
+          context_menu = {};
+          console.log(d._type);
+          console.log(menus);
+          // 这个方法 在menu.js 中
           pgAdmin.Browser.MenuCreator(
             $div, menus, obj.menu_categories, d, item, context_menu
           );
-
           return {
             autoHide: false,
             items: context_menu,
@@ -478,17 +483,17 @@ define('pgadmin.browser', [
         },
         events: {
           hide: function() {
-            // Return focus to the tree
+            // Return focus to the tree 将焦点回到树上
             obj.keyboardNavigation.bindLeftTree();
           },
         },
       });
 
-      // Treeview event handler
+      // Treeview event handler 树的处理事件
       $('#tree').on('acitree', function(event, api, item, eventName, options) {
+        // 获取数据
         var d = item ? obj.tree.itemData(item) : null;
         var node;
-
         if (d && obj.Nodes[d._type]) {
           node = obj.Nodes[d._type];
 
@@ -525,7 +530,7 @@ define('pgadmin.browser', [
         return true;
       });
 
-      // Register scripts and add menus
+      // Register scripts and add menus  后端模板js
       pgBrowser.utils.registerScripts(this);
       pgBrowser.utils.addMenus(obj);
 
@@ -723,7 +728,7 @@ define('pgadmin.browser', [
       });
     },
 
-    bind_beforeunload: function() {
+    bind_beforeunload: function() { // Init 的时候执行
       $(window).on('beforeunload', function(e) {
         /* Can open you in new tab */
         let openerBrowser = pgWindow.default.pgAdmin.Browser;
@@ -742,7 +747,7 @@ define('pgadmin.browser', [
         }
       });
     },
-
+    // 添加菜单分类
     add_menu_category: function(
       id, label, priority, icon, above_separator, below_separator, single
     ) {
@@ -935,7 +940,7 @@ define('pgadmin.browser', [
       return;
     },
 
-    onAddTreeNode: function(_data, _hierarchy, _opts) {
+    onAddTreeNode: function(_data, _hierarchy, _opts) { // 添加树的回调
       var ctx = {
           b: this, // Browser
           d: null, // current parent
@@ -2174,7 +2179,7 @@ define('pgadmin.browser', [
       indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
     },
 
-    // This function will return the name and version of the browser.
+    // This function will return the name and version of the browser. 返回浏览器的名称和版本。
     get_browser: function() {
       var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
       if(/trident/i.test(M[1])) {

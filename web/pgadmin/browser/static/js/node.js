@@ -1275,7 +1275,7 @@ define('pgadmin.browser.node', [
             // });
             buttons.push({
               label: gettext('Save'),
-              type: 'save',
+              type: 'edit',
               tooltip: gettext('Save'),
               extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
               icon: 'fa fa-sm fa-pencil',
@@ -1680,7 +1680,6 @@ define('pgadmin.browser.node', [
           }
           panel.$container.attr('action-mode', action);
           let j = panel.$container.find('.obj_properties').first();
-          debugger
           let  view = j.data('obj-view');
 
           //属性为列表的时候

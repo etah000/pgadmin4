@@ -48,6 +48,11 @@ define('pgadmin.node.server_group', [
           },{
             id: 'name', label: gettext('Name'), type: 'text',
             mode: ['properties', 'edit', 'create'],
+            control: Backform.InputControl.extend({
+              onChange: function() {
+                Backform.InputControl.prototype.onChange.apply(this, arguments);
+              }
+            })
           },
         ],
         validate: function() {

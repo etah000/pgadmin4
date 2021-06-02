@@ -62,6 +62,13 @@ define('pgadmin.node.server', [
       dropPriority: 5,
       hasStatistics: true,
       hasCollectiveStatistics: true,
+
+      statsPrettifyFields: [gettext('Size'), gettext('Size of temporary files')],
+      hasDepends: true,
+      canDrop: function(node) {
+        return node.canDrop;
+      },
+
       can_expand: function(d) {
         return d && d.connected;
       },
@@ -957,7 +964,8 @@ define('pgadmin.node.server', [
         },{
           id: 'save_password', controlLabel: gettext('Save password?'),
           type: 'checkbox', group: gettext('Connection'), mode: ['create'],
-          deps: ['connect_now'], visible: function(model) {
+          deps: ['connect_now'],
+          visible: function(model) {
             return model.get('connect_now') && model.isNew();
           },
           disabled: function() {
@@ -1198,7 +1206,8 @@ define('pgadmin.node.server', [
         }, {
           id: 'save_ssh_password', controlLabel: gettext('Save password?'),
           type: 'checkbox', group: gettext('Advanced'), mode: ['properties', 'edit', 'create'],
-          deps: ['connect_now'], visible: function(model) {
+          deps: ['connect_now'],
+          visible: function(model) {
             return model.get('connect_now') && model.isNew();
           },
         },

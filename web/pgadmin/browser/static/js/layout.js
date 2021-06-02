@@ -55,7 +55,7 @@ _.extend(pgBrowser, {
       });
     }
   },
-
+  // 恢复布局
   restore_layout: function(docker, layout, defaultLayoutCallback) {
     // Try to restore the layout if there is one
     if (layout != '') {

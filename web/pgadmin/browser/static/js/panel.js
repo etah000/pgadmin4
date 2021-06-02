@@ -40,6 +40,7 @@ define(
       limit: null,
       extraClasses: null,
       load: function(docker, title) {
+        // 这里的 this 值得是  pgAdmin.Browser.Panel['name'] 调用load 时 前边的对象
         var that = this;
         if (!that.panel) {
           docker.registerPanelType(that.name, {

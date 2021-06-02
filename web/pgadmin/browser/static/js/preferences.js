@@ -66,7 +66,7 @@ _.extend(pgBrowser, {
     }
   },
 
-  /* Get all the preferences of a module */
+  /* Get all the preferences of a module 获取模块的所有首选项 */
   get_preferences_for_module: function(module) {
     var self = this;
     let preferences = {};
