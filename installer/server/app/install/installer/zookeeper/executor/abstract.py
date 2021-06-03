@@ -1,0 +1,109 @@
+# coding: utf-8
+import sys, os, re
+import global_vars
+class AbstractExecutor():
+
+
+    def prepareFirewalldRule(self, node):
+        conf = node.getInfo()
+        clientPort = conf['clientPort']
+        leaderPort = conf['leaderPort']
+        listenPort = conf['listenPort']
+
+        cmd = 'firewall-cmd --add-port=%s/tcp --permanent &&'%(clientPort)
+        cmd = cmd + 'firewall-cmd --add-port=%s/tcp --permanent &&'%(leaderPort)
+        cmd = cmd + 'firewall-cmd --add-port=%s/tcp --permanent &&'%(listenPort)
+        cmd = cmd + 'firewall-cmd --reload'
+        res = node.call(cmd)
+        print(res)
+        # print('check checkFirewalld ...', node)
+        return True
+
+    def copyInstallFile(self, node,spath,remoteSoftdir,remoteAppdir,softlist):
+        cmd = ''
+        cmd = cmd + 'mkdir -p /app && mkdir -p ' + remoteSoftdir + '&& '
+        cmd = cmd + 'rm -rf /app/jdk && rm -rf /app/jdk* && rm -rf /app/apache-zookeeper* && rm -rf /app/zookeeper'
+        node.call(cmd)
+
+        #softlist = self.getZookeeperFile();
+        for soft, filename in softlist.items():
+            fullFilename = filename
+            res = node.put(fullFilename, remoteSoftdir)
+            global_vars.session['percentagesize'] = global_vars.session.get('percentagesize')+os.path.getsize(fullFilename)
+            print(res)
+        self.unzipInstallFile(node,remoteSoftdir,softlist)
+        self.cpZookerCfgFile(node,remoteAppdir)
+        self.makeIdfile(node)
+        return True
+
+    def cpZookerCfgFile(self, node,remoteAppdir):
+        confs = node.getConf()
+        content = '#zookeeper cfg file'+ '\n'
+        for k in confs:
+            content = content + k + '=' + confs[k] + '\n'
+        content = content + '\n'
+
+        #nodes = zookeeperConf.options('nodes')
+        for server in node.servers:
+            str = "server.%s=%s:%s:%s" % (server['servid'], server['host'], server['leaderPort'], server['listenPort'])
+            content = content + str + '\n'
+        print(content);
+        filename = remoteAppdir + 'conf/zoo.cfg'
+        print(filename)
+        res = node.write(content, filename)
+        return res
+
+    def makeIdfile(self,node):
+        confs = node.getConf()
+        info = node.getInfo()
+        servid = info['servid']
+        datadir = confs['dataDir']
+        cmd = 'mkdir -p ' + datadir + '; '
+
+        cmd = cmd + 'echo "%s" > %s/%s'%(servid,datadir,'myid')
+        res = node.call(cmd)
+        print(res)
+
+    def unzipInstallFile(self,node,remoteSoftdir,softlist):
+
+        #softlist = self.getZookeeperFile();
+
+        javafile = softlist['jdk']
+        zkfile = softlist['zookeeper']
+
+        remoteJavafile = remoteSoftdir + os.path.basename(javafile);
+        remoteZkfile = remoteSoftdir + os.path.basename(zkfile);
+        cmd = ''
+        cmd = cmd + 'tar -zxvf ' + remoteJavafile + ' -C /app && '
+        cmd = cmd + 'tar -zxvf ' + remoteZkfile + ' -C /app && '
+        cmd = cmd + 'mv  /app/jdk* /app/jdk && mv  /app/apache-zookeeper* /app/zookeeper &&'
+
+        cmd = cmd + "sed -i '/JAVA_HOME=/d' /etc/profile && "
+        cmd = cmd + "sed -i '/$JAVA_HOME\/jre/d' /etc/profile && "
+        cmd = cmd + "echo 'export JAVA_HOME=/app/jdk '>>/etc/profile && "
+        cmd = cmd + "echo 'export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib:$CLASSPATH '>>/etc/profile &&"
+        cmd = cmd + "echo 'export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH'>>/etc/profile &&"
+
+        cmd = cmd + "sed -i '/ZOOKEEPER_HOME/d' /etc/profile && "
+        cmd = cmd + "echo 'export ZOOKEEPER_HOME=/app/zookeeper'>>/etc/profile && "
+        cmd = cmd + "echo 'export PATH=$PATH:$ZOOKEEPER_HOME/bin'>>/etc/profile  &&"
+
+        cmd = cmd + 'source /etc/profile'
+        print(cmd)
+        res = node.call(cmd)
+        print(res)
+
+    def startZookeeperServ(self, node):
+        cmd = "source /etc/profile && /app/zookeeper/bin/zkServer.sh start"
+        res = node.call(cmd)
+        print(res)
+
+    def restartZookeeperServ(self, node):
+        cmd = 'source /etc/profile && /app/zookeeper/bin/zkServer.sh restart'
+        res = node.call(cmd)
+        print(res)
+
+    def verifyZookeeperStatus(self, node):
+        cmd = 'source /etc/profile && /app/zookeeper/bin/zkServer.sh status'
+        res = node.call(cmd)
+        print(res)
