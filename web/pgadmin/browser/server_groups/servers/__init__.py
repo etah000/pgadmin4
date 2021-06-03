@@ -34,6 +34,7 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 import os
 from pgadmin.utils import get_storage_directory
 from pgadmin.browser.utils import PGChildModule
+from pgadmin.browser.server_groups.servers.utils import get_ssh_client, get_ssh_info
 
 
 def has_any(data, keys):
@@ -895,8 +896,8 @@ class ServerNode(PGChildNodeView):
                         db.session.commit()
 
                     if 'save_ssh_password' in data and \
-                        data['save_ssh_password'] and \
-                        have_ssh_password:
+                            data['save_ssh_password'] and \
+                            have_ssh_password:
                         setattr(server, 'ssh_password', ssh_password)
                         db.session.commit()
 
@@ -1762,21 +1763,16 @@ class ServerNode(PGChildNodeView):
         current_app.logger.info(
             'Start Server Request for server#{0}'.format(sid)
         )
-        # get ssh connection info
-        ssh_info = self._check_ssh_info(gid, sid)
-        if isinstance(ssh_info, Response):
-            return ssh_info
 
-        if ssh_info['ssh_username'] is None or (
-                ssh_info['ssh_key_file'] is None and
-                ssh_info['ssh_authentication_type'] == 1) or (
-                ssh_info['ssh_password'] is None and
-                ssh_info['ssh_authentication_type'] == 0):
+        # get ssh connection info
+        ssh_info = get_ssh_info(gid, sid)
+        if not ssh_info:
             errmsg = gettext('please submit ssh connection information in properties!')
             return make_json_response(
                 success=0,
                 errormsg=errmsg
             )
+
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -1784,20 +1780,14 @@ class ServerNode(PGChildNodeView):
         status = True
         try:
             # create ssh client obj
-            ssh = paramiko.SSHClient()
-            # allow connect host which not in known_hosts
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            # connect to host
-            if ssh_info['ssh_authentication_type'] == 1:
-                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
-                            , username=ssh_info['ssh_username'],
-                            pkey=ssh_info['private_key'])
-            elif ssh_info['ssh_authentication_type'] == 0:
-                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
-                            , username=ssh_info['ssh_username'],
-                            password=ssh_info['ssh_password'])
+            ssh_client = get_ssh_client(server.host,
+                                        user=ssh_info['ssh_username'],
+                                        port=ssh_info['ssh_port'],
+                                        password=ssh_info['ssh_password'],
+                                        pkey=ssh_info['private_key'],)
+
             # execute ssh command
-            stdin, stdout, stderr = ssh.exec_command(
+            _, stdout, stderr = ssh_client.execute_cmd(
                 'service snowball-server status')
             # get result of ssh command
             result = stdout.read()
@@ -1805,14 +1795,14 @@ class ServerNode(PGChildNodeView):
                 errmsg = 'snowball server already running'
                 status = False
             else:
-                stdin, stdout, stderr = ssh.exec_command(
+                _, stdout, stderr = ssh_client.execute_cmd(
                     'service snowball-server start')
                 result = stdout.read()
                 if stderr.channel.recv_exit_status() != 0:
                     status = False
                     errmsg = stderr.channel.recv_stderr(4096)
             # close connect
-            ssh.close()
+            ssh_client.disconnect()
 
         except Exception as e:
             current_app.logger.exception(e)
@@ -1896,18 +1886,14 @@ class ServerNode(PGChildNodeView):
         )
 
         # get ssh connection info
-        ssh_info = self._check_ssh_info(gid, sid)
-        if isinstance(ssh_info, Response):
-            return ssh_info
-
-        if ssh_info['ssh_username'] is None or (
-            ssh_info['ssh_key_file'] is None and
-            ssh_info['ssh_password'] is None):
+        ssh_info = get_ssh_info(gid, sid)
+        if not ssh_info:
             errmsg = gettext('please submit ssh connection information in properties!')
             return make_json_response(
                 success=0,
                 errormsg=errmsg
             )
+
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -1915,20 +1901,14 @@ class ServerNode(PGChildNodeView):
         status = True
         try:
             # create ssh client obj
-            ssh = paramiko.SSHClient()
-            # allow connect host which not in known_hosts
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            # connect to host
-            if ssh_info['ssh_authentication_type'] == 1:
-                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
-                            , username=ssh_info['ssh_username'],
-                            pkey=ssh_info['private_key'])
-            elif ssh_info['ssh_authentication_type'] == 0:
-                ssh.connect(hostname=ssh_info['host'], port=ssh_info['ssh_port']
-                            , username=ssh_info['ssh_username'],
-                            password=ssh_info['ssh_password'])
+            ssh_client = get_ssh_client(server.host,
+                                        user=ssh_info['ssh_username'],
+                                        port=ssh_info['ssh_port'],
+                                        password=ssh_info['ssh_password'],
+                                        pkey=ssh_info['private_key'],)
+
             # execute ssh command
-            stdin, stdout, stderr = ssh.exec_command(
+            _, stdout, stderr = ssh_client.execute_cmd(
                 'service snowball-server status')
             # get result of ssh command
             result = stdout.read()
@@ -1936,14 +1916,14 @@ class ServerNode(PGChildNodeView):
                 errmsg = 'snowball server is stopped'
                 status = False
             else:
-                stdin, stdout, stderr = ssh.exec_command(
+                _, stdout, stderr = ssh_client.execute_cmd(
                     'service snowball-server stop')
                 result = stdout.read()
                 if stderr.channel.recv_exit_status() != 0:
                     status = False
                     errmsg = stderr.channel.recv_stderr(4096)
             # close connect
-            ssh.close()
+            ssh_client.disconnect()
 
         except Exception as e:
             current_app.logger.exception(e)
