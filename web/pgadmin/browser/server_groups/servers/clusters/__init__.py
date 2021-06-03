@@ -15,7 +15,7 @@ import re
 from functools import wraps
 
 import simplejson as json
-from flask import render_template, current_app, request, jsonify
+from flask import render_template, current_app, request, jsonify, Response
 from flask_babelex import gettext as _
 from flask_security import current_user
 
@@ -198,21 +198,7 @@ class DatabaseView(PGClusterChildNodeView):
                     return gone(errormsg=_("Could not find the server."))
 
                 self.datlastsysoid = 0
-                if action and action in ["drop"] and False:
-                    self.conn = self.manager.connection()
-                elif 'did' in kwargs and False:
-                    self.conn = self.manager.connection(did=kwargs['did'])
-                    self.db_allow_connection = True
-                    # If connection to database is not allowed then
-                    # provide generic connection
-                    if kwargs['did'] in self.manager.db_info:
-                        self._db = self.manager.db_info[kwargs['did']]
-                        self.datlastsysoid = self._db['datlastsysoid']
-                        if self._db['datallowconn'] is False:
-                            self.conn = self.manager.connection()
-                            self.db_allow_connection = False
-                else:
-                    self.conn = self.manager.connection()
+                self.conn = self.manager.connection()
 
                 conn = self.conn
                 already_connected = conn.connected()
@@ -245,19 +231,11 @@ class DatabaseView(PGClusterChildNodeView):
 
     @check_precondition(action="list")
     def list(self, gid, sid):
-        db_disp_res = None
-        params = None
-        if self.manager and self.manager.db_res:
-            db_disp_res = ", ".join(
-                ['%s'] * len(self.manager.db_res.split(','))
-            )
-            params = tuple(self.manager.db_res.split(','))
-
         SQL = render_template(
             "/".join([self.template_path, 'properties.sql']),
             conn=self.conn,
         )
-        status, res = self.conn.execute_dict(SQL, params)
+        status, res = self.conn.execute_dict(SQL, )
 
         if not status:
             return internal_server_error(errormsg=res)
@@ -267,64 +245,31 @@ class DatabaseView(PGClusterChildNodeView):
             status=200
         )
 
-    def retrieve_last_system_oid(self):
-        last_system_oid = 0
-        if self.blueprint.show_system_objects:
-            last_system_oid = 0
-        elif (
-            self.manager.db_info is not None and
-            self.manager.did in self.manager.db_info
-        ):
-            last_system_oid = (self.manager.db_info[self.manager.did])[
-                'datlastsysoid']
-        return last_system_oid
-
-    def get_nodes(self, gid, sid, show_system_templates=False):
+    def get_nodes(self, gid, sid, did=None):
         res = []
-        last_system_oid = self.retrieve_last_system_oid()
-        server_node_res = self.manager
-
-        db_disp_res = None
-        params = None
-        if server_node_res and server_node_res.db_res:
-            db_disp_res = ", ".join(
-                ['%s'] * len(server_node_res.db_res.split(','))
-            )
-            params = tuple(server_node_res.db_res.split(','))
         SQL = render_template(
             "/".join([self.template_path, 'nodes.sql']),
-            last_system_oid=last_system_oid,
-            db_restrictions=db_disp_res
+            did=did,
         )
-        status, rset = self.conn.execute_dict(SQL, params)
+        status, rset = self.conn.execute_dict(SQL, )
 
         if not status:
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            dbname = row['name']
-            if self.manager.db == dbname:
-                connected = True
-                canDrop = canDisConn = False
-            else:
-                conn = self.manager.connection(dbname, did=row['did'])
-                connected = conn.connected()
-                canDrop = canDisConn = True
-
             res.append(
                 self.blueprint.generate_browser_node(
                     row['did'],
                     sid,
                     row['name'],
-                    icon="pg-icon-database" if not connected
-                    else "pg-icon-database",
-                    connected=connected,
+                    icon="pg-icon-database",
+                    connected=False,
                     tablespace=row['spcname'],
-                    allowConn=row['datallowconn'],
-                    canCreate=row['cancreate'],
-                    canDisconn=canDisConn,
-                    canDrop=canDrop,
-                    inode=True if row['datallowconn'] else False
+                    allowConn=True,
+                    canCreate=True,
+                    canDisconn=True,
+                    canDrop=True,
+                    inode=True,
                 )
             )
 
@@ -332,36 +277,10 @@ class DatabaseView(PGClusterChildNodeView):
 
     @check_precondition(action="nodes")
     def nodes(self, gid, sid):
-        # return  make_json_response(data=[])
-
         res = self.get_nodes(gid, sid)
 
-        return make_json_response(
-            data=res,
-            status=200
-        )
-
-    @check_precondition(action="get_databases")
-    def get_databases(self, gid, sid):
-        """
-        This function is used to get all the databases irrespective of
-        show_system_object flag for templates in create database dialog.
-        :param gid:
-        :param sid:
-        :return:
-        """
-        res = []
-        SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
-            last_system_oid=0,
-        )
-        status, rset = self.conn.execute_dict(SQL)
-
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            res.append(row['name'])
+        if isinstance(res, Response):
+            return res
 
         return make_json_response(
             data=res,
@@ -370,40 +289,18 @@ class DatabaseView(PGClusterChildNodeView):
 
     @check_precondition(action="node")
     def node(self, gid, sid, did):
-        SQL = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
-            did=did, conn=self.conn, last_system_oid=0
+        res = self.get_nodes(gid, sid, did)
+
+        if isinstance(res, Response):
+            return res
+
+        if len(res) == 0:
+            return gone(errormsg=_("Could not find the cluster on the server."))
+
+        return make_json_response(
+            data=res[0],
+            status=200
         )
-        status, rset = self.conn.execute_2darray(SQL)
-
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            db = row['name']
-            if self.manager.db == db:
-                connected = True
-            else:
-                conn = self.manager.connection(row['name'])
-                connected = conn.connected()
-            icon_css_class = "pg-icon-database"
-            if not connected:
-                icon_css_class = "icon-database-not-connected"
-            return make_json_response(
-                data=self.blueprint.generate_browser_node(
-                    row['did'],
-                    sid,
-                    row['name'],
-                    icon=icon_css_class,
-                    connected=connected,
-                    spcname=row['spcname'],
-                    allowConn=row['datallowconn'],
-                    canCreate=row['cancreate']
-                ),
-                status=200
-            )
-
-        return gone(errormsg=_("Could not find the database on the server."))
 
     @check_precondition(action="properties")
     def properties(self, gid, sid, did):
@@ -428,35 +325,10 @@ class DatabaseView(PGClusterChildNodeView):
             status=200
         )
 
-    @staticmethod
-    def formatdbacl(res, dbacl):
-        for row in dbacl:
-            priv = parse_priv_from_db(row)
-            res['rows'][0].setdefault(row['deftype'], []).append(priv)
-        return res
-
     @check_precondition(action="connect")
     def connect(self, gid, sid, did):
         """Connect the Database."""
-        # from pgadmin.utils.driver import get_driver
-        # manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        # conn = manager.connection(did=did, auto_reconnect=True)
-        # already_connected = conn.connected()
-        # if not already_connected:
-        #     status, errmsg = conn.connect()
-        #     if not status:
-        #         current_app.logger.error(
-        #             "Could not connected to database(#{0}).\nError: {1}"
-        #             .format(
-        #                 did, errmsg
-        #             )
-        #         )
-        #         return internal_server_error(errmsg)
-        #     else:
-        #         current_app.logger.info(
-        #             'Connection Established for Database Id: \
-        #             %s' % (did)
-        #         )
+
         return make_json_response(
             success=1,
             info=_("Database connected."),
@@ -471,88 +343,40 @@ class DatabaseView(PGClusterChildNodeView):
 
     def disconnect(self, gid, sid, did):
         """Disconnect the database."""
-
-        # Release Connection
-        from pgadmin.utils.driver import get_driver
-        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        conn = manager.connection(did=did, auto_reconnect=True)
-        status = manager.release(did=did)
-
-        if not status:
-            return unauthorized(_("Database could not be disconnected."))
-        else:
-            return make_json_response(
-                success=1,
-                info=_("Database disconnected."),
-                data={
-                    'icon': 'icon-database-not-connected',
-                    'connected': False,
-                    'info_prefix': '{0}/{1}'.
-                    format(Server.query.filter_by(id=sid)[0].name, conn.db)
-                }
-            )
-
-    @check_precondition(action="get_encodings")
-    def get_encodings(self, gid, sid, did=None):
-        """
-        This function to return list of avialable encodings
-        """
-        res = [{'label': 'UTF8', 'value': 'UTF8'}]
-
         return make_json_response(
-            data=res,
-            status=200
+            success=1,
+            info=_("Database disconnected."),
+            data={
+                'icon': 'icon-database-not-connected',
+                'connected': False,
+                'info_prefix': '{0}/{1}'.
+                format(Server.query.filter_by(id=sid)[0].name, did)
+            }
         )
 
-        SQL = render_template(
-            "/".join([self.template_path, 'get_encodings.sql'])
-        )
-        status, rset = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
+    # @check_precondition(action="get_encodings")
+    # def get_encodings(self, gid, sid, did=None):
+    #     """
+    #     This function to return list of avialable encodings
+    #     """
+    #     res = [{'label': 'UTF8', 'value': 'UTF8'}]
 
-        for row in rset['rows']:
-            res.append(
-                {'label': row['encoding'], 'value': row['encoding']}
-            )
+    #     return make_json_response(
+    #         data=res,
+    #         status=200
+    #     )
 
-        return make_json_response(
-            data=res,
-            status=200
-        )
+    # @check_precondition(action="get_ctypes")
+    # def get_ctypes(self, gid, sid, did=None):
+    #     """
+    #     This function to return list of available collation/character types
+    #     """
+    #     res = [{'label': '', 'value': ''}]
 
-    @check_precondition(action="get_ctypes")
-    def get_ctypes(self, gid, sid, did=None):
-        """
-        This function to return list of available collation/character types
-        """
-        res = [{'label': '', 'value': ''}]
-
-        return make_json_response(
-            data=res,
-            status=200
-        )
-
-        default_list = ['C', 'POSIX']
-        for val in default_list:
-            res.append(
-                {'label': val, 'value': val}
-            )
-        SQL = render_template(
-            "/".join([self.template_path, 'get_ctypes.sql'])
-        )
-        status, rset = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        for row in rset['rows']:
-            if row['cname'] not in default_list:
-                res.append({'label': row['cname'], 'value': row['cname']})
-
-        return make_json_response(
-            data=res,
-            status=200
-        )
+    #     return make_json_response(
+    #         data=res,
+    #         status=200
+    #     )
 
     @check_precondition(action="create")
     def create(self, gid, sid):
@@ -599,7 +423,7 @@ class DatabaseView(PGClusterChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if rset['rows']:
-            errmsg = 'cluster: {} existed, can not be overided!'.format(data['name'])
+            errmsg = _('cluster: {} existed.'.format(data['name']))
             return make_json_response(
                 success=0,
                 errormsg=errmsg
@@ -627,6 +451,34 @@ class DatabaseView(PGClusterChildNodeView):
             )
         )
 
+    def get_ssh_infos(self, gid, sid=None):
+        """Update the database.
+
+        Args:
+            gid: ServerGroup id
+            sid: Server id
+        """
+        sg = ServerGroup.query.filter_by(id=gid).first()
+        servers = Server.query.filter_by(servergroup_id=gid).all()
+
+        # get ssh connection info and check
+        ssh_infos = dict()
+        ssh_null_servers = list()
+        for server in servers:
+            ssh_info = get_ssh_info(gid, server.id)
+            if not ssh_info:
+                ssh_null_servers.append(server)
+
+            ssh_infos[server.id] = ssh_info
+
+        if ssh_null_servers:
+            server_names = ['{}.{}'.format(sg.name, server.name) for server in ssh_null_servers]
+            errmsg = _('please submit ssh connection information in properties for server: {}'
+                       .format(','.join(server_names)))
+            return None, errmsg
+
+        return True, ssh_infos
+
     def write_remote_file(self, gid, sid, did, data):
         """Update the database.
 
@@ -636,29 +488,101 @@ class DatabaseView(PGClusterChildNodeView):
             did: Cluster id
             data: xml str
         """
+        sg = ServerGroup.query.filter_by(id=gid).first()
+        servers = Server.query.filter_by(servergroup_id=gid).all()
 
-        # get ssh connection info
-        ssh_info = get_ssh_info(gid, sid)
-        if not ssh_info:
-            errmsg = _('please submit ssh connection information in properties!')
+        # get ssh connection info and check
+        ssh_infos = dict()
+        ssh_null_servers = list()
+        for server in servers:
+            ssh_info = get_ssh_info(gid, server.id)
+            if not ssh_info:
+                ssh_null_servers.append(server)
+
+            ssh_infos[server.id] = ssh_info
+
+        if ssh_null_servers:
+            server_names = [server.name for server in ssh_null_servers]
+            errmsg = _('please submit ssh connection information in properties for server: {}'
+                       .format(','.join(server_names)))
             return None, errmsg
 
         fl = io.StringIO(data)
 
         remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(did))
 
-        hosts = self.get_server_group_hosts(gid)
-        for host in hosts:
-            ssh_client = get_ssh_client(host,
-                                        user=ssh_info['ssh_username'],
-                                        port=ssh_info['ssh_port'],
-                                        password=ssh_info['ssh_password'],
-                                        pkey=ssh_info['private_key'],)
+        created_servers = list()
+        for server in servers:
+            try:
+                ssh_client = get_ssh_client(server.host,
+                                            user=ssh_info['ssh_username'],
+                                            port=ssh_info['ssh_port'],
+                                            password=ssh_info['ssh_password'],
+                                            pkey=ssh_info['private_key'],)
 
-            fl.seek(0, os.SEEK_SET)
-            ssh_client.execute_cmd('mkdir -p /etc/snowball-server/config.d')
-            ssh_client.putfo(fl, remote_path)
-            ssh_client.disconnect()
+                fl.seek(0, os.SEEK_SET)
+                ssh_client.execute_cmd('mkdir -p /etc/snowball-server/config.d')
+                ssh_client.putfo(fl, remote_path)
+                ssh_client.disconnect()
+
+                created_servers.append(server)
+            except Exception as ex:
+                try:
+                    self.delete_remote_file(gid, sid, did)
+                except Exception:
+                    pass
+
+                errmsg = _('server error: {}, {}'.format(server.name, ex))
+                return None, errmsg
+
+        return True, None
+
+    def delete_remote_file(self, gid, sid, did, ignore_error=True):
+        """Update the database.
+
+        Args:
+            gid: ServerGroup id
+            sid: Server id
+            did: Cluster id
+        """
+        sg = ServerGroup.query.filter_by(id=gid).first()
+        servers = Server.query.filter_by(servergroup_id=gid).all()
+
+        # get ssh connection info and check
+        ssh_infos = dict()
+        ssh_null_servers = list()
+        for server in servers:
+            ssh_info = get_ssh_info(gid, server.id)
+            if not ssh_info:
+                ssh_null_servers.append(server)
+
+            ssh_infos[server.id] = ssh_info
+
+        if ssh_null_servers:
+            server_names = ['{}.{}'.format(sg.name, server.name) for server in ssh_null_servers]
+            errmsg = _('please submit ssh connection information in properties for server: {}'
+                       .format(','.join(server_names)))
+            return None, errmsg
+
+        remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(did))
+
+        deleted_servers = list()
+        for server in servers:
+            try:
+                ssh_client = get_ssh_client(server.host,
+                                            user=ssh_info['ssh_username'],
+                                            port=ssh_info['ssh_port'],
+                                            password=ssh_info['ssh_password'],
+                                            pkey=ssh_info['private_key'],)
+
+                ssh_client.execute_cmd('rm -f {}'.format(remote_path))
+                ssh_client.disconnect()
+
+                deleted_servers.append(server)
+            except Exception as ex:
+                if not ignore_error:
+                    errmsg = _('server error: {}, {}'.format(server.name, ex))
+                    return None, errmsg
 
         return True, None
 
@@ -681,15 +605,16 @@ class DatabaseView(PGClusterChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if not rset['rows']:
-            errmsg = 'cluster: {} does not exist, can not be updated!'.format(did)
+            errmsg = _('Could not find the required cluster.')
             return make_json_response(
+                status=410,
                 success=0,
                 errormsg=errmsg
             )
 
         cluster_str = ClusterUpdater(did, data).to_str()
 
-        status, msg = self.write_remote_file(gid, sid, did, cluster_str)
+        status, errmsg = self.write_remote_file(gid, sid, did, cluster_str)
         if not status:
             return make_json_response(
                 success=0,
@@ -726,370 +651,28 @@ class DatabaseView(PGClusterChildNodeView):
             else:
                 did = data['ids'][0]
 
-        # get hosts from system.clusters
-        SQL = render_template(
-            "/".join([self.template_path, 'get_hosts.sql']),
-            did=did, conn=self.conn,
-        )
-        status, rset = self.conn.execute_2darray(SQL)
-
+        status, errmsg = self.delete_remote_file(gid, sid, did, ignore_error=False)
         if not status:
-            return internal_server_error(errormsg=rset)
-
-        hosts = [row['host_name'] for row in rset['rows']]
-
-        # get ssh connection info
-        ssh_info = get_ssh_info(gid, sid)
-        if not ssh_info:
-            errmsg = _('please submit ssh connection information in properties!')
             return make_json_response(
                 success=0,
-                errormsg=errmsg
+                errormsg=errmsg,
             )
-
-        remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(did))
-
-        for host in hosts:
-            ssh_client = get_ssh_client(host,
-                                        user=ssh_info['ssh_username'],
-                                        port=ssh_info['ssh_port'],
-                                        password=ssh_info['ssh_password'],
-                                        pkey=ssh_info['private_key'],)
-
-            ssh_client.execute_cmd('rm -f {}'.format(remote_path))
-            ssh_client.disconnect()
-
-        return make_json_response(success=1)
-
-    @check_precondition(action="msql")
-    def msql(self, gid, sid, did=None):
-        """
-        This function to return modified SQL.
-        """
-        data = {}
-        for k, v in request.args.items():
-            try:
-                # comments should be taken as is because if user enters a
-                # json comment it is parsed by loads which should not happen
-                if k in ('comments',):
-                    data[k] = v
-                else:
-                    data[k] = json.loads(v, encoding='utf-8')
-            except ValueError:
-                data[k] = v
-        status, res = self.get_sql(gid, sid, data, did)
-
-        if not status:
-            return res
-
-        res = re.sub('\n{2,}', '\n\n', res)
-        SQL = res.strip('\n').strip(' ')
 
         return make_json_response(
-            data=SQL,
-            status=200
-        )
-
-    def get_sql(self, gid, sid, data, did=None):
-        SQL = ''
-        if did is not None:
-            # Fetch the name of database for comparison
-            conn = self.manager.connection()
-            status, rset = conn.execute_dict(
-                render_template(
-                    "/".join([self.template_path, 'nodes.sql']),
-                    did=did, conn=conn, last_system_oid=0
-                )
-            )
-            if not status:
-                return False, internal_server_error(errormsg=rset)
-
-            if len(rset['rows']) == 0:
-                return gone(
-                    _("Could not find the database on the server.")
-                )
-
-            data['old_name'] = (rset['rows'][0])['name']
-            if 'name' not in data:
-                data['name'] = data['old_name']
-
-            SQL = ''
-            for action in ["rename_database", "tablespace"]:
-                SQL += self.get_offline_sql(gid, sid, data, did, action)
-
-            SQL += self.get_online_sql(gid, sid, data, did)
-        else:
-            SQL += self.get_new_sql(gid, sid, data, did)
-
-        return True, SQL
-
-    def get_new_sql(self, gid, sid, data, did=None):
-        """
-        Generates sql for creating new database.
-        """
-        required_args = [
-            u'name'
-        ]
-
-        for arg in required_args:
-            if arg not in data:
-                return _(" -- definition incomplete")
-
-        acls = []
-        SQL_acl = ''
-
-        try:
-            acls = render_template(
-                "/".join([self.template_path, 'allowed_privs.json'])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
-        # Privileges
-        for aclcol in acls:
-            if aclcol in data:
-                allowedacl = acls[aclcol]
-                data[aclcol] = parse_priv_to_db(
-                    data[aclcol], allowedacl['acl']
-                )
-
-        SQL_acl = render_template(
-            "/".join([self.template_path, 'grant.sql']),
-            data=data,
-            conn=self.conn
-        )
-
-        SQL = render_template(
-            "/".join([self.template_path, 'create.sql']),
-            data=data, conn=self.conn
-        )
-        SQL += "\n"
-        SQL += SQL_acl
-        return SQL
-
-    def get_online_sql(self, gid, sid, data, did=None):
-        """
-        Generates sql for altering database which don not require
-        database to be disconnected before applying.
-        """
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, 'allowed_privs.json'])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
-        # Privileges
-        for aclcol in acls:
-            if aclcol in data:
-                allowedacl = acls[aclcol]
-
-                for key in ['added', 'changed', 'deleted']:
-                    if key in data[aclcol]:
-                        data[aclcol][key] = parse_priv_to_db(
-                            data[aclcol][key], allowedacl['acl']
-                        )
-
-        return render_template(
-            "/".join([self.template_path, 'alter_online.sql']),
-            data=data, conn=self.conn
-        )
-
-    def get_offline_sql(self, gid, sid, data, did=None, action=None):
-        """
-        Generates sql for altering database which require
-        database to be disconnected before applying.
-        """
-
-        return render_template(
-            "/".join([self.template_path, 'alter_offline.sql']),
-            data=data, conn=self.conn, action=action
-        )
-
-    @check_precondition(action="variable_options")
-    def variable_options(self, gid, sid):
-        SQL = render_template(
-            "/".join([self.template_path, 'variables.sql'])
-        )
-        status, rset = self.conn.execute_dict(SQL)
-
-        if not status:
-            return internal_server_error(errormsg=rset)
-
-        return make_json_response(
-            data=rset['rows'],
-            status=200
-        )
-
-    @check_precondition()
-    def statistics(self, gid, sid, did=None):
-        """
-        statistics
-        Returns the statistics for a particular database if did is specified,
-        otherwise it will return statistics for all the databases in that
-        server.
-        """
-        last_system_oid = self.retrieve_last_system_oid()
-
-        db_disp_res = None
-        params = None
-        if self.manager and self.manager.db_res:
-            db_disp_res = ", ".join(
-                ['%s'] * len(self.manager.db_res.split(','))
-            )
-            params = tuple(self.manager.db_res.split(','))
-
-        conn = self.manager.connection()
-        status, res = conn.execute_dict(render_template(
-            "/".join([self.template_path, 'stats.sql']),
-            did=did,
-            conn=conn,
-            last_system_oid=last_system_oid,
-            db_restrictions=db_disp_res),
-            params
-        )
-
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        return make_json_response(
-            data=res,
-            status=200
-        )
-
-    @check_precondition(action="sql")
-    def sql(self, gid, sid, did):
-        """
-        This function will generate sql for sql panel
-        """
-
-        conn = self.manager.connection()
-        SQL = render_template(
-            "/".join([self.template_path, 'properties.sql']),
-            did=did, conn=conn, last_system_oid=0
-        )
-        status, res = conn.execute_dict(SQL)
-
-        if not status:
-            return internal_server_error(errormsg=res)
-
-        if len(res['rows']) == 0:
-            return gone(
-                _("Could not find the database on the server.")
-            )
-
-        SQL = render_template(
-            "/".join([self.template_path, 'acl.sql']),
-            did=did, conn=self.conn
-        )
-        status, dataclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=dataclres)
-        res = self.formatdbacl(res, dataclres['rows'])
-
-        SQL = render_template(
-            "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
-        )
-        status, defaclres = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=defaclres)
-
-        res = self.formatdbacl(res, defaclres['rows'])
-
-        result = res['rows'][0]
-
-        SQL = render_template(
-            "/".join([self.template_path, 'get_variables.sql']),
-            did=did, conn=self.conn
-        )
-        status, res1 = self.conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=res1)
-
-        # Get Formatted Security Labels
-        if 'seclabels' in result:
-            # Security Labels is not available for PostgreSQL <= 9.1
-            frmtd_sec_labels = parse_sec_labels_from_db(result['seclabels'])
-            result.update(frmtd_sec_labels)
-
-        # Get Formatted Variables
-        frmtd_variables = parse_variables_from_db(res1['rows'])
-        result.update(frmtd_variables)
-
-        sql_header = u"-- Database: {0}\n\n-- ".format(result['name'])
-
-        sql_header += render_template(
-            "/".join([self.template_path, 'delete.sql']),
-            datname=result['name'], conn=conn
-        )
-
-        SQL = self.get_new_sql(gid, sid, result, did)
-        SQL = re.sub('\n{2,}', '\n\n', SQL)
-        SQL = sql_header + '\n' + SQL
-        SQL = SQL.strip('\n')
-
-        return ajax_response(response=SQL)
-
-    @check_precondition()
-    def dependents(self, gid, sid, did):
-        """
-        This function gets the dependents and returns an ajax response
-        for the database.
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            did: Database ID
-        """
-        dependents_result = self.get_dependents(self.conn, did) if \
-            self.conn.connected() else []
-        return ajax_response(
-            response=dependents_result,
-            status=200
-        )
-
-    @check_precondition()
-    def dependencies(self, gid, sid, did):
-        """
-        This function gets the dependencies and returns an ajax response
-        for the database.
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            did: Database ID
-        """
-        dependencies_result = self.get_dependencies(self.conn, did) if \
-            self.conn.connected() else []
-        return ajax_response(
-            response=dependencies_result,
-            status=200
+            success=1,
+            info=_('Cluster deleted')
         )
 
     @check_precondition(action="get_hosts")
     def get_hosts(self, gid, sid, did=None):
         """
-        This function get hosts from system.clusters.
+        This function get host and port within the ServerGroup.
 
         Args:
             gid: Server Group ID
             sid: Server ID
             did: Database ID
         """
-        # SQL = render_template(
-        #     "/".join([self.template_path, 'get_hosts.sql']),
-        #     did=did, conn=self.conn,
-        # )
-        # status, rset = self.conn.execute_2darray(SQL)
-
-        # if not status:
-        #     return internal_server_error(errormsg=rset)
-
-        # return make_json_response(data=rset['rows'], status=200)
 
         servers = Server.query.filter_by(servergroup_id=gid).all()
         hosts = [{'host_name': s.host, 'port': s.port} for s in servers]

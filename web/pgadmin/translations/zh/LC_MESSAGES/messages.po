@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-05-24 18:10+0800\n"
+"POT-Creation-Date: 2021-06-02 16:45+0800\n"
 "PO-Revision-Date: 2019-08-03 13:09+0800\n"
 "Last-Translator: maikebing <mysticboy@live.com>\n"
 "Language: zh\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: pgadmin/__init__.py:527 pgadmin/__init__.py:580
 msgid "Auto-detected {0} installation with the data directory at {1}"
@@ -51,6 +51,7 @@ msgstr "桌面"
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:203
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:280
 #: pgadmin/browser/static/js/browser.js:593
+#: pgadmin/static/js/alertify.pgadmin.defaults.js:493
 #: pgadmin/static/js/slickgrid/editors.js:50
 #: pgadmin/static/js/slickgrid/editors.js:60
 #: pgadmin/static/js/slickgrid/editors.js:61
@@ -518,19 +519,19 @@ msgstr "没有指定服务器组名称"
 msgid "Could not find the server group."
 msgstr "找不到服务器组。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:106
+#: pgadmin/browser/server_groups/servers/__init__.py:107
 msgid "Servers"
 msgstr "服务器"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:378
+#: pgadmin/browser/server_groups/servers/__init__.py:379
 msgid "The specified server group with id# {0} could not be found."
 msgstr "找不到标识为＃{0}的服务器组。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:396
+#: pgadmin/browser/server_groups/servers/__init__.py:397
 msgid "Could not find the server with id# {0}."
 msgstr "找不到 id 为 # {0} 的服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:448
+#: pgadmin/browser/server_groups/servers/__init__.py:449
 msgid ""
 "The specified server could not be found.\n"
 "Does the user have permission to access the server?"
@@ -538,77 +539,77 @@ msgstr ""
 "找不到指定的服务器。\n"
 " 用户是否有权访问服务器？"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:470
+#: pgadmin/browser/server_groups/servers/__init__.py:471
 msgid "Server deleted"
 msgstr "服务器已经被删除"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:482
-#: pgadmin/browser/server_groups/servers/__init__.py:660
-#: pgadmin/browser/server_groups/servers/__init__.py:1435
-#: pgadmin/browser/server_groups/servers/__init__.py:1519
-#: pgadmin/browser/server_groups/servers/__init__.py:1595
-#: pgadmin/browser/server_groups/servers/__init__.py:1634
+#: pgadmin/browser/server_groups/servers/__init__.py:483
+#: pgadmin/browser/server_groups/servers/__init__.py:670
+#: pgadmin/browser/server_groups/servers/__init__.py:1446
+#: pgadmin/browser/server_groups/servers/__init__.py:1530
+#: pgadmin/browser/server_groups/servers/__init__.py:1606
+#: pgadmin/browser/server_groups/servers/__init__.py:1645
 msgid "Could not find the required server."
 msgstr "找不到所需的服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:521
+#: pgadmin/browser/server_groups/servers/__init__.py:523
 msgid "name"
 msgstr "名称"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:522
+#: pgadmin/browser/server_groups/servers/__init__.py:524
 #: pgadmin/browser/server_groups/servers/static/js/server.js:940
 msgid "Host name/address"
 msgstr "主机名称/地址"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:523
+#: pgadmin/browser/server_groups/servers/__init__.py:525
 #: pgadmin/browser/server_groups/servers/static/js/server.js:943
 msgid "Port"
 msgstr "端口"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:524
+#: pgadmin/browser/server_groups/servers/__init__.py:526
 #: pgadmin/browser/server_groups/servers/static/js/server.js:946
 msgid "Maintenance database"
 msgstr "维护数据库"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:525
+#: pgadmin/browser/server_groups/servers/__init__.py:527
 #: pgadmin/browser/server_groups/servers/static/js/server.js:949
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1174
 #: pgadmin/tools/user_management/static/js/user_management.js:326
 msgid "Username"
 msgstr "用户名"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:526
+#: pgadmin/browser/server_groups/servers/__init__.py:528
 msgid "SSL Mode"
 msgstr "SSL 模式"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:527
+#: pgadmin/browser/server_groups/servers/__init__.py:529
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:456
 #: pgadmin/browser/server_groups/servers/static/js/server.js:937
 #: pgadmin/tools/restore/static/js/restore.js:264
 msgid "Comments"
 msgstr "注释"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:528
+#: pgadmin/browser/server_groups/servers/__init__.py:530
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:406
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:178
 #: pgadmin/tools/user_management/static/js/user_management.js:364
 msgid "Role"
 msgstr "角色"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:543
+#: pgadmin/browser/server_groups/servers/__init__.py:545
 msgid "Host address not valid"
 msgstr "主机地址无效"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:557
+#: pgadmin/browser/server_groups/servers/__init__.py:559
 msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "服务器在连接时, '{0}'不允许修改。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:576
+#: pgadmin/browser/server_groups/servers/__init__.py:586
 msgid "No parameters were changed."
 msgstr "未更改任何参数。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:759
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:575
+#: pgadmin/browser/server_groups/servers/__init__.py:769
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:399
 #: pgadmin/browser/server_groups/servers/clusters/shards/__init__.py:597
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:962
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:615
@@ -653,63 +654,63 @@ msgstr "未更改任何参数。"
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:368
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:299
 msgid "Could not find the required parameter ({})."
-msgstr ""
+msgstr "找不到必须参数 ({})."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:769
+#: pgadmin/browser/server_groups/servers/__init__.py:779
 msgid "Not a valid Host address"
-msgstr ""
+msgstr "主机地址无效"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:870
+#: pgadmin/browser/server_groups/servers/__init__.py:880
 msgid ""
 "Unable to connect to server:\n"
 "\n"
 "{}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:953
+#: pgadmin/browser/server_groups/servers/__init__.py:963
 msgid "Server has no active connection for generating statistics."
 msgstr "服务器没有用于生成统计信息的活动连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1033
-#: pgadmin/browser/server_groups/servers/__init__.py:1206
-#: pgadmin/browser/server_groups/servers/__init__.py:1314
-#: pgadmin/browser/server_groups/servers/__init__.py:1663
-#: pgadmin/browser/server_groups/servers/utils.py:285
+#: pgadmin/browser/server_groups/servers/__init__.py:1043
+#: pgadmin/browser/server_groups/servers/__init__.py:1217
+#: pgadmin/browser/server_groups/servers/__init__.py:1325
+#: pgadmin/browser/server_groups/servers/__init__.py:1674
+#: pgadmin/browser/server_groups/servers/utils.py:286
 msgid "Server not found."
 msgstr "服务器未找到."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1039
-#: pgadmin/browser/server_groups/servers/__init__.py:1041
-#: pgadmin/browser/server_groups/servers/__init__.py:1319
-#: pgadmin/browser/server_groups/servers/__init__.py:1669
-#: pgadmin/browser/server_groups/servers/__init__.py:1671
+#: pgadmin/browser/server_groups/servers/__init__.py:1049
+#: pgadmin/browser/server_groups/servers/__init__.py:1051
+#: pgadmin/browser/server_groups/servers/__init__.py:1330
+#: pgadmin/browser/server_groups/servers/__init__.py:1680
+#: pgadmin/browser/server_groups/servers/__init__.py:1682
 #: pgadmin/utils/driver/snowball/connection.py:257
 #: pgadmin/utils/driver/snowball/connection.py:1268
 #: pgadmin/utils/driver/snowball/server_manager.py:501
 msgid "Unauthorized request."
 msgstr "未经授权的请求。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1184
+#: pgadmin/browser/server_groups/servers/__init__.py:1195
 msgid "Server connected."
 msgstr "服务器已连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1214
+#: pgadmin/browser/server_groups/servers/__init__.py:1225
 msgid "Server could not be disconnected."
 msgstr "无法断开连接服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1218
+#: pgadmin/browser/server_groups/servers/__init__.py:1229
 msgid "Server disconnected."
 msgstr "服务器已断开连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1238
+#: pgadmin/browser/server_groups/servers/__init__.py:1249
 msgid "Could not reload the server configuration."
 msgstr "无法重新加载服务器配置。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1243
+#: pgadmin/browser/server_groups/servers/__init__.py:1254
 msgid "Server configuration reloaded."
 msgstr "服务器配置已重新加载。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1249
+#: pgadmin/browser/server_groups/servers/__init__.py:1260
 #: pgadmin/dashboard/static/js/dashboard.js:594
 #: pgadmin/dashboard/static/js/dashboard.js:729
 #: pgadmin/static/js/sqleditor/execute_query.js:323
@@ -720,59 +721,57 @@ msgid ""
 "closed."
 msgstr "未连接到服务器或与服务器的连接已关闭。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1286
+#: pgadmin/browser/server_groups/servers/__init__.py:1297
 msgid "Named restore point created: {0}"
 msgstr "命名还原点已创建: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1292
+#: pgadmin/browser/server_groups/servers/__init__.py:1303
 msgid "Named restore point creation failed ({0})"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1339
-#: pgadmin/browser/server_groups/servers/__init__.py:1351
+#: pgadmin/browser/server_groups/servers/__init__.py:1350
+#: pgadmin/browser/server_groups/servers/__init__.py:1362
 msgid "Could not find the required parameter(s)."
 msgstr "未找到所需参数。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1360
+#: pgadmin/browser/server_groups/servers/__init__.py:1371
 #: pgadmin/browser/server_groups/servers/static/js/server.js:642
 #: pgadmin/tools/user_management/__init__.py:102
 msgid "Passwords do not match."
 msgstr "密码不匹配。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1376
+#: pgadmin/browser/server_groups/servers/__init__.py:1387
 msgid "Incorrect password."
 msgstr "密码错误。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1416
+#: pgadmin/browser/server_groups/servers/__init__.py:1427
 msgid "Password changed successfully."
 msgstr "密码已成功更改。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1466
+#: pgadmin/browser/server_groups/servers/__init__.py:1477
 msgid "WAL replay paused"
 msgstr "WAL 回放已暂停"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1469
-#: pgadmin/browser/server_groups/servers/__init__.py:1527
+#: pgadmin/browser/server_groups/servers/__init__.py:1480
+#: pgadmin/browser/server_groups/servers/__init__.py:1538
 msgid "Please connect the server."
 msgstr "请连接服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1613
-#: pgadmin/browser/server_groups/servers/__init__.py:1649
+#: pgadmin/browser/server_groups/servers/__init__.py:1624
+#: pgadmin/browser/server_groups/servers/__init__.py:1660
 msgid "The saved password cleared successfully."
 msgstr "已成功清除保存的密码。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1759
-#: pgadmin/browser/server_groups/servers/__init__.py:1886
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:643
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:744
+#: pgadmin/browser/server_groups/servers/__init__.py:1775
+#: pgadmin/browser/server_groups/servers/__init__.py:1906
 msgid "please submit ssh connection information in properties!"
 msgstr "请在属性面板设置SSH连接信息!"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1829
+#: pgadmin/browser/server_groups/servers/__init__.py:1845
 msgid "Server started."
 msgstr "服务已启动"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1956
+#: pgadmin/browser/server_groups/servers/__init__.py:1973
 msgid "Server stopped."
 msgstr "服务已停止"
 
@@ -844,50 +843,50 @@ msgstr "虚拟集群"
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:187
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:148
 msgid "Could not find the server."
-msgstr ""
+msgstr "找不到服务器"
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:406
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:809
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:981
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:396
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:412
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:702
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:772
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:880
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:1053
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2204
-msgid "Could not find the database on the server."
-msgstr "在服务器上找不到数据库。"
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:298
+msgid "Could not find the cluster on the server."
+msgstr "在服务器上找不到虚拟集群。"
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:423
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:320
 msgid "Could not find the virtual cluster on the server."
 msgstr "在服务器上找不到虚拟集群。"
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:462
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:334
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:504
 msgid "Database connected."
 msgstr "已连接数据库。"
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:482
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:524
-msgid "Database could not be disconnected."
-msgstr "无法断开数据库连接。"
-
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:486
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:348
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:528
 msgid "Database disconnected."
 msgstr "数据库连接已断开。"
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:586
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:410
 msgid "XMLSyntaxError ({})."
 msgstr "XML语法错误 ({})."
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:836
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:907
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:924
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1821
-msgid " -- definition incomplete"
-msgstr " --定义不完整"
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:426
+msgid "cluster: {} existed."
+msgstr "虚拟集群: {} 已存在."
+
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:565
+msgid "please submit ssh connection information in properties for server: {}"
+msgstr "请在属性面板为服务器设置SSH连接信息: {}"
+
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:535
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:585
+msgid "server error: {}, {}"
+msgstr "服务器错误: {}, {}"
+
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:609
+msgid "Could not find the required cluster."
+msgstr "找不到目标虚拟集群。"
+
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:664
+msgid "Cluster deleted"
+msgstr "虚拟集群已删除"
 
 #: pgadmin/browser/server_groups/servers/clusters/shards/__init__.py:71
 #: pgadmin/browser/server_groups/servers/clusters/shards/static/js/shard.js:310
@@ -999,21 +998,21 @@ msgstr "找不到表."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:606
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:634
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:656
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1328
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1464
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1499
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1547
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1598
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1651
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1700
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1329
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1465
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1500
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1548
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1599
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1652
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1701
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:402
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:496
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:592
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:752
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1163
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:628
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1393
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1985
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:629
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1394
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1986
 msgid "The specified table could not be found."
 msgstr "找不到指定的表。"
 
@@ -1022,18 +1021,18 @@ msgid "The specified table could not be found.\n"
 msgstr "找不到指定的表。\n"
 
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1141
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1190
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1191
 msgid "Table dropped"
 msgstr "表被删除"
 
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1222
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1271
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1272
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:817
 msgid "Trigger(s) have been disabled"
 msgstr "触发器已禁用"
 
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1224
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1273
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1274
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:819
 msgid "Trigger(s) have been enabled"
 msgstr "触发器已启用"
@@ -1042,14 +1041,14 @@ msgstr "触发器已启用"
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1548
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1334
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1380
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1569
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1622
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1587
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1570
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1623
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1588
 msgid "-- Please create column(s) first..."
 msgstr "--请先创建列..."
 
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1641
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1715
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1716
 msgid "Table rows counted: {}"
 msgstr "表的行数: {}"
 
@@ -3019,6 +3018,26 @@ msgstr "元组已获取"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:21
 msgid "Databases"
 msgstr "数据库"
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:396
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:412
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:702
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:772
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:880
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1053
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2205
+msgid "Could not find the database on the server."
+msgstr "在服务器上找不到数据库。"
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:524
+msgid "Database could not be disconnected."
+msgstr "无法断开数据库连接。"
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:907
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:925
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1822
+msgid " -- definition incomplete"
+msgstr " --定义不完整"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:20
@@ -6303,22 +6322,22 @@ msgstr "物化视图"
 msgid "Could not find the view."
 msgstr "找不到视图。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:764
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:765
 msgid "View dropped"
 msgstr "视图已删除"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:839
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1491
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1552
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:840
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1492
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1553
 msgid "Could not find the view on the server."
 msgstr "在服务器上找不到视图。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1307
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1898
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1308
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1899
 msgid "The specified view could not be found."
 msgstr "找不到指定的视图。\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1634
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1635
 msgid ""
 "\n"
 "-- Changing the columns in a view requires dropping and re-creating the "
@@ -6328,28 +6347,28 @@ msgid ""
 "-- take account of the changes.\n"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2058
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2164
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2059
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2165
 msgid "Could not find the materialized view."
 msgstr "找不到物化视图."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2183
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2184
 #: pgadmin/tools/import_export/__init__.py:230
 #: pgadmin/tools/maintenance/__init__.py:201
 msgid "Could not find the given server"
 msgstr "找不到给定的服务器"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2195
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2196
 #: pgadmin/tools/maintenance/__init__.py:213
 #: pgadmin/tools/restore/__init__.py:231
 msgid "Please connect to the server first."
 msgstr "请先连接到服务器。"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2256
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2257
 msgid "Materialized view refresh job created."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2307
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2308
 #: pgadmin/tools/import_export/__init__.py:387
 #: pgadmin/tools/maintenance/__init__.py:293
 #: pgadmin/tools/restore/__init__.py:217 pgadmin/tools/restore/__init__.py:395
@@ -7061,7 +7080,7 @@ msgstr "当前用户没有创建角色的权限。"
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:543
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:725
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:738
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:771
 msgid ""
 "Error retrieving the role information.\n"
 "{0}"
@@ -7076,8 +7095,8 @@ msgstr "在数据库服务器上找不到角色。"
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:577
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:687
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:581
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:691
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:591
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:722
 msgid ""
 "Error retrieving roles from the database server.\n"
 "{0}"
@@ -7087,10 +7106,10 @@ msgstr "从数据库服务器检索角色时出错。"
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:633
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:810
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:858
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:602
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:637
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:835
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:883
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:620
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:655
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:868
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:916
 msgid ""
 "Error fetching role information from the database server.\n"
 "{0}"
@@ -7102,10 +7121,10 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:694
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:825
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:875
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:655
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:698
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:850
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:900
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:673
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:731
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:883
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:933
 msgid "Could not find the role information."
 msgstr "找不到角色信息."
 
@@ -7118,7 +7137,7 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:761
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:779
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:812
 msgid ""
 "Could not generate reversed engineered query for the role.\n"
 "{0}"
@@ -7127,14 +7146,14 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:769
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:787
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:820
 msgid "Could not generate reversed engineered query for the role."
 msgstr "无法为角色生成反向工程查询。"
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:789
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:847
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:814
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:872
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:847
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:905
 msgid ""
 "Could not create the role.\n"
 "{0}"
@@ -7153,7 +7172,7 @@ msgid ""
 msgstr "检索角色的变量信息时出错。{0}"
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:1116
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:1141
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1174
 msgid ""
 "Error retrieving the variable options for the role.\n"
 "{0}"
@@ -8286,11 +8305,11 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:554
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:755
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:788
 msgid "Could not find the user/role on the database server."
 msgstr "在数据库服务器上找不到角色。"
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:725
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:758
 msgid ""
 "Error retrieving the user information.\n"
 "{0}"
@@ -8298,7 +8317,7 @@ msgstr ""
 "检索角色信息时出错。\n"
 "{0}"
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:761
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:794
 msgid ""
 "Could not drop the user/role.\n"
 "{0}"
@@ -10315,6 +10334,10 @@ msgstr "未知错误"
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:179
 msgid "INTERNAL SERVER ERROR"
 msgstr "INTERNAL SERVER ERROR"
+
+#: pgadmin/static/js/alertify.pgadmin.defaults.js:493
+msgid "cancel"
+msgstr "取消"
 
 #: pgadmin/static/js/backform.pgadmin.js:590
 #: pgadmin/static/js/backform.pgadmin.js:616
@@ -13368,9 +13391,6 @@ msgid ""
 "Failed to create the SSH tunnel.\n"
 "Error: {0}"
 msgstr ""
-
-msgid "cancel"
-msgstr "取消"
 
 #~ msgid "Script - "
 #~ msgstr "脚本 - "

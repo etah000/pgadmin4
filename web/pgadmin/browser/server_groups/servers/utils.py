@@ -22,6 +22,7 @@ from pgadmin.utils import get_storage_directory
 from pgadmin.utils.crypto import decrypt
 from pgadmin.utils.master_password import get_crypt_key
 
+
 def parse_priv_from_db(db_privileges):
     """
     Common utility function to parse privileges retrieved from database.
@@ -273,7 +274,7 @@ def get_ssh_client(host, user, port=22, password=None, pkey=None, ):
     return ssh_client
 
 
-def get_ssh_info(gid, sid):
+def _get_ssh_info(gid, sid):
     """
     This function is used to get ssh connection information
     :param gid:
@@ -368,5 +369,61 @@ def get_ssh_info(gid, sid):
     ):
 
         ssh_data = None
+
+    return ssh_data
+
+
+def get_ssh_info(gid, sid):
+    """
+    This function is used to get ssh connection information
+    :param gid:
+    :param sid:
+    :return: ssh_data or None
+    """
+    # Fetch Server Details
+    server = Server.query.filter_by(id=sid).first()
+    if server is None:
+        return bad_request(gettext("Server not found."))
+
+    # Get enc key
+    crypt_key_present, crypt_key = get_crypt_key()
+    if not crypt_key_present:
+        raise CryptKeyMissing
+
+    ssh_data = dict()
+
+    ssh_data['host'] = server.host
+    ssh_data['ssh_username'] = server.ssh_username
+    ssh_data['ssh_port'] = server.ssh_port
+    ssh_data['ssh_authentication_type'] = int(server.ssh_authentication_type)
+    ssh_data['ssh_key_file'] = server.ssh_key_file
+    ssh_data['ssh_password'] = server.ssh_password
+
+    if not server.ssh_username \
+       or (not server.ssh_key_file and not server.ssh_password) \
+       or (int(server.ssh_authentication_type) == 0 and not server.ssh_password):
+        ssh_data = None
+    elif ssh_data['ssh_authentication_type'] == 0:
+        decrypted_password = decrypt(server.ssh_password, crypt_key)
+
+        if isinstance(decrypted_password, bytes):
+            decrypted_password = decrypted_password.decode()
+
+        ssh_data['ssh_password'] = decrypted_password
+        ssh_data['private_key'] = None
+    elif ssh_data['ssh_authentication_type'] == 1:
+        # retrieve ssh key directory path
+        storage_path = get_storage_directory()
+        if storage_path:
+            # generate full path of ssh key file
+            ssh_key_path = os.path.join(
+                storage_path,
+                server.ssh_key_file.strip('/').strip('\\')
+            )
+            ssh_data['private_key'] = paramiko.RSAKey.from_private_key_file(ssh_key_path)
+            ssh_data['ssh_password'] = None
+        else:
+            # this will be error
+            pass
 
     return ssh_data
