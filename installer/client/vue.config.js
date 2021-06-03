@@ -17,10 +17,13 @@ module.exports = {
                 ],
                 //"compression": "store", // "store" | "normal"| "maximum" 打包压缩情况(store 相对较快)，store 39749kb, maximum 39186kb
                 //"extraResources": ["./extraResources/**"],
-                "extraResources":  { // 拷贝app等静态文件到指定位置
+                "extraResources":  [{ // 拷贝app等静态文件到指定位置
                     "from": "./extraResources/app",
                     "to": "./app/app"
-                },
+                },{ // 拷贝app等静态文件到指定位置
+                    "from": "./extraResources/app.exe",
+                    "to": "./app/app.exe"
+                }],
                 productName: "snowball-installer",//项目名，也是生成的安装文件名
                 copyright: "Copyright © 2021",//版权信息
                 directories: {
@@ -69,7 +72,7 @@ module.exports = {
                     "icon": "build/icon.ico"
                 },*/
                 win: {//win相关配置
-                    icon: "./public/Mtv.ico",//图标，当前图标在根目录下，注意这里有两个坑
+                    icon: "./public/pgAdmin4.ico",//图标，当前图标在根目录下，注意这里有两个坑
                     target: [
                         {
                             target: "nsis",//利用nsis制作安装程序
@@ -83,12 +86,12 @@ module.exports = {
                     oneClick: false, // 是否一键安装
                     allowElevation: true, // 允许请求提升。 如果为false，则用户必须使用提升的权限重新启动安装程序。
                     allowToChangeInstallationDirectory: true, // 允许修改安装目录
-                    installerIcon: "./public/Mtv.ico",// 安装图标
-                    uninstallerIcon: "./public/Mtv.ico",//卸载图标
-                    installerHeaderIcon: "./public/Mtv.ico", // 安装时头部图标
+                    installerIcon: "./public/pgAdmin4.ico",// 安装图标
+                    uninstallerIcon: "./public/pgAdmin4.ico",//卸载图标
+                    installerHeaderIcon: "./public/pgAdmin4.ico", // 安装时头部图标
                     createDesktopShortcut: true, // 创建桌面图标
                     createStartMenuShortcut: true,// 创建开始菜单图标
-                    shortcutName: "Mtv", // 图标名称
+                    shortcutName: "pgAdmin4", // 图标名称
                 },
             }
         }

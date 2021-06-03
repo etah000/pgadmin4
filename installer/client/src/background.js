@@ -2,6 +2,7 @@
 
 import { app, protocol, BrowserWindow } from 'electron'
 const path = require('path')
+
 import {
   createProtocol,
   /* installVueDevtools */
@@ -78,6 +79,10 @@ app.on('ready', async () => {
 
   }
   createWindow()
+  /*获取electron窗体的菜单栏*/
+  const {Menu} = require('electron')
+  /*隐藏electron创听的菜单栏*/
+  Menu.setApplicationMenu(null)
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -99,10 +104,14 @@ if(!isDevelopment)
 {
 try{
   let pyProc = null;
+
   let script = path.join(__dirname, 'app')//path.join(__dirname, 'app')//process.env.MY_PYTHON_APP_PATH
+  if (process.platform === 'win32') {
+    script = path.join(__dirname, 'app.exe')
+  }
   const createPyProc = () => {
     console.log("createing at ", script);
-    pyProc = require("child_process").spawn(script, { detached: true });
+    pyProc = require("child_process").spawn(script, { detached: true,windowsHide:true });
     if (pyProc != null) {
       console.log("child process spawned");
     }
