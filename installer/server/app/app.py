@@ -66,26 +66,27 @@ def setInstallConf():
     remoteSoftdir=data['config']['general']['remoteSoftdir']
     remoteAppdir=data['config']['general']['remoteAppdir']
     remoteConfDir=data['config']['general']['remoteConfDir']
+    #zookeeperselected
+    if data['config']['zookeeperselected'] == True:
+        zksoftlist=data['config']['zookeeper']['softlist']
+        zknodes = []
+        for node in data['config']['zookeeper']['nodes']:
+            zknodes.append(node['name'])
+        current_app.logger.info('install  Zookeeper start')
+        ZookeeperProcesser().install(spath,remoteSoftdir,remoteAppdir,zksoftlist,zknodes,data['config'])
+        current_app.logger.info('install  Zookeeper end')
+        flash(message="50", category="test")
+    #snowballselected
+    if data['config']['snowballselected'] == True:
+        sbsoftlist=data['config']['snowball']['softlist']
+        sbnodes = []
+        for node in data['config']['snowball']['nodes']:
+            sbnodes.append(node['name'])
+        current_app.logger.info('install  Snowball start')
+        SnowballProcesser().install(spath,remoteSoftdir,remoteConfDir,sbsoftlist,sbnodes,data['config'])
+        current_app.logger.info('install  Snowball end')
     try:
-        #zookeeperselected
-        if data['config']['zookeeperselected'] == True:
-            zksoftlist=data['config']['zookeeper']['softlist']
-            zknodes = []
-            for node in data['config']['zookeeper']['nodes']:
-                zknodes.append(node['name'])
-            current_app.logger.info('install  Zookeeper start')
-            ZookeeperProcesser().install(spath,remoteSoftdir,remoteAppdir,zksoftlist,zknodes,data['config'])
-            current_app.logger.info('install  Zookeeper end')
-            flash(message="50", category="test")
-        #snowballselected
-        if data['config']['snowballselected'] == True:
-            sbsoftlist=data['config']['snowball']['softlist']
-            sbnodes = []
-            for node in data['config']['snowball']['nodes']:
-                sbnodes.append(node['name'])
-            current_app.logger.info('install  Snowball start')
-            SnowballProcesser().install(spath,remoteSoftdir,remoteConfDir,sbsoftlist,sbnodes,data['config'])
-            current_app.logger.info('install  Snowball end')
+       pass
     except Exception as e:
         print(e)
         res = {

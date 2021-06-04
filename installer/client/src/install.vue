@@ -333,6 +333,29 @@
               </el-row>
               <el-row>
                 <el-col :span="24">
+                  <el-form-item label="basecfg" :label-width="formLabelWidth"  prop="basecfg">
+                    <el-input v-model="snowball.basecfg" :readonly="true" >
+                      <template slot="append">
+                        <yl-upload
+                            action="/install/upload"
+                            :data="chunkData"
+                            :on-success="handleSuccess"
+                            :on-change="beforebasecfgtplUpload"
+                            :show-file-list = false
+                            accept = ".xml, .tpl"
+                            :chunk-size="1024 * 1024 * 3"
+                            :thread="4"
+                            :auto-upload="false"
+                        >
+                          <i class="el-icon-upload"></i>
+                        </yl-upload>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24">
                   <el-button @click="addsb" size="medium" icon="el-icon-circle-plus-outline" type="primary" round>{{$t('install.addsnowball')}}</el-button>
                   <el-table
                       :data="snowball.nodes"
@@ -501,6 +524,7 @@ export default {
         timezone:'Asia/Shanghai',
         basecfgtpl:'snowball.config.xml.tpl',
         licensetpl:'',
+        basecfg:'',
         nodes: [
           {name: 'node01', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server1'},
           {name: 'node02', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server2'},
@@ -539,6 +563,9 @@ export default {
         licensetpl: [
           {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
+        basecfg: [
+          {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
+        ],
         tcp_port: [
           {required: true, message: `${this.$t('install.notnull')}`, trigger: 'blur'}
         ],
@@ -574,6 +601,17 @@ export default {
       }else {
         //this.snowball.licensetpl = file.name
         this.snowball.licensetpl = file.path
+        return true
+      }
+    },
+    beforebasecfgtplUpload(file){
+      file =  file.raw
+      if(file.name.indexOf('config')==-1){
+        this.$message.error(`${this.$t('install.selected')} basecfg ${this.$t('install.errorpkg')}` );
+        return false
+      }else {
+        //this.snowball.licensetpl = file.name
+        this.snowball.basecfg = file.path
         return true
       }
     },

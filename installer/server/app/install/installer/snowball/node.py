@@ -3,7 +3,7 @@
 #from pgadmin.tools.install.config import snowballConf as conf
 from install.installer.node import AbstractNode
 from install.installer.common import GetSelfPath
-import xmltodict
+import xmltodict,os
 selfPath = GetSelfPath()
 
 tmpsqlfile = '/app/temp.sql';
@@ -36,7 +36,8 @@ class Node(AbstractNode):
         self.snowballconf = self.getSnowballNodeConf(name,jsonCfg['snowball']) #conf.getSnowballNodeConf(name)
 
     def getSnowballNodeConf(self,name,snowballCfg):
-        f = open(selfPath+'/config/snowball.config.xml.tpl', 'r')
+        f = open(snowballCfg['basecfg'], 'r')
+
         xmlstr = f.read()
         snowballconf = xmltodict.parse(xmlstr)
         #全局设置
