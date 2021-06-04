@@ -1,9 +1,7 @@
 import sys, os, re
 from install.installer.common import Put, Exec, CheckSSHConnectAndGetOsInfo
-from install.installer.common import GetSelfPath
 import tempfile
 
-appPath = GetSelfPath()
 class AbstractNode():
     name = ''
     host = ''
@@ -31,7 +29,7 @@ class AbstractNode():
         return Exec(self.host, self.ssh['port'], self.ssh['authMode'], self.ssh['name'], self.ssh['passwd'],self.ssh['authKeyFile'], cmd)
 
     def put(self,src, dst):
-        return Put(self.host, self.ssh['port'], self.ssh['authMode'], self.ssh['name'], self.ssh['passwd'],self.ssh['authKeyFile'], src, dst)
+        Put(self.host, self.ssh['port'], self.ssh['authMode'], self.ssh['name'], self.ssh['passwd'],self.ssh['authKeyFile'], src, dst)
 
     def get(self, remotefile):
         cmd = 'cat ' + remotefile
