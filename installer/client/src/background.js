@@ -80,9 +80,9 @@ app.on('ready', async () => {
   }
   createWindow()
   /*获取electron窗体的菜单栏*/
-  const {Menu} = require('electron')
+  //const {Menu} = require('electron')
   /*隐藏electron创听的菜单栏*/
-  Menu.setApplicationMenu(null)
+  //Menu.setApplicationMenu(null)
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -111,7 +111,7 @@ try{
   }
   const createPyProc = () => {
     console.log("createing at ", script);
-    pyProc = require("child_process").spawn(script, { detached: true,windowsHide:true });
+    pyProc = require("child_process").spawn(script, { detached: false,windowsHide:true });
     if (pyProc != null) {
       console.log("child process spawned");
     }
