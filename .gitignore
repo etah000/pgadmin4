@@ -54,4 +54,4 @@ auditjs.html
 auditpy.txt
 /venv/
 /web/pgadmin/tools/install/soft/
-installer/client/package-lock.json
+web/npm-debug.log

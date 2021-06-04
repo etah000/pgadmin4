@@ -39,6 +39,10 @@ cd ..
 
 ### Windows
 ```sh
+第一步：以管理员身份运行powershell
+第二步：执行：get-ExecutionPolicy 回复Restricted，表示状态是禁止的。
+第三步：执行：set-ExecutionPolicy RemoteSigned
+第四步：选择Y，回车
 powershell
 git clone https://github.com/m0hashi/vue-flask-packaging-with-electron.git
 cd server
