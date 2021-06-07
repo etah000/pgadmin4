@@ -27,6 +27,7 @@ from flask_security.utils import login_user, logout_user
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
+from flask_cors import CORS
 
 from pgadmin.model import db, Role, Server, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
@@ -761,8 +762,11 @@ def create_app(app_name=None):
     ##########################################################################
     # Protection against CSRF attacks
     ##########################################################################
-    with app.app_context():
-        pgCSRFProtect.init_app(app)
+    # with app.app_context():
+    #     pgCSRFProtect.init_app(app)
+    # CORS(app, supports_credentials=True, send_wildcard=False)
+    # CORS(app, supports_credentials=False, send_wildcard=True)
+    CORS(app)
 
     ##########################################################################
     # All done!

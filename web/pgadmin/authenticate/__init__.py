@@ -11,7 +11,7 @@
 
 import flask
 import pickle
-from flask import current_app, flash
+from flask import current_app, flash, Response
 from flask_babelex import gettext
 from flask_security import current_user
 from flask_security.views import _security, _ctx
@@ -21,6 +21,7 @@ from flask import session
 
 import config
 from pgadmin.utils import PgAdminModule
+from pgadmin.utils.ajax import unauthorized
 from .registry import AuthSourceRegistry
 
 MODULE_NAME = 'authenticate'
@@ -48,8 +49,7 @@ def login():
     if not auth_obj.validate():
         for field in form.errors:
             for error in form.errors[field]:
-                flash(error, 'warning')
-            return flask.redirect(get_post_logout_redirect())
+                return unauthorized(errormsg=error)
 
     # Authenticate the user
     status, msg = auth_obj.authenticate()
@@ -57,14 +57,12 @@ def login():
         # Login the user
         status, msg = auth_obj.login()
         if not status:
-            flash(gettext(msg), 'danger')
-            return flask.redirect(get_post_logout_redirect())
+            return unauthorized(errormsg=gettext(msg))
 
         session['_auth_source_manager_obj'] = auth_obj.as_dict()
-        return flask.redirect(get_post_login_redirect())
+        return Response()
 
-    flash(gettext(msg), 'danger')
-    return flask.redirect(get_post_logout_redirect())
+    return unauthorized(errormsg=gettext(msg))
 
 
 class AuthSourceManager():
