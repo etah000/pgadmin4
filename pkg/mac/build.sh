@@ -10,9 +10,9 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 trap 'if [ $? -ne 0 ]; then echo "\"${last_command}\" command filed with exit code $?."; fi' EXIT
 
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
-SOURCE_DIR=$(realpath ${SCRIPT_DIR}/../..)
-BUILD_ROOT=$(realpath ${SCRIPT_DIR}/../..)/mac-build
-DIST_ROOT=$(realpath ${SCRIPT_DIR}/../..)/dist
+SOURCE_DIR=${SCRIPT_DIR}/../..
+BUILD_ROOT=${SCRIPT_DIR}/../../mac-build
+DIST_ROOT=${SCRIPT_DIR}/../../dist
 
 if [ ! -f ${SCRIPT_DIR}/framework.conf ]; then
     echo
@@ -76,7 +76,6 @@ _setup_env
 _cleanup
 _create_venv
 _build_runtime
-_build_docs
 _complete_bundle
 _framework_config
 _codesign_binaries

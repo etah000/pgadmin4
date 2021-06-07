@@ -15,6 +15,7 @@ url_map.txt
 /*.diff
 /*.patch
 /dist
+/out
 /debian-build
 /docker-build
 /mac-build

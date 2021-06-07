@@ -19,7 +19,7 @@ Building:
    the PGADMIN_PYTHON_DIR environment variable to the Python root installation
    directory, e.g.
 
-   export PGADMIN_PYTHON_DIR=/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8
+   export PGADMIN_PYTHON_DIR=/Library/Frameworks/Python.framework/Versions/3.9
 
 2. If a value different from the default of ~/Qt/5.13.2/clang_64, is required,
    set the PGADMIN_QT_DIR environment variable to the QT root installation
