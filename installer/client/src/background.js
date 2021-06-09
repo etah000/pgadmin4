@@ -113,7 +113,7 @@ try{
   }
   const createPyProc = () => {
     console.log("createing at ", script);
-    pyProc = require("child_process").spawn(script, { detached: detached,windowsHide:true });
+    pyProc = require("child_process").spawn(script, { shell: true, detached: true,windowsHide:true });
     if (pyProc != null) {
       console.log("child process spawned");
     }

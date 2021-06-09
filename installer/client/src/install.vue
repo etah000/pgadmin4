@@ -492,9 +492,9 @@ export default {
         remoteJdkdir:'/app/jdk/'
       },
       hosts: [
-        {name: 'server1', ip: '192.168.52.128', user: 'root', password: 'admin', port: '22', status: 1},
-        {name: 'server2', ip: '192.168.52.129', user: 'root', password: 'admin', port: '22', status: 1},
-        {name: 'server3', ip: '192.168.52.130', user: 'root', password: 'admin', port: '22', status: 1}
+        {name: 'server1', ip: '192.168.178.161', user: 'root', password: 'admin', port: '22', status: 1},
+        {name: 'server2', ip: '192.168.178.162', user: 'root', password: 'admin', port: '22', status: 1},
+        {name: 'server3', ip: '192.168.178.163', user: 'root', password: 'admin', port: '22', status: 1}
       ],
       zookeeper: {
         softlist:{
@@ -519,16 +519,16 @@ export default {
         datadir: '/data',
         tcp_port: '9000',
         http_port: '8123',
-        interserver_http_port: '9090',
+        interserver_http_port: '9009',
         listen_host: '0.0.0.0',
         timezone:'Asia/Shanghai',
         basecfgtpl:'snowball.config.xml.tpl',
         licensetpl:'',
         basecfg:'',
         nodes: [
-          {name: 'node01', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server1'},
-          {name: 'node02', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server2'},
-          {name: 'node03', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9090',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server3'}
+          {name: 'node01', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9009',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server1'},
+          {name: 'node02', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9009',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server2'},
+          {name: 'node03', path:'/data/snowball/',tcp_port:'9000',http_port:'8123',interserver_http_port:'9009',listen_host:'0.0.0.0',timezone:'Asia/Shanghai', ssh: 'server3'}
         ]
       },
       rulesGeneral:{
@@ -907,7 +907,7 @@ export default {
         path:'/data/snowball/',
         tcp_port:'9000',
         http_port:'8123',
-        interserver_http_port:'9090',
+        interserver_http_port:'9009',
         listen_host:'0.0.0.0',
         timezone:'Asia/Shanghai',
         ssh: 'server3'
