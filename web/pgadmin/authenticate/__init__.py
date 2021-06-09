@@ -18,6 +18,7 @@ from flask_security.views import _security, _ctx
 from flask_security.utils import config_value, get_post_logout_redirect, \
     get_post_login_redirect
 from flask import session
+from flask_security.utils import login_user, logout_user
 
 import config
 from pgadmin.utils import PgAdminModule
@@ -29,7 +30,7 @@ MODULE_NAME = 'authenticate'
 
 class AuthenticateModule(PgAdminModule):
     def get_exposed_url_endpoints(self):
-        return ['authenticate.login']
+        return ['authenticate.login', 'authenticate.logout']
 
 
 blueprint = AuthenticateModule(MODULE_NAME, __name__, static_url_path='')
@@ -63,6 +64,14 @@ def login():
         return Response()
 
     return unauthorized(errormsg=gettext(msg))
+
+
+@blueprint.route('/logout', endpoint='logout', methods=['GET', 'POST'])
+def logout():
+    """
+    """
+    logout_user()
+    return Response()
 
 
 class AuthSourceManager():
