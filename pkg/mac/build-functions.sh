@@ -26,17 +26,21 @@ _create_venv() {
     cd ${BUILD_ROOT}
 
     ${PYTHON_EXE} -m venv --copies venv
-
+    #pip3 install virtualenv
+    #virtualenv -p python3.9 venv
     source venv/bin/activate
     pip install --no-cache-dir --no-binary psycopg2 -r ${SOURCE_DIR}/requirements.txt
+    mv ${BUILD_ROOT}/venv/lib/python3.9/site-packages/clickhouse_driver ${BUILD_ROOT}/venv/lib/python3.9/site-packages/snowball_driver
+    mv ${BUILD_ROOT}/venv/lib/python3.9/site-packages/clickhouse_driver-0.2.0.dist-info ${BUILD_ROOT}/venv/lib/python3.9/site-packages/snowball_driver-0.2.0.dist-info
 
     # Figure the source path for use when completing the venv
-    SOURCE_PYMODULES_PATH=$(dirname $("${PYTHON_EXE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"))
 
+    SOURCE_PYMODULES_PATH=$(dirname $("${PYTHON_EXE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"))
+    echo ${SOURCE_PYMODULES_PATH}
     # Figure the target path for use when completing the venv
     # Use "python" here as we want the venv path
     TARGET_PYMODULES_PATH=$(dirname $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"))
-
+    echo ${TARGET_PYMODULES_PATH}
     # Copy in the additional system python modules
     cp -R ${SOURCE_PYMODULES_PATH}/* "${TARGET_PYMODULES_PATH}/"
 
@@ -116,6 +120,7 @@ EOF
 			fw_relpath_old=${fw_relpath}
 
 			# Find all libraries $todo_obj depends on, but skip system libraries
+			echo "##################### $(otool -L ${todo_obj} | grep "Qt\|dylib\|Frameworks\|PlugIns" | grep -v ":" | sed 's/(.*//' | egrep -v '(/usr/lib)|(/System)|@executable_path@')"
 			for lib in $(otool -L ${todo_obj} | grep "Qt\|dylib\|Frameworks\|PlugIns" | grep -v ":" | sed 's/(.*//' | egrep -v '(/usr/lib)|(/System)|@executable_path@'); do
 				if echo ${lib} | grep "PlugIns\|libqcocoa"  > /dev/null; then
 					lib_loc="Contents/PlugIns/platforms"
@@ -145,6 +150,8 @@ EOF
 					echo "Adding symlink: ${lib_bn} (because of: ${todo_obj})"
 
 					# Copy the QT and Python framework
+
+					echo "####: ${lib}"
 					if echo ${lib} | grep Qt > /dev/null ; then
 						test -d ${lib_loc} || mkdir -p ${lib_loc}
 						echo Copying -R ${PGADMIN_QT_DIR}/lib/${qtfw_path}/${lib_bn} to ${lib_loc}/
@@ -152,15 +159,19 @@ EOF
 					elif echo ${lib} | grep Python > /dev/null ; then
 						test -d ${lib_loc} || mkdir -p ${lib_loc}
 						cp -R "${lib}" "${lib_loc}/${lib_bn}"
+					elif test "${lib}" == "libncursesw.5.dylib" || test "${lib}" == "libpanelw.5.dylib" || test "${lib}" == "libssl.1.1.dylib" || test "${lib}" == "libcrypto.1.1.dylib" ; then
+					  echo "####: ${lib}"
+					  echo "####: ${lib_loc}/${lib_bn}"
+					  cp -R "${todo_obj}" "${lib_loc}/${lib_bn}"
 					else
 						cp -R "${lib}" "${lib_loc}/${lib_bn}"
 					fi
-					if ! test -L "${lib_loc}/${lib_bn}"; then
+					if ! test -L "${lib_loc}/${lib_bn}" ; then
 						chmod 755 "${lib_loc}/${lib_bn}"
 					else
-						target_file=$(readlink "${lib}")
+						target_file=$(greadlink "${lib}")
+						echo ${target_file}
 						target_path=$(dirname "${lib}")/${target_file}
-
 					    echo "Adding symlink target: ${target_path}"
 						cp "${target_path}" "${lib_loc}/${target_file}"
 						chmod 755 "${lib_loc}/${target_file}"
@@ -196,8 +207,8 @@ EOF
 	popd > /dev/null
 
     pushd ${SOURCE_DIR}/web > /dev/null
-        yarn install
-        yarn run bundle
+        npm install
+        npm run bundle
 
         curl https://curl.haxx.se/ca/cacert.pem -o cacert.pem -s
     popd > /dev/null

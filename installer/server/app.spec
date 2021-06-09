@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['app\\app.py'],
-             pathex=['D:\\work\\pgadmin4\\installer\\server'],
+a = Analysis(['app/app.py'],
+             pathex=['/Volumes/users/ssg/projects/git/pgadmin4/installer/server'],
              binaries=[],
              datas=[],
              hiddenimports=['pkg_resources.py2_warn', 'cmath'],
