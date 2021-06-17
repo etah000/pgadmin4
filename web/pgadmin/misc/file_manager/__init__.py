@@ -959,6 +959,7 @@ class Filemanager(object):
         dir = self.dir if self.dir is not None else ''
         err_msg = ''
         code = 1
+        newName = ''
         try:
             path = req.form.get('currentpath')
 
