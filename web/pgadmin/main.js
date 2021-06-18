@@ -51,3 +51,9 @@ setTimeout(function() {
   // console.log("###document.getElementById('install').appendChild(component.$el)")
 }, 3000);
 
+
+import wrapper from '@vue/web-component-wrapper'
+import MyComponent from "./App.vue";
+
+const CustomElement = wrapper(Vue, MyComponent)
+window.customElements.define('my-component', CustomElement)
