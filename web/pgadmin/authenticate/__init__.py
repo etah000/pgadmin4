@@ -61,6 +61,8 @@ def login():
             return unauthorized(errormsg=gettext(msg))
 
         session['_auth_source_manager_obj'] = auth_obj.as_dict()
+        # we may use JSON instead of Form, so flask.request.form may not works
+        current_app.keyManager.set(form['password'].data)
         return Response()
 
     return unauthorized(errormsg=gettext(msg))
@@ -70,6 +72,7 @@ def login():
 def logout():
     """
     """
+    current_app.keyManager.reset()
     logout_user()
     return Response()
 

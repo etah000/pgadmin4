@@ -388,6 +388,12 @@ class Filemanager(object):
             files_only = False
             folders_only = True
             title = gettext("Storage Manager")
+        elif fm_type == 'storage_all':
+            capabilities = ['select_folder', 'select_file', 'download',
+                            'rename', 'delete', 'upload', 'create']
+            files_only = False
+            folders_only = False
+            title = gettext("Storage Manager")
 
         # Using os.path.join to make sure we have trailing '/' or '\'
         homedir = '/' if (config.SERVER_MODE) \
@@ -903,7 +909,7 @@ class Filemanager(object):
 
         return result
 
-    def delete(self, path=None, req=None):
+    def delete(self, path=None, req=None, **kwargs):
         """
         Delete file or folder
         """
