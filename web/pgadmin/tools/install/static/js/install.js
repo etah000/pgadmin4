@@ -18,7 +18,7 @@ define([
         return;
       this.initialized = true;
       // Initialize the context menu to display the import options when user open the context menu for table
-      pgBrowser.add_menus([{
+      /*pgBrowser.add_menus([{
         name: 'install',
         module: this,
         applies: ['tools'],
@@ -27,7 +27,7 @@ define([
         priority: 10,
         label: gettext('Install'),
         icon: 'fa fa-shopping-cart',
-      }]);
+      }]);*/
     },
     initVue: function() {
       if (this.vueinited)
