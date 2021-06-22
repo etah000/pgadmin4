@@ -264,7 +264,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
-        'msql': [{'get': 'msql'}, {'get': 'msql'}],
+        'msql': [{'post': 'msql'}, {'post': 'msql'}],
         'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
@@ -1352,28 +1352,10 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
            scid: Schema ID
            tid: Table ID
         """
-        data = dict()
-        data['engine_params'] = dict()
+        data = request.form if request.form else json.loads(
+            request.data, encoding='utf-8'
+        )
         SQL = ''
-        for k, v in request.args.items():
-            try:
-                # comments should be taken as is because if user enters a
-                # json comment it is parsed by loads which should not happen
-                if k in ('description',):
-                    data[k] = v
-                else:
-                    data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
-
-            try:
-                # reformat engine_params for frontend
-                # to resolve onfocus/onblue issue
-                if k.startswith('ep_'):
-                    k = '_'.join(k.split('_')[1:])
-                    data['engine_params'][k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data['engine_params'][k] = v
 
         if 'database' in data and data['database']:
             did = data['database']
