@@ -28,6 +28,7 @@ from uuid import uuid4
 from threading import Lock
 from flask import current_app, request, flash, redirect
 from flask_login import login_url
+from flask_babelex import gettext as _
 
 from pickle import dump, load
 from collections import OrderedDict
@@ -35,7 +36,7 @@ from collections import OrderedDict
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
 
-from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.ajax import make_json_response, unauthorized
 
 
 def _calc_hmac(body, secret):
@@ -354,7 +355,7 @@ def pga_unauthorised():
         return make_json_response(
             status=401,
             success=0,
-            errormsg=login_message,
+            errormsg=_(login_message),
             info='PGADMIN_LOGIN_REQUIRED'
         )
 
@@ -362,9 +363,11 @@ def pga_unauthorised():
     # security page, otherwise it will be redirected to login page
     # anyway
     if login_message and 'security' in request.endpoint:
-        flash(login_message, category=lm.login_message_category)
+        # flash(login_message, category=lm.login_message_category)
+        return unauthorized(errormsg=_(login_message))
 
-    return redirect(login_url(lm.login_view, request.url))
+    # return redirect(login_url(lm.login_view, request.url))
+    return unauthorized(errormsg=_(login_message))
 
 
 def cleanup_session_files():

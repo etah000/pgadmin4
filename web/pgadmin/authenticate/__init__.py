@@ -11,7 +11,7 @@
 
 import flask
 import pickle
-from flask import current_app, flash, Response
+from flask import current_app, flash, Response, session
 from flask_babelex import gettext
 from flask_security import current_user
 from flask_security.views import _security, _ctx
@@ -61,8 +61,15 @@ def login():
             return unauthorized(errormsg=gettext(msg))
 
         session['_auth_source_manager_obj'] = auth_obj.as_dict()
+
+        # signals for user_logged_in from create_app
+        # signal handler 01:
+        session.force_write = True
+        # signal handler 02:
         # we may use JSON instead of Form, so flask.request.form may not works
         current_app.keyManager.set(form['password'].data)
+        # signal handlers end
+
         return Response()
 
     return unauthorized(errormsg=gettext(msg))
@@ -72,7 +79,27 @@ def login():
 def logout():
     """
     """
+    # signals for user_logged_out from create_app
+    # signal handler 01:
+    session.force_write = True
+    # signal handler 02:
+    from config import PG_DEFAULT_DRIVER
+    from pgadmin.utils.driver import get_driver
+    from flask import current_app
+
+    # remove key
     current_app.keyManager.reset()
+
+    for mdl in current_app.logout_hooks:
+        try:
+            mdl.on_logout(current_user)
+        except Exception as e:
+            current_app.logger.exception(e)
+
+    _driver = get_driver(PG_DEFAULT_DRIVER)
+    _driver.gc_own()
+    # signal handlers end
+
     logout_user()
     return Response()
 
