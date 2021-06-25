@@ -67,7 +67,3 @@ class Completion(object):
 
         else:
             return ''
-
-
-c=Completion( text='default', start_position=-5, display_meta='schema', display='default')
-print(c)
