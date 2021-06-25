@@ -22,7 +22,7 @@ from flask_security.utils import login_user, logout_user
 
 import config
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import unauthorized
+from pgadmin.utils.ajax import unauthorized, make_json_response
 from .registry import AuthSourceRegistry
 
 MODULE_NAME = 'authenticate'
@@ -70,7 +70,7 @@ def login():
         current_app.keyManager.set(form['password'].data)
         # signal handlers end
 
-        return Response()
+        return make_json_response(success=1)
 
     return unauthorized(errormsg=gettext(msg))
 
