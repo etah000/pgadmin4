@@ -497,7 +497,7 @@ def poll(trans_id):
 
     return make_json_response(
         data={
-            'status': status, 'result': result,
+            'status': status, 'result': result or [],
             'rows_affected': rows_affected,
             'rows_fetched_from': rows_fetched_from,
             'rows_fetched_to': rows_fetched_to,
