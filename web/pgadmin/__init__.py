@@ -12,6 +12,7 @@ such as setup of logging, dynamic loading of modules etc."""
 import logging
 import os
 import sys
+import json
 from types import MethodType
 from collections import defaultdict
 from importlib import import_module
@@ -279,6 +280,7 @@ def create_app(app_name=None):
     ##########################################################################
 
     # Initialise i18n
+    app.config['BABEL_DEFAULT_LOCALE'] = 'zh'
     babel = Babel(app)
 
     app.logger.debug('Available translations: %s' % babel.list_translations())
@@ -303,7 +305,10 @@ def create_app(app_name=None):
         else:
             # If language is available in get request then return the same
             # otherwise check the session or cookie
-            data = request.form
+            data = request.form if request.form else json.loads(
+                request.data, encoding='utf-8'
+            ) if request.data else {}
+
             if 'language' in data:
                 language = data['language'] or language
                 setattr(session, 'PGADMIN_LANGUAGE', language)
