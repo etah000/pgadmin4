@@ -28,15 +28,15 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables import \
     BaseTableView
 
 
-class RoleModule(CollectionNodeModule):
-    NODE_TYPE = 'role'
-    COLLECTION_LABEL = _("Roles")
+class UserModule(CollectionNodeModule):
+    NODE_TYPE = 'user'
+    COLLECTION_LABEL = _("Users")
 
     def __init__(self, *args, **kwargs):
         self.min_ver = None
         self.max_ver = None
 
-        super(RoleModule, self).__init__(*args, **kwargs)
+        super(UserModule, self).__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid):
         """
@@ -71,7 +71,7 @@ class RoleModule(CollectionNodeModule):
                 "browser/css/collection.css",
                 node_type=self.node_type
             ),
-            render_template("roles/css/role.css")]
+            render_template("users/css/user.css")]
 
         for submodule in self.submodules:
             snippets.extend(submodule.csssnippets)
@@ -87,11 +87,11 @@ class RoleModule(CollectionNodeModule):
         return False
 
 
-blueprint = RoleModule(__name__)
+blueprint = UserModule(__name__)
 
 
-class RoleView(PGChildNodeView, ClusterReader):
-    node_type = 'role'
+class UserView(PGChildNodeView, ClusterReader):
+    node_type = 'user'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -483,7 +483,7 @@ rolmembership:{
                     if self.manager.db_info is not None and \
                     self.manager.did in self.manager.db_info else 0
 
-                self.sql_path = 'roles/sql/#{0}#'.format(self.manager.version)
+                self.sql_path = 'users/sql/#{0}#'.format(self.manager.version)
 
                 self.alterKeys = [
                     u'rolcanlogin', u'rolsuper', u'rolcreatedb',
@@ -535,7 +535,7 @@ rolmembership:{
 
                 if fetch_name:
                     status, res = self.conn.execute_dict(
-                        u"SELECT name, 0 AS rolcanlogin FROM system.roles WHERE name = '{}'".format(kwargs['rid'])
+                        u"SELECT name, 1 AS rolcanlogin FROM system.users WHERE name = '{}'".format(kwargs['rid'])
                     )
 
                     if not status:
@@ -1192,4 +1192,4 @@ WHERE
             status=200
         )
 
-RoleView.register_node_view(blueprint)
+UserView.register_node_view(blueprint)

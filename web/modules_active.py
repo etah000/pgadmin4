@@ -80,6 +80,7 @@ MODULES_ACTIVE = (
     # 'pgadmin.browser.server_groups.servers.ppas',
     # 'pgadmin.browser.server_groups.servers.resource_groups',
     'pgadmin.browser.server_groups.servers.roles',
+    'pgadmin.browser.server_groups.servers.users',
     'pgadmin.browser.server_groups.servers.tablespaces',
     # 'pgadmin.browser.server_groups.servers.formats',
     'pgadmin.browser.server_groups.servers.dictionaries',
