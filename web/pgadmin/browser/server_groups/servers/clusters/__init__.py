@@ -205,13 +205,11 @@ class DatabaseView(PGClusterChildNodeView):
                 if not already_connected:
                     status, errmsg = conn.connect()
                     if not status:
-                        current_app.logger.error(
-                            "Could not connected server(#{0}).\nError: {1}"
-                            .format(
+                        msg = _("Could not connected server(#{0}).\nError: {1}").format(
                                 sid, errmsg
                             )
-                        )
-                        return internal_server_error(errmsg)
+                        current_app.logger.error(msg)
+                        return internal_server_error(msg)
                     else:
                         current_app.logger.info(
                             'Connection Established for server Id: \

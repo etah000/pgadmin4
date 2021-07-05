@@ -347,6 +347,8 @@ class Connection(BaseConnection):
         self.conn = pg_conn
         self.wasConnected = True
         try:
+            status = False
+            msg = ''
             status, msg = self._initialize(conn_id, **kwargs)
         except Exception as e:
             manager.stop_ssh_tunnel()
@@ -354,7 +356,7 @@ class Connection(BaseConnection):
             self.conn = None
             if not self.reconnecting:
                 self.wasConnected = False
-            raise e
+            return status, str(e)
 
         if status:
             manager._update_password(encpass)

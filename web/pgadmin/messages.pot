@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-06-03 11:54+0800\n"
+"POT-Creation-Date: 2021-07-05 11:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: pgadmin/__init__.py:527 pgadmin/__init__.py:580
+#: pgadmin/__init__.py:534 pgadmin/__init__.py:587
 msgid "Auto-detected {0} installation with the data directory at {1}"
 msgstr ""
 
@@ -481,6 +481,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:225
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:478
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:121
+#: pgadmin/browser/server_groups/servers/users/__init__.py:478
 #: pgadmin/browser/utils.py:422
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:102
 #: pgadmin/static/js/alertify.pgadmin.defaults.js:167
@@ -583,6 +584,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/__init__.py:531
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:405
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:178
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:405
 #: pgadmin/tools/user_management/static/js/user_management.js:364
 msgid "Role"
 msgstr ""
@@ -600,7 +602,7 @@ msgid "No parameters were changed."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:770
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:399
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:397
 #: pgadmin/browser/server_groups/servers/clusters/shards/__init__.py:597
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:962
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:615
@@ -677,7 +679,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/__init__.py:1681
 #: pgadmin/browser/server_groups/servers/__init__.py:1683
 #: pgadmin/utils/driver/snowball/connection.py:257
-#: pgadmin/utils/driver/snowball/connection.py:1268
+#: pgadmin/utils/driver/snowball/connection.py:1270
 #: pgadmin/utils/driver/snowball/server_manager.py:501
 msgid "Unauthorized request."
 msgstr ""
@@ -837,48 +839,54 @@ msgstr ""
 msgid "Could not find the server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:298
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:208
+msgid ""
+"Could not connected server(#{0}).\n"
+"Error: {1}"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:296
 msgid "Could not find the cluster on the server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:320
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:318
 msgid "Could not find the virtual cluster on the server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:334
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:332
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:504
 msgid "Database connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:348
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:346
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:528
 msgid "Database disconnected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:410
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:408
 msgid "XMLSyntaxError ({})."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:426
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:424
 msgid "cluster: {} existed."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:477
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:507
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:564
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:475
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:505
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:562
 msgid "please submit ssh connection information in properties for server: {}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:535
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:584
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:533
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:582
 msgid "server error: {}, {}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:608
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:606
 msgid "Could not find the required cluster."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/clusters/__init__.py:663
+#: pgadmin/browser/server_groups/servers/clusters/__init__.py:661
 msgid "Cluster deleted"
 msgstr ""
 
@@ -990,12 +998,12 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:634
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:656
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1329
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1465
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1500
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1548
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1599
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1652
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1701
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1447
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1482
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1530
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1581
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1634
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1683
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:402
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:496
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:592
@@ -1032,14 +1040,14 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1548
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1334
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1380
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1570
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1623
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1552
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1605
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1588
 msgid "-- Please create column(s) first..."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/clusters/shards/replications/__init__.py:1641
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1716
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1698
 msgid "Table rows counted: {}"
 msgstr ""
 
@@ -1266,6 +1274,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:133
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:346
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:2
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:410
 #: pgadmin/browser/server_groups/static/js/server_group.js:49
 #: pgadmin/dashboard/static/js/dashboard.js:1162
 #: pgadmin/dashboard/static/js/dashboard.js:1388
@@ -2183,6 +2192,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/formats/static/js/format.js:355
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:639
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:364
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:639
 #: pgadmin/tools/debugger/static/js/direct.js:1707
 msgid "Parameters"
 msgstr ""
@@ -2284,6 +2294,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:529
 #: pgadmin/browser/server_groups/servers/formats/static/js/format.js:361
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:647
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:647
 msgid "Security"
 msgstr ""
 
@@ -2306,6 +2317,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:786
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:527
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:645
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:645
 msgid "Security labels"
 msgstr ""
 
@@ -2691,6 +2703,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.js:111
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:632
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:172
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:632
 #: pgadmin/dashboard/static/js/dashboard.js:1167
 #: pgadmin/misc/statistics/static/js/statistics.js:136
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:305
@@ -2828,6 +2841,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.js:116
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:667
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:375
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:667
 #: pgadmin/browser/server_groups/static/js/server_group.js:71
 msgid "Name cannot be empty."
 msgstr ""
@@ -3606,6 +3620,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:413
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:601
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:360
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:413
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:601
 #: pgadmin/static/js/browser/server_groups/servers/databases/external_tables/external_tables.js:47
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:283
 #: pgadmin/tools/debugger/static/js/direct.js:1165
@@ -3664,6 +3680,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.2_plus/stats.sql:28
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/9.6_plus/stats.sql:29
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:404
 #: pgadmin/dashboard/static/js/dashboard.js:959
 #: pgadmin/dashboard/static/js/dashboard.js:1110
 #: pgadmin/dashboard/static/js/dashboard.js:1239
@@ -4172,6 +4189,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:132
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:143
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:147
+#: pgadmin/browser/server_groups/servers/users/__init__.py:147
 #: pgadmin/static/js/browser/server_groups/servers/model_validation.js:31
 msgid "Name must be specified."
 msgstr ""
@@ -5803,6 +5821,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:148
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:344
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:538
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:538
 msgid "On Cluster"
 msgstr ""
 
@@ -6646,6 +6665,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/formats/static/js/format.js:193
 #: pgadmin/browser/server_groups/servers/functions/static/js/function.js:192
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:198
+#: pgadmin/browser/server_groups/servers/users/__init__.py:33
 #: pgadmin/browser/templates/browser/index.html:160
 #: pgadmin/tools/user_management/__init__.py:44
 #: pgadmin/tools/user_management/static/js/user_management.js:712
@@ -6808,16 +6828,19 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:158
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:162
+#: pgadmin/browser/server_groups/servers/users/__init__.py:162
 msgid "Date format is invalid."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:171
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:175
+#: pgadmin/browser/server_groups/servers/users/__init__.py:175
 msgid "Connection limit must be an integer value or equal to -1."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:177
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:181
+#: pgadmin/browser/server_groups/servers/users/__init__.py:181
 msgid ""
 "\n"
 "Role membership information must be passed as an array of JSON objects in"
@@ -6834,6 +6857,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:203
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:207
+#: pgadmin/browser/server_groups/servers/users/__init__.py:207
 msgid ""
 "\n"
 "Role membership information must be passed as a string representing an "
@@ -6862,6 +6886,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:283
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:287
+#: pgadmin/browser/server_groups/servers/users/__init__.py:287
 msgid ""
 "\n"
 "Security Label must be passed as an array of JSON objects in the "
@@ -6877,6 +6902,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:301
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:305
+#: pgadmin/browser/server_groups/servers/users/__init__.py:305
 msgid ""
 "\n"
 "Security Label must be passed as an array of JSON objects in the "
@@ -6905,6 +6931,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:364
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:368
+#: pgadmin/browser/server_groups/servers/users/__init__.py:368
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
@@ -6921,6 +6948,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:382
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:386
+#: pgadmin/browser/server_groups/servers/users/__init__.py:386
 msgid ""
 "\n"
 "Configuration parameters/variables must be passed as an array of JSON "
@@ -6952,22 +6980,26 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:504
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:508
+#: pgadmin/browser/server_groups/servers/users/__init__.py:508
 msgid "The current user does not have permission to drop the role."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:509
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:513
+#: pgadmin/browser/server_groups/servers/users/__init__.py:513
 msgid "The current user does not have permission to update the role."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:515
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:519
+#: pgadmin/browser/server_groups/servers/users/__init__.py:519
 msgid "The current user does not have permission to create the role."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:543
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:725
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:771
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:766
+#: pgadmin/browser/server_groups/servers/users/__init__.py:766
 msgid ""
 "Error retrieving the role information.\n"
 "{0}"
@@ -6980,8 +7012,10 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:577
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:687
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:591
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:722
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:587
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:717
+#: pgadmin/browser/server_groups/servers/users/__init__.py:587
+#: pgadmin/browser/server_groups/servers/users/__init__.py:717
 msgid ""
 "Error retrieving roles from the database server.\n"
 "{0}"
@@ -6991,10 +7025,14 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:633
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:810
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:858
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:620
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:655
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:868
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:916
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:616
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:651
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:863
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:911
+#: pgadmin/browser/server_groups/servers/users/__init__.py:616
+#: pgadmin/browser/server_groups/servers/users/__init__.py:651
+#: pgadmin/browser/server_groups/servers/users/__init__.py:863
+#: pgadmin/browser/server_groups/servers/users/__init__.py:911
 msgid ""
 "Error fetching role information from the database server.\n"
 "{0}"
@@ -7004,10 +7042,14 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:694
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:825
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:875
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:673
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:731
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:883
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:933
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:669
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:726
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:878
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:928
+#: pgadmin/browser/server_groups/servers/users/__init__.py:669
+#: pgadmin/browser/server_groups/servers/users/__init__.py:726
+#: pgadmin/browser/server_groups/servers/users/__init__.py:878
+#: pgadmin/browser/server_groups/servers/users/__init__.py:928
 msgid "Could not find the role information."
 msgstr ""
 
@@ -7018,21 +7060,25 @@ msgid ""
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:761
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:812
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:807
+#: pgadmin/browser/server_groups/servers/users/__init__.py:807
 msgid ""
 "Could not generate reversed engineered query for the role.\n"
 "{0}"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:769
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:820
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:815
+#: pgadmin/browser/server_groups/servers/users/__init__.py:815
 msgid "Could not generate reversed engineered query for the role."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:789
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:847
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:847
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:905
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:842
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:900
+#: pgadmin/browser/server_groups/servers/users/__init__.py:842
+#: pgadmin/browser/server_groups/servers/users/__init__.py:900
 msgid ""
 "Could not create the role.\n"
 "{0}"
@@ -7051,7 +7097,8 @@ msgid ""
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/__init__.py:1116
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:1174
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:1169
+#: pgadmin/browser/server_groups/servers/users/__init__.py:1169
 msgid ""
 "Error retrieving the variable options for the role.\n"
 "{0}"
@@ -7060,12 +7107,14 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:40
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:39
 #: pgadmin/browser/server_groups/servers/static/js/server.js:32
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:39
 msgid "Provider"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:44
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:43
 #: pgadmin/browser/server_groups/servers/static/js/server.js:36
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:43
 msgid "Security label"
 msgstr ""
 
@@ -7073,21 +7122,26 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:63
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:52
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:62
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:52
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:62
 msgid "Please specify the value for all the security providers."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:245
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:244
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:244
 msgid "Select members"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:338
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:339
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:339
 msgid "Login Role"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:340
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:341
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:341
 msgid "Group Role"
 msgstr ""
 
@@ -7097,6 +7151,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1188
 #: pgadmin/browser/server_groups/servers/static/js/server.js:1204
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:6
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:445
 #: pgadmin/browser/templates/browser/master_password.html:5
 msgid "Password"
 msgstr ""
@@ -7142,7 +7197,9 @@ msgid "Can initiate streaming replication and backups?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/engines/static/js/engine.js:494
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:33
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:542
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:542
 msgid "Roles"
 msgstr ""
 
@@ -7925,7 +7982,7 @@ msgid "Not running currently."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.js:92
-#: pgadmin/misc/file_manager/__init__.py:984
+#: pgadmin/misc/file_manager/__init__.py:991
 #: pgadmin/tools/search_objects/static/js/search_objects_dialog_wrapper.js:149
 msgid "Unknown"
 msgstr ""
@@ -8170,74 +8227,91 @@ msgstr ""
 msgid "Dirty rate limit cannot be empty."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:33
-#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:21
-msgid "Login/Group Roles"
-msgstr ""
-
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:547
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:543
+#: pgadmin/browser/server_groups/servers/users/__init__.py:543
 msgid ""
 "Error retrieving the user/role information.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:554
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:788
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:550
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:783
+#: pgadmin/browser/server_groups/servers/users/__init__.py:550
+#: pgadmin/browser/server_groups/servers/users/__init__.py:783
 msgid "Could not find the user/role on the database server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:758
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:753
+#: pgadmin/browser/server_groups/servers/users/__init__.py:753
 msgid ""
 "Error retrieving the user information.\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/roles/__init__.py:794
+#: pgadmin/browser/server_groups/servers/roles/__init__.py:789
+#: pgadmin/browser/server_groups/servers/users/__init__.py:789
 msgid ""
 "Could not drop the user/role.\n"
 "{0}"
 msgstr ""
 
+#: pgadmin/browser/server_groups/servers/roles/static/js/role.js:21
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:21
+msgid "Login/Group Roles"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:303
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:303
 msgid "Login/Group Role"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:353
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:359
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:365
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:353
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:359
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:365
 msgid "Login/Group Role..."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:399
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:399
 msgid "User/Role"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:416
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:416
 msgid "Auth Type"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:419
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:419
 #: pgadmin/misc/file_manager/__init__.py:125
 msgid "Storage"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:422
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:422
 msgid "Host IP"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:425
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:425
 msgid "Default Roles All"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:428
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:428
 msgid "Default Roles List"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:431
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:431
 msgid "Default Roles Except"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:436
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:436
 #: pgadmin/misc/__init__.py:25 pgadmin/tools/backup/static/js/backup.js:77
 #: pgadmin/tools/backup/static/js/backup.js:84
 #: pgadmin/tools/backup/static/js/backup.js:90
@@ -8250,16 +8324,22 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:437
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:597
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:437
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:597
 msgid "Definition(User)"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:571
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:571
 msgid "Profile"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:596
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:605
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:634
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:596
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:605
+#: pgadmin/browser/server_groups/servers/users/static/js/user.js:634
 msgid "Host Info"
 msgstr ""
 
@@ -9825,59 +9905,60 @@ msgstr ""
 
 #: pgadmin/misc/file_manager/__init__.py:384
 #: pgadmin/misc/file_manager/__init__.py:390
+#: pgadmin/misc/file_manager/__init__.py:396
 msgid "Storage Manager"
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:576
-#: pgadmin/misc/file_manager/__init__.py:679
-#: pgadmin/misc/file_manager/__init__.py:681
-#: pgadmin/misc/file_manager/__init__.py:774
-#: pgadmin/misc/file_manager/__init__.py:858
-#: pgadmin/misc/file_manager/__init__.py:925
-#: pgadmin/misc/file_manager/__init__.py:939
-#: pgadmin/misc/file_manager/__init__.py:983
+#: pgadmin/misc/file_manager/__init__.py:582
+#: pgadmin/misc/file_manager/__init__.py:685
+#: pgadmin/misc/file_manager/__init__.py:687
+#: pgadmin/misc/file_manager/__init__.py:780
+#: pgadmin/misc/file_manager/__init__.py:864
+#: pgadmin/misc/file_manager/__init__.py:931
+#: pgadmin/misc/file_manager/__init__.py:945
 #: pgadmin/misc/file_manager/__init__.py:990
-#: pgadmin/misc/file_manager/__init__.py:1027
-#: pgadmin/misc/file_manager/__init__.py:1029
-#: pgadmin/misc/file_manager/__init__.py:1115
-#: pgadmin/misc/file_manager/__init__.py:1117
-#: pgadmin/misc/file_manager/__init__.py:1121
-#: pgadmin/misc/file_manager/__init__.py:1149
-#: pgadmin/misc/file_manager/__init__.py:1167
+#: pgadmin/misc/file_manager/__init__.py:997
+#: pgadmin/misc/file_manager/__init__.py:1034
+#: pgadmin/misc/file_manager/__init__.py:1036
+#: pgadmin/misc/file_manager/__init__.py:1122
+#: pgadmin/misc/file_manager/__init__.py:1124
+#: pgadmin/misc/file_manager/__init__.py:1128
+#: pgadmin/misc/file_manager/__init__.py:1156
 #: pgadmin/misc/file_manager/__init__.py:1174
-#: pgadmin/misc/file_manager/__init__.py:1208
-#: pgadmin/misc/file_manager/__init__.py:1225
+#: pgadmin/misc/file_manager/__init__.py:1181
+#: pgadmin/misc/file_manager/__init__.py:1215
+#: pgadmin/misc/file_manager/__init__.py:1232
 #: pgadmin/tools/sqleditor/__init__.py:1271
 #: pgadmin/tools/sqleditor/__init__.py:1274
 msgid "Error: {0}"
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:616
-#: pgadmin/misc/file_manager/__init__.py:805
+#: pgadmin/misc/file_manager/__init__.py:622
+#: pgadmin/misc/file_manager/__init__.py:811
 msgid "'{0}' file does not exist."
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:678
+#: pgadmin/misc/file_manager/__init__.py:684
 msgid "Permission denied"
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:714
+#: pgadmin/misc/file_manager/__init__.py:720
 msgid "Access denied ({0})"
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:847
-#: pgadmin/misc/file_manager/__init__.py:912
-#: pgadmin/misc/file_manager/__init__.py:955
-#: pgadmin/misc/file_manager/__init__.py:1138
-#: pgadmin/misc/file_manager/__init__.py:1191
+#: pgadmin/misc/file_manager/__init__.py:853
+#: pgadmin/misc/file_manager/__init__.py:918
+#: pgadmin/misc/file_manager/__init__.py:961
+#: pgadmin/misc/file_manager/__init__.py:1145
+#: pgadmin/misc/file_manager/__init__.py:1198
 msgid "Not allowed"
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:886
+#: pgadmin/misc/file_manager/__init__.py:892
 msgid "Renamed successfully."
 msgstr ""
 
-#: pgadmin/misc/file_manager/__init__.py:893
+#: pgadmin/misc/file_manager/__init__.py:899
 msgid "There was an error renaming the file:"
 msgstr ""
 
@@ -13152,80 +13233,80 @@ msgid ""
 "Error: {0}"
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:443
+#: pgadmin/utils/driver/snowball/connection.py:445
 msgid ""
 "Failed to setup the role with error message:\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:594
+#: pgadmin/utils/driver/snowball/connection.py:596
 msgid ""
 "Failed to create cursor for psycopg2 connection with error message for "
 "the server#{1}:{2}:\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:606
+#: pgadmin/utils/driver/snowball/connection.py:608
 msgid ""
 "Attempting to reconnect to the database server (#{server_id}) for the "
 "connection - '{conn_id}'."
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:730
-#: pgadmin/utils/driver/snowball/connection.py:783
+#: pgadmin/utils/driver/snowball/connection.py:732
+#: pgadmin/utils/driver/snowball/connection.py:785
 msgid "The query executed did not return any data."
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1211
-#: pgadmin/utils/driver/snowball/connection.py:1416
-#: pgadmin/utils/driver/snowball/connection.py:1514
+#: pgadmin/utils/driver/snowball/connection.py:1213
+#: pgadmin/utils/driver/snowball/connection.py:1418
+#: pgadmin/utils/driver/snowball/connection.py:1516
 msgid "Cursor could not be found for the async connection."
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1304
+#: pgadmin/utils/driver/snowball/connection.py:1306
 msgid ""
 "\n"
 "Failed to reset the connection to the server due to following error:\n"
 "{0}"
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1556
+#: pgadmin/utils/driver/snowball/connection.py:1558
 msgid "snowball database has not transaction."
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1575
+#: pgadmin/utils/driver/snowball/connection.py:1577
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1581
+#: pgadmin/utils/driver/snowball/connection.py:1583
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1652
+#: pgadmin/utils/driver/snowball/connection.py:1654
 msgid "ERROR: "
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1675
+#: pgadmin/utils/driver/snowball/connection.py:1677
 msgid "SQL state: "
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1682
+#: pgadmin/utils/driver/snowball/connection.py:1684
 msgid "Detail: "
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1691
+#: pgadmin/utils/driver/snowball/connection.py:1693
 msgid "Hint: "
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1698
+#: pgadmin/utils/driver/snowball/connection.py:1700
 msgid "Character: "
 msgstr ""
 
-#: pgadmin/utils/driver/snowball/connection.py:1707
+#: pgadmin/utils/driver/snowball/connection.py:1709
 msgid "Context: "
 msgstr ""
 
