@@ -103,7 +103,7 @@ MODULES_ACTIVE = (
     'pgadmin.misc.themes',
     'pgadmin.model',
     'pgadmin.preferences',
-    'pgadmin.redirects',
+    # 'pgadmin.redirects',
     'pgadmin.settings',
     'pgadmin.setup',
     'pgadmin.tools',

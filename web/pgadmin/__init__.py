@@ -215,7 +215,7 @@ def create_app(app_name=None):
 
     """Create the Flask application, startup logging and dynamically load
     additional modules (blueprints) that are found in this directory."""
-    app = PgAdmin(__name__, static_url_path='/static')
+    app = PgAdmin(__name__, static_url_path='', )
     # Removes unwanted whitespace from render_template function
     app.jinja_env.trim_blocks = True
     app.config.from_object(config)
