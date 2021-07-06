@@ -425,7 +425,7 @@ class DatabaseView(PGClusterChildNodeView):
             return internal_server_error(errormsg=rset)
 
         if rset['rows']:
-            errmsg = _('cluster: {} existed.'.format(data['name']))
+            errmsg = _('cluster: {} existed.').format(data['name'])
             return make_json_response(
                 success=0,
                 errormsg=errmsg
@@ -475,8 +475,8 @@ class DatabaseView(PGClusterChildNodeView):
 
         if ssh_null_servers:
             server_names = ['{}.{}'.format(sg.name, server.name) for server in ssh_null_servers]
-            errmsg = _('please submit ssh connection information in properties for server: {}'
-                       .format(','.join(server_names)))
+            errmsg = _('please submit ssh connection information in properties for server: {}') \
+                       .format(','.join(server_names))
             return None, errmsg
 
         return True, ssh_infos
@@ -505,8 +505,8 @@ class DatabaseView(PGClusterChildNodeView):
 
         if ssh_null_servers:
             server_names = [server.name for server in ssh_null_servers]
-            errmsg = _('please submit ssh connection information in properties for server: {}'
-                       .format(','.join(server_names)))
+            errmsg = _('please submit ssh connection information in properties for server: {}') \
+                       .format(','.join(server_names))
             return None, errmsg
 
         fl = io.StringIO(data)
@@ -516,6 +516,7 @@ class DatabaseView(PGClusterChildNodeView):
         created_servers = list()
         for server in servers:
             try:
+                ssh_info = ssh_infos[server.id]
                 ssh_client = get_ssh_client(server.host,
                                             user=ssh_info['ssh_username'],
                                             port=ssh_info['ssh_port'],
@@ -534,7 +535,7 @@ class DatabaseView(PGClusterChildNodeView):
                 except Exception:
                     pass
 
-                errmsg = _('server error: {}, {}'.format(server.name, ex))
+                errmsg = _('server error: {}, {}').format(server.name, ex)
                 return None, errmsg
 
         return True, None
@@ -562,8 +563,8 @@ class DatabaseView(PGClusterChildNodeView):
 
         if ssh_null_servers:
             server_names = ['{}.{}'.format(sg.name, server.name) for server in ssh_null_servers]
-            errmsg = _('please submit ssh connection information in properties for server: {}'
-                       .format(','.join(server_names)))
+            errmsg = _('please submit ssh connection information in properties for server: {}') \
+                       .format(','.join(server_names))
             return None, errmsg
 
         remote_path = os.path.join('/etc/snowball-server/config.d', '{}.xml'.format(did))
@@ -571,6 +572,7 @@ class DatabaseView(PGClusterChildNodeView):
         deleted_servers = list()
         for server in servers:
             try:
+                ssh_info = ssh_infos[server.id]
                 ssh_client = get_ssh_client(server.host,
                                             user=ssh_info['ssh_username'],
                                             port=ssh_info['ssh_port'],
@@ -583,7 +585,7 @@ class DatabaseView(PGClusterChildNodeView):
                 deleted_servers.append(server)
             except Exception as ex:
                 if not ignore_error:
-                    errmsg = _('server error: {}, {}'.format(server.name, ex))
+                    errmsg = _('server error: {}, {}').format(server.name, ex)
                     return None, errmsg
 
         return True, None
