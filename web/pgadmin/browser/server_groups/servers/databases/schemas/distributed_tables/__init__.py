@@ -36,9 +36,9 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.exclusion_constraint import utils as exclusion_utils
 
 
-class TableModule(SchemaChildModule):
+class DistributedTableModule(SchemaChildModule):
     """
-     class TableModule(SchemaChildModule)
+     class DistributedTableModule(SchemaChildModule)
 
         A module class for Table node derived from SchemaChildModule.
 
@@ -57,8 +57,8 @@ class TableModule(SchemaChildModule):
       - Load the module script for schema, when any of the server node is
         initialized.
     """
-    NODE_TYPE = 'table'
-    COLLECTION_LABEL = gettext("Tables")
+    NODE_TYPE = 'distributed_table'
+    COLLECTION_LABEL = gettext("DistributedTables")
 
     def __init__(self, *args, **kwargs):
         """
@@ -68,7 +68,7 @@ class TableModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(TableModule, self).__init__(*args, **kwargs)
+        super(DistributedTableModule, self).__init__(*args, **kwargs)
         self.max_ver = None
         self.min_ver = None
 
@@ -102,17 +102,17 @@ class TableModule(SchemaChildModule):
             ),
             render_template(
                 "browser/css/node.css",
-                node_type='table',
+                node_type=self.node_type,
                 file_name='table-inherited',
             ),
             render_template(
                 "browser/css/node.css",
-                node_type='table',
+                node_type=self.node_type,
                 file_name='table-inherits',
             ),
             render_template(
                 "browser/css/node.css",
-                node_type='table',
+                node_type=self.node_type,
                 file_name='table-multi-inherit',
             ),
         ]
@@ -135,10 +135,10 @@ class TableModule(SchemaChildModule):
         return scripts
 
 
-blueprint = TableModule(__name__)
+blueprint = DistributedTableModule(__name__)
 
 
-class TableView(BaseTableView, DataTypeReader, VacuumSettings,
+class DistributedTableView(BaseTableView, DataTypeReader, VacuumSettings,
                 SchemaDiffTableCompare,
                 ClusterReader, EngineReader, TimezoneReader):
     """
@@ -326,7 +326,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             status=200
         )
 
-    def get_icon_css_class(self, table_info, default_val='icon-table'):
+    def get_icon_css_class(self, table_info, default_val='icon-distributed-table'):
         if ('is_inherits' in table_info and
             table_info['is_inherits'] == '1') or \
                 ('coll_inherits' in table_info and
@@ -345,7 +345,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                     table_info['relhassubclass']):
             default_val = 'icon-table-inherited'
 
-        return super(TableView, self).\
+        return super(DistributedTableView, self).\
             get_icon_css_class(table_info, default_val)
 
     @BaseTableView.check_precondition
@@ -1019,7 +1019,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         # Parse & format columns
         data = column_utils.parse_format_columns(data)
-        data = TableView.check_and_convert_name_to_string(data)
+        data = DistributedTableView.check_and_convert_name_to_string(data)
 
         # 'coll_inherits' is Array but it comes as string from browser
         # We will convert it again to list
@@ -1134,7 +1134,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             if not status:
                 return res
 
-            return super(TableView, self).update(
+            return super(DistributedTableView, self).update(
                 gid, sid, did, scid, tid, data, res)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1180,7 +1180,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 #         )
                 #     )
 
-                status, res = super(TableView, self).delete(gid, sid, did,
+                status, res = super(DistributedTableView, self).delete(gid, sid, did,
                                                             scid, tid, res=None)
 
                 if not status:
@@ -1220,7 +1220,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             # if len(res['rows']) == 0:
             #     return gone(gettext("The specified table could not be found."))
 
-            return super(TableView, self).truncate(
+            return super(DistributedTableView, self).truncate(
                 gid, sid, did, scid, tid, res=None
             )
 
@@ -1711,7 +1711,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
 
         if status:
             self.cmd = 'delete'
-            sql = super(TableView, self).get_delete_sql(res)
+            sql = super(DistributedTableView, self).get_delete_sql(res)
             self.cmd = None
 
         return sql
@@ -1740,7 +1740,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 current_app.logger.error(data)
                 return False
 
-            data = super(TableView, self).properties(
+            data = super(DistributedTableView, self).properties(
                 0, sid, did, scid, tid, data, False
             )
 
@@ -1759,7 +1759,7 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
                 status, data = self._fetch_properties(did, row['oid'], scid)
 
                 if status:
-                    data = super(TableView, self).properties(
+                    data = super(DistributedTableView, self).properties(
                         0, sid, did, scid, row['oid'], data, False
                     )
 
@@ -1832,5 +1832,5 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
             status=200
         )
 
-SchemaDiffRegistry(blueprint.node_type, TableView)
-TableView.register_node_view(blueprint)
+SchemaDiffRegistry(blueprint.node_type, DistributedTableView)
+DistributedTableView.register_node_view(blueprint)

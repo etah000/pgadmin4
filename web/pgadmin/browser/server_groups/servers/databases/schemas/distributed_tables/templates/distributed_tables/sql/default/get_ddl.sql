@@ -1,15 +1,14 @@
 SELECT
-    name AS oid,
+    database,
     name,
-    0 AS triggercount,
-    0 AS has_enable_triggers,
-    0 AS is_inherits,
-    0 AS is_inherited
+    engine_full,
+    partition_key,
+    primary_key,
+    create_table_query
 FROM system.tables
 WHERE
     database = '{{ did }}'
     AND name NOT LIKE '.%'
     AND engine NOT LIKE '%View'
-    AND engine != 'Distributed'
 {% if tid %}    AND name = '{{ tid }}' {% endif %}
 ORDER BY name;

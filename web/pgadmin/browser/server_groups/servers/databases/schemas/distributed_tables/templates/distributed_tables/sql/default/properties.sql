@@ -72,7 +72,6 @@ FROM
 WHERE
     database = '{{ did }}'
     AND name NOT LIKE '.%'
-    AND engine NOT LIKE '%View'
-    AND engine != 'Distributed'
+    AND engine = 'Distributed'
     {% if tid %} AND name = '{{ tid }}' {% endif %}
 ORDER BY name
