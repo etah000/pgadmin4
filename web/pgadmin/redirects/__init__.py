@@ -15,18 +15,20 @@ from pgadmin import PgAdminModule
 MODULE_NAME = 'redirects'
 
 blueprint = PgAdminModule(
-    MODULE_NAME, __name__, url_prefix='/'
+    MODULE_NAME, __name__, url_prefix='/',
+    static_url_path=''
 )
 
 
 @blueprint.route('/')
-@login_required
+# @login_required
 def index():
     """Redirect users hitting the root to the browser"""
-    return redirect(url_for('browser.index'))
+    # return redirect(url_for('browser.index'))
+    return redirect('/index.html')
 
 
-@blueprint.route('favicon.ico')
-def favicon():
-    """Redirect to the favicon"""
-    return redirect(url_for('static', filename='favicon.ico'))
+# @blueprint.route('favicon.ico')
+# def favicon():
+#     """Redirect to the favicon"""
+#     return redirect(url_for('static', filename='favicon.ico'))
