@@ -1159,7 +1159,7 @@ class DatabaseView(PGChildNodeView, ClusterReader, EngineReader):
         for module in self.blueprint.submodules[:1]:
 
             for mod in module.submodules:
-                if mod.NODE_TYPE not in ('table', 'view', 'mview'):
+                if mod.NODE_TYPE not in ('table', 'view', 'mview', 'distributed_table'):
                     continue
 
                 if isinstance(mod, PGChildModule):
