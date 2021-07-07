@@ -13,4 +13,5 @@ WHERE
     t.database = '{{ did }}'
     AND t.name NOT LIKE '.%'
     AND t.engine NOT LIKE '%View'
+    AND t.engine = 'Distributed'
 ORDER BY name

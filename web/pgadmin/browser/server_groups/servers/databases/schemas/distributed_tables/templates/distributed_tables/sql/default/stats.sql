@@ -13,6 +13,7 @@ WHERE
     t.database = '{{ did }}'
     AND t.name NOT LIKE '.%'
     AND t.engine NOT LIKE '%View'
+    AND t.engine = 'Distributed'
 {% if tid %}  AND t.name = '{{ tid }}' {% endif %}
 {% if did %}  AND t.database = '{{ did }}' {% endif %}
 ORDER BY name
