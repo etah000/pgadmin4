@@ -971,28 +971,14 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
-
         data['engine_params'] = dict()
 
-        for k, v in data.items():
-            try:
-                # comments should be taken as is because if user enters a
-                # json comment it is parsed by loads which should not happen
-                if k in ('description',):
-                    data[k] = v
-                else:
-                    data[k] = json.loads(v, encoding='utf-8')
-            except (ValueError, TypeError, KeyError):
-                data[k] = v
-
-            try:
-                # reformat engine_params for frontend
-                # to resolve onfocus/onblue issue
-                if k.startswith('ep_'):
-                    k = '_'.join(k.split('_')[1:])
-                    data['engine_params'][k] = v
-            except (ValueError, TypeError, KeyError):
-                data['engine_params'][k] = v
+        # reformat engine_params for frontend
+        # to resolve onfocus/onblue issue
+        engine_params = [(k, v) for k, v in data.items() if k.startswith('ep_')]
+        for k, v in engine_params:
+            k = '_'.join(k.split('_')[1:])
+            data['engine_params'][k] = v
 
         required_args = [
             'name'
@@ -1355,7 +1341,15 @@ class TableView(BaseTableView, DataTypeReader, VacuumSettings,
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
         )
+        data['engine_params'] = dict()
         SQL = ''
+
+        # reformat engine_params for frontend
+        # to resolve onfocus/onblue issue
+        engine_params = [(k, v) for k,v in data.items() if k.startswith('ep_')]
+        for k, v in engine_params:
+            k = '_'.join(k.split('_')[1:])
+            data['engine_params'][k] = v
 
         if 'database' in data and data['database']:
             did = data['database']

@@ -8,10 +8,10 @@
 {#====== MAIN TABLE TEMPLATE STARTS HERE ======#}
 {#===========================================#}
 
-{% from 'tables/sql/macros/column.macro' import COLUMNS %}
-{% from 'tables/sql/macros/index.macro' import INDEXES %}
-{% from 'tables/sql/macros/constraint.macro' import CONSTRAINTS %}
-{% from 'tables/sql/macros/engine.macro' import ENGINE %}
+{% from 'distributed_tables/sql/macros/column.macro' import COLUMNS %}
+{% from 'distributed_tables/sql/macros/index.macro' import INDEXES %}
+{% from 'distributed_tables/sql/macros/constraint.macro' import CONSTRAINTS %}
+{% from 'distributed_tables/sql/macros/engine.macro' import ENGINE %}
 
 
 {#===========================================#}
