@@ -47,6 +47,7 @@ MODULES_ACTIVE = (
     # 'pgadmin.browser.server_groups.servers.databases.schemas.sequences',
     # 'pgadmin.browser.server_groups.servers.databases.schemas.synonyms',
     'pgadmin.browser.server_groups.servers.databases.schemas.distributed_tables',
+    'pgadmin.browser.server_groups.servers.databases.schemas.distributed_tables.children',
     'pgadmin.browser.server_groups.servers.databases.schemas.tables',
     'pgadmin.browser.server_groups.servers.databases.schemas.tables.base_partition_table',
     'pgadmin.browser.server_groups.servers.databases.schemas.tables.columns',
