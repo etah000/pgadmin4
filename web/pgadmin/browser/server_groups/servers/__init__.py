@@ -1575,8 +1575,16 @@ class ServerNode(PGChildNodeView):
                 )
             )
         else:
+            if errmsg is None:
+                errmsg = gettext(
+                    'Please enter the password for the user \'{0}\' to connect the server - "{1}"'
+                ).format(server.username, server.name)
+
+            errmsg = errmsg.split('Stack trace')[0]
+
             return make_json_response(
                 success=0,
+                errormsg=errmsg,
                 status=status,
                 result=render_template(
                     'servers/password.html',
