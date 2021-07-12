@@ -9,6 +9,7 @@
 
 """Implements Grant Wizard"""
 
+import sqlparse
 import simplejson as json
 from flask import Response, url_for
 from flask import render_template, request, current_app
@@ -490,9 +491,13 @@ def save(sid, did):
         if SQL and SQL.strip('\n') != '':
             SQL_data += SQL
 
-        status, res = conn.execute_dict(SQL_data)
-        if not status:
-            return internal_server_error(errormsg=res)
+        SQLS = sqlparse.split(SQL_data)
+        for SQL in SQLS:
+            if not SQL.strip():
+                continue
+            status, res = conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
         return make_json_response(
             success=1,
