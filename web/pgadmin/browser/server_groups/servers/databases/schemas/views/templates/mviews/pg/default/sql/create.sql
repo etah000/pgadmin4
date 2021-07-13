@@ -32,9 +32,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS {% if data.database %}{{ data.database }}
 
 {%- if data.on_cluster and data.columns|length <= 0 %}ON CLUSTER {{ data.on_cluster }}{%- endif %}
 
-{%- if data.to_database or data.to_table %} TO {% if data.to_database %}{{ data.to_database }}.{% endif %}{% if data.to_table %}{{ data.to_table }}{% endif %}{%- endif %}
+{%- if not (data.engine) and (data.to_database or data.to_table) %} TO {% if data.to_database %}{{ data.to_database }}.{% endif %}{% if data.to_table %}{{ data.to_table }}{% endif %}{%- endif %}
 
-{% if not (data.to_database or data.to_table) %}{{ ENGINE(data) }}{% endif %}
+{% if data.engine %}{{ ENGINE(data) }}{% endif %}
 
 {% if data.populate and not (data.to_database or data.to_table) %}POPULATE{% endif %}
  AS
