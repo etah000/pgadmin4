@@ -595,7 +595,7 @@ msgstr "主机地址无效"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:560
 msgid "'{0}' is not allowed to modify, when server is connected."
-msgstr "服务器在连接时, '{0}'不允许修改。"
+msgstr "未断开服务器，不允许修改。"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:587
 msgid "No parameters were changed."
