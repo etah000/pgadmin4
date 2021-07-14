@@ -679,7 +679,10 @@ class DatabaseView(PGClusterChildNodeView):
         """
 
         servers = Server.query.filter_by(servergroup_id=gid).all()
-        hosts = [{'host_name': s.host, 'port': s.port} for s in servers]
+        hosts_tuple = [(s.host, s.port) for s in servers]
+        hosts_set = list(set(hosts_tuple))
+
+        hosts = [{'host_name': host, 'port': port} for host,port in hosts_set]
 
         return make_json_response(data=hosts, status=200)
 
